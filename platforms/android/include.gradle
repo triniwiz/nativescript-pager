@@ -1,0 +1,12 @@
+android {
+	productFlavors {
+		'nativescriptpager' {
+			dimension 'nativescriptpager'
+		}
+	}
+}
+
+dependencies {
+    compile "com.android.support:support-v4:+"
+    compile 'com.eftimoff:android-viewpager-transformers:1.0.1@aar'
+}
