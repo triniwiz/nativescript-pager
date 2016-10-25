@@ -81,3 +81,8 @@ registerElement("Pager", () => require("nativescript-pager").Pager);
 * ZoomInTransformer
 * ZoomOutSlideTransformer
 * ZoomOutTranformer
+
+
+Android |
+--------|
+![android](screenshots/pager.gif?raw=true) |

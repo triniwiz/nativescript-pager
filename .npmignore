@@ -4,3 +4,4 @@ demo/
 *.map
 *.ts
 !*.d.ts
+screenshots/
