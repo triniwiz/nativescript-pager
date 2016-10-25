@@ -70,7 +70,7 @@ registerElement("Pager", () => require("nativescript-pager").Pager);
 * DefaultTransformer
 * DepthPageTransformer
 * DrawFromBackTransformer
-* FlipHorizontalTransformer
+* [FlipHorizontalTransformer](https://github.com/triniwiz/nativescript-pager/wiki/FlipHorizontalTransformer)
 * FlipVerticalTransformer
 * ForegroundToBackgroundTransformer
 * ParallaxPageTransformer
