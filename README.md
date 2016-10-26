@@ -39,8 +39,8 @@ import {registerElement} from "nativescript-angular/element-registry";
 registerElement("Pager", () => require("nativescript-pager").Pager);
 ```
 
-```xml
-<Pager>
+```html
+<Pager #pager>
 
 <StackLayout>
 <Label text="Slide 1"></Label>
@@ -60,10 +60,21 @@ registerElement("Pager", () => require("nativescript-pager").Pager);
 </Pager>
 ```
 
+*Note*
+Using it with angular is a bit tricky.
+If you intend to use with `*ngFor`
+You will ned to do some extra work. (This should be fixed in future :p)
+
+```
+ngAfterViewInit(){
+this.pager.nativeElement.runUpdate();
+}
+```
+
 ##Config
 
 ```xml
-<Pager selectedIndex="5" transformer="FlipHorizontalTransformer">
+<Pager disableSwipe="true" selectedIndex="5" transformer="FlipHorizontalTransformer">
 ```
 
 

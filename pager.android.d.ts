@@ -5,8 +5,10 @@ export declare class Pager extends StackLayout {
     private _pagerAdapter;
     private _transformer;
     private _android;
+    private _disableSwipe;
     static selectedIndexProperty: Property;
     constructor();
+    disableSwipe: boolean;
     readonly android: android.support.v4.view.ViewPager;
     readonly _nativeView: android.support.v4.view.ViewPager;
     readonly pagerAdapter: android.support.v4.view.PagerAdapter;
@@ -15,4 +17,5 @@ export declare class Pager extends StackLayout {
     _createUI(): void;
     onLoaded(): void;
     updateIndex(index: number): void;
+    runUpdate(): void;
 }

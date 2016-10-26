@@ -1,6 +1,7 @@
 import { StackLayout } from "ui/layouts/stack-layout";
 import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
+import { View } from "ui/core/view";
 declare var com;
 function onSelectedIndexChanged(data: PropertyChangeData) {
     const item = <Pager>data.object;
@@ -11,9 +12,16 @@ export class Pager extends StackLayout {
     private _pagerAdapter: android.support.v4.view.PagerAdapter;
     private _transformer;
     private _android: android.support.v4.view.ViewPager;
+    private _disableSwipe: boolean;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.None));
     constructor() {
         super();
+    }
+    get disableSwipe(): boolean {
+        return this._disableSwipe;
+    }
+    set disableSwipe(value: boolean) {
+        this._disableSwipe = value;
     }
     get android() {
         return this._android;
@@ -92,16 +100,20 @@ export class Pager extends StackLayout {
         if (!this._androidViewId) {
             this._androidViewId = android.view.View.generateViewId();
         };
-        this._android = new android.support.v4.view.ViewPager(this._context);
+        if (this.disableSwipe) {
+            this._android = new TNSViewPager(this._context, true); //new android.support.v4.view.ViewPager(this._context);
+        } else {
+            this._android = new TNSViewPager(this._context); //new android.support.v4.view.ViewPager(this._context);
+        }
+
         this._android.setId(this._androidViewId);
     }
 
     onLoaded() {
         super.onLoaded();
         const that = new WeakRef(this);
-        this._android.setOffscreenPageLimit(this._android.getChildCount());
         this._pagerAdapter = new PagerAdapter(this);
-        this._android.setOnPageChangeListener(new android.support.v4.view.ViewPager.OnPageChangeListener({
+        this._android.addOnPageChangeListener(new android.support.v4.view.ViewPager.OnPageChangeListener({
             onPageSelected: function (position: number) {
                 that.get().selectedIndex = position;
             },
@@ -118,12 +130,22 @@ export class Pager extends StackLayout {
             this._android.setCurrentItem(this.selectedIndex);
         }
     }
-
     updateIndex(index: number) {
         if (this._android && index) {
             this._android.setCurrentItem(index);
         }
     }
+    runUpdate() {
+        if (this._android.getChildAt(0) instanceof org.nativescript.widgets.ContentLayout) {
+            this._android.removeViewAt(0);
+        }
+        this._pagerAdapter.notifyDataSetChanged();
+        if (this._pagerAdapter.getCount() > 0) {
+            this._android.setOffscreenPageLimit(this._pagerAdapter.getCount());
+        }
+
+    }
+
 }
 Pager.selectedIndexProperty.onValueChanged = onSelectedIndexChanged;
 class PagerAdapter extends android.support.v4.view.PagerAdapter {
@@ -135,23 +157,43 @@ class PagerAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     instantiateItem(collection: android.view.ViewGroup, position: number) {
-        if (position <= this.owner.android.getChildCount() - 1) {
-            const view = this.owner.android.getChildAt(position);
-            collection.removeView(this.owner.android.getChildAt(position));
-            collection.addView(view, position);
-            this.owner.pagerAdapter.notifyDataSetChanged();
-            return view;
-        }
-
+        return this.owner.android.getChildAt(position);
     }
 
     destroyItem(container: android.view.ViewGroup, position: number, object) {
         container.removeView(object);
     }
     getCount(): number {
-        return this.owner.android.getChildCount();
+
+        return this.owner.android ? this.owner.android.getChildCount() : 0;
     }
     isViewFromObject(view: android.view.View, object) {
-        return view == object;
+        return view === object;
+    }
+}
+
+class TNSViewPager extends android.support.v4.view.ViewPager {
+    disableSwipe: boolean;
+    constructor(context, disableSwipe?: boolean) {
+        super(context);
+        if (disableSwipe) {
+            this.disableSwipe = disableSwipe;
+        }
+        return global.__native(this);
+    }
+    onInterceptTouchEvent(ev) {
+        if (this.disableSwipe) {
+            return false;
+        } else {
+            return super.onInterceptTouchEvent(ev);
+        }
+    }
+    onTouchEvent(ev) {
+        if (this.disableSwipe) {
+            return false;
+        }
+        else {
+            return super.onTouchEvent(ev);
+        }
     }
 }
