@@ -12,9 +12,9 @@ function onSelectedIndexChanged(data: PropertyChangeData) {
 
 function onItemsChanged(data: PropertyChangeData) {
     const pager = <Pager>data.object;
-    pager.updateItems(pager.items);
+    pager.updateItems(<Array<View>>data.oldValue, <Array<View>>data.newValue);
 }
-export class Pager extends View {
+export abstract class Pager extends View {
     private _disableSwipe: boolean;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.None, onSelectedIndexChanged));
     public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.None, onItemsChanged));
@@ -38,5 +38,7 @@ export class Pager extends View {
         this._disableSwipe = value;
     }
 
+    public abstract updateItems(oldItems: Array<View>, newItems: Array<View>): void;
 
+    public abstract updateIndex(index: number): void;
 }    
