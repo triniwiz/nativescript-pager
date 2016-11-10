@@ -6,7 +6,7 @@ import * as platform from "platform";
     selector: 'Pager',
     inputs: ['selectedIndex']
 })
-export class PagerDirective {
+class PagerDirective {
     public pager: Pager;
     private _selectedIndex: number;
     private viewInitialized: boolean;
@@ -38,7 +38,7 @@ export class PagerDirective {
 @Directive({
     selector: '[pagerItem]'
 })
-export class PagerItemDirective {
+class PagerItemDirective {
     private item: PagerItem;
     constructor(
         private owner: PagerDirective,
@@ -76,3 +76,11 @@ export class PagerItemDirective {
         }
     }
 }
+
+
+import { NgModule } from "@angular/core";
+@NgModule({
+    declarations: [PagerDirective, PagerItemDirective],
+    exports: [PagerDirective, PagerItemDirective]
+})
+export class PagerModule { }

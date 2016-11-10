@@ -35,24 +35,33 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
 ###AngularNative
 
 ```js
-import {registerElement} from "nativescript-angular/element-registry";
-registerElement("Pager", () => require("nativescript-pager").Pager);
+import { PagerModule } from "nativescript-pager/angular";
+
+@NgModule({
+    imports: [
+    PagerModule
+    ],
+    declarations: [
+        AppComponent
+    ],
+    bootstrap: [AppComponent]
+})
 ```
 
 ```html
 <Pager #pager>
 
-<StackLayout>
+<StackLayout *pagerItem>
 <Label text="Slide 1"></Label>
 <Image src="https://upload.wikimedia.org/wikipedia/en/5/59/Hulk_%28comics_character%29.png"></Image>
 </StackLayout>
 
-<StackLayout>
+<StackLayout *pagerItem>
 <Label text="Slide 2"></Label>
 <Image src="https://s-media-cache-ak0.pinimg.com/originals/4c/92/cc/4c92cc1dfbde6a6a40fe799f56fa9294.jpg"></Image>
 </StackLayout>
 
-<StackLayout>
+<StackLayout *pagerItem>
 <Label text="Slide 3"></Label>
 <Image src="http://static.srcdn.com/slir/w1000-h500-q90-c1000:500/wp-content/uploads/Batman-Begins-Batman-with-bats.jpg"></Image>
 </StackLayout>
@@ -60,16 +69,6 @@ registerElement("Pager", () => require("nativescript-pager").Pager);
 </Pager>
 ```
 
-*Note*
-Using it with angular is a bit tricky.
-If you intend to use with `*ngFor`
-You will ned to do some extra work. (This should be fixed in future :p)
-
-```
-ngAfterViewInit(){
-this.pager.nativeElement.runUpdate();
-}
-```
 
 ##Config
 
