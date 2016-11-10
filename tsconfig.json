@@ -16,7 +16,8 @@
       "node_modules/tns-platform-declarations/tns-core-modules/ios/ios.d.ts",
       "node_modules/tns-platform-declarations/tns-core-modules/org.nativescript.widgets.d.ts",
       "pager.android.ts", 
-      "pager.ios.ts"
+      "pager.ios.ts",
+      "angular/index.ts"
     ],
     "compileOnSave": false
 }
