@@ -1,4 +1,1 @@
-import { StackLayout } from "ui/layouts/stack-layout";
-export declare class Pager extends StackLayout {
-    constructor();
-}
+export * from './src/ios/pager';
