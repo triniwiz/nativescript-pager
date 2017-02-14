@@ -6,12 +6,12 @@
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-android": {
-      "version": "2.3.0"
+      "version": "2.5.0"
     }
   },
   "dependencies": {
-    "tns-core-modules": "2.3.0",
-    "nativescript-pager": "file:.."
+    "nativescript-pager": "file:..",
+    "tns-core-modules": "2.3.0"
   },
   "devDependencies": {
     "babel-traverse": "6.16.0",

@@ -3,7 +3,7 @@ import { PropertyMetadata } from "ui/core/proxy";
 import { View, AddArrayFromBuilder } from "ui/core/view";
 import { ContentView } from "ui/content-view";
 export module knownCollections {
-    export var items = "items";
+    export const items = "items";
 }
 
 function onSelectedIndexChanged(data: PropertyChangeData) {
