@@ -59,7 +59,7 @@ export class Pager extends common.Pager {
         return this.items ? this.items.length : 0;
     }
 
-    public _createUI() {
+    _createUI() {
         const that = new WeakRef(this);
         if (this.disableSwipe) {
             this._android = new TNSViewPager(app.android.context, true); //new android.support.v4.view.ViewPager(this._context);
@@ -73,7 +73,7 @@ export class Pager extends common.Pager {
             onPageSelected: function (position: number) {
                 const owner = that.get();
                 if (owner) {
-                    owner.selectedIndexUpdatedFromNative(position);
+                    owner._selectedIndexUpdatedFromNative(position);
                 }
             },
             onPageScrolled: function (position, positionOffset, positionOffsetPixels) {
@@ -99,28 +99,21 @@ export class Pager extends common.Pager {
         }
     }
 
-    public updatePagesCount(value: number) {
+    updatePagesCount(value: number) {
         if (this._android) {
             this._pagerAdapter.notifyDataSetChanged();
             this._android.setOffscreenPageLimit(value);
         }
     }
 
-    public selectedIndexUpdatedFromNative(newIndex: number) {
-        // console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
-        const oldIndex = this.selectedIndex;
-        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
-        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
-    }
-
-    public updateNativeIndex(oldIndex: number, newIndex: number) {
+    updateNativeIndex(oldIndex: number, newIndex: number) {
         // console.log(`Pager.updateNativeIndex ${newIndex}`);
         if (this._android) {
             this._android.setCurrentItem(newIndex);
         }
     }
 
-    public updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {
+    updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {
         // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
         if (oldItems) {
             this._pagerAdapter.notifyDataSetChanged();
@@ -132,7 +125,7 @@ export class Pager extends common.Pager {
         }
     }
 
-    public _eachChildView(callback: (child: View) => boolean): void {
+    _eachChildView(callback: (child: View) => boolean): void {
         if (this.items) {
             var i;
             var length = this.items.length;
@@ -208,6 +201,13 @@ export class Pager extends common.Pager {
 
     updateAdapter() {
         this._pagerAdapter.notifyDataSetChanged();
+    }
+
+    _selectedIndexUpdatedFromNative(newIndex: number) {
+        console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
+        const oldIndex = this.selectedIndex;
+        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 }
 
