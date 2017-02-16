@@ -1,6 +1,7 @@
 import { Component, NgModule } from "@angular/core";
 import { Pager, PagerAdapter } from "..";
 import { registerElement, ViewClassMeta, NgView, TEMPLATE } from "nativescript-angular/element-registry";
+import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { View } from "ui/core/view";
 import { Placeholder } from "ui/placeholder";
 
@@ -40,6 +41,7 @@ class PagerComponent {
 
 @NgModule({
     declarations: [PagerComponent],
+    imports: [NativeScriptFormsModule],
     exports: [PagerComponent]
 })
 export class PagerModule {
