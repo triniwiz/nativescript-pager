@@ -205,9 +205,11 @@ export class Pager extends common.Pager {
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
         console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
-        const oldIndex = this.selectedIndex;
-        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
-        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+        if (this.selectedIndex !== newIndex) {
+            const oldIndex = this.selectedIndex;
+            this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+            this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+        }
     }
 }
 
