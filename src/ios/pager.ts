@@ -93,20 +93,13 @@ export class Pager extends common.Pager {
         return this.items ? this.items.length : 0;
     }
 
-    selectedIndexUpdatedFromNative(newIndex: number) {
-        console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
-        const oldIndex = this.selectedIndex;
-        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
-        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
-    }
-
     updateNativeIndex(oldIndex: number, newIndex: number) {
-        console.log(`Pager.updateNativeIndex: ${oldIndex} -> ${newIndex}`);
+        // console.log(`Pager.updateNativeIndex: ${oldIndex} -> ${newIndex}`);
         this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
     }
 
     updateNativeItems(oldItems: View[], newItems: View[]) {
-        console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
+        // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
         if (oldItems) {
             this.cachedViewControllers = [];
         }
@@ -171,6 +164,17 @@ export class Pager extends common.Pager {
 
     onUnloaded() {
         // console.log(`Pager.ios.onUnloaded`);
+        this._ios.delegate = null;
+        this._ios = null;
+        this.cachedViewControllers = null;
+        super.onUnloaded();
+    }
+
+    _selectedIndexUpdatedFromNative(newIndex: number) {
+        // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
+        const oldIndex = this.selectedIndex;
+        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 
     _viewControllerRemovedFromParent(controller: PagerView): void {
@@ -226,7 +230,7 @@ class PagerViewControllerDelegate extends NSObject implements UIPageViewControll
             let vc = <PagerView>pageViewController.viewControllers[0];
             const owner = this.owner;
             if (owner) {
-                owner.selectedIndexUpdatedFromNative(vc.tag);
+                owner._selectedIndexUpdatedFromNative(vc.tag);
             }
         }
     }
