@@ -7,8 +7,7 @@
             <Pager.items>
                 <StackLayout>
                     <Label text="Slide 1"/>
-                    <Image src="https://upload.wiki
-                    media.org/wikipedia/en/5/59/Hulk_%28comics_character%29.png"/>
+                    <Image src="https://upload.wikimedia.org/wikipedia/en/5/59/Hulk_%28comics_character%29.png"/>
                 </StackLayout>
 
                 <StackLayout>
