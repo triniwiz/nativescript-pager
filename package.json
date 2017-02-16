@@ -16,6 +16,11 @@
     "demo.android": "npm run preparedemo && cd demo && tns run android",
     "preparedemo": "npm run build && npm run reload",
     "reload": "cd demo && tns plugin remove nativescript-pager && tns plugin add .. && tns install",
+    "ng.preparedemo": "npm run build && npm run ng.reload",
+    "ng.reload": "cd demo-ng && tns plugin remove nativescript-pager && tns plugin add ..",
+    "ng.demo.ios": "npm run ng.preparedemo && cd demo-ng && tns emulate ios",
+    "ng.demo.ios.device": "npm run ng.preparedemo && cd demo-ng && tns run ios",
+    "ng.demo.android": "npm run ng.preparedemo && cd demo-ng && tns run android",
     "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
     "postclone": "npm i && node scripts/postclone.js"
   },
