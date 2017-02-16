@@ -17,12 +17,12 @@ export function pageLoaded() {
 
 export function prevPage() {
   const pager: Pager = <Pager>page.getViewById("pager");
-  pager.selectedIndex = Math.max(0, pager.selectedIndex - 1);
+  --pager.selectedIndex;
 }
 
 export function nextPage() {
   const pager: Pager = <Pager>page.getViewById("pager");
-  pager.selectedIndex = Math.min(pager.items.length -1, pager.selectedIndex + 1);
+  ++pager.selectedIndex;
 }
 
 export function firstPage() {
