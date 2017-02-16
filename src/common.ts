@@ -19,6 +19,7 @@ function onSelectedIndexChanged(data: PropertyChangeData) {
     const pager = <Pager>data.object;
     if (pager && pager.items && types.isNumber(data.newValue)) {
         pager.updateNativeIndex(data.oldValue, data.newValue);
+        pager.notify({ eventName: Pager.selectedIndexChangedEvent, object: pager, oldIndex: data.oldValue, newIndex: data.newValue });
     }
 }
 
@@ -27,6 +28,7 @@ export abstract class Pager extends View implements AddArrayFromBuilder {
     private _pageSpacing: number = 0;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(0, PropertyMetadataSettings.None, null, null, onSelectedIndexChanged));
     public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, null, null, onItemsChanged));
+    public static selectedIndexChangedEvent = "selectedIndexChanged";
 
     public _addArrayFromBuilder(name: string, value: Array<any>) {
         if (name === "items") {
