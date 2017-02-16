@@ -110,7 +110,8 @@ export class Pager extends common.Pager {
         if (oldItems) {
             this.cachedViewControllers = [];
         }
-        if (newItems) {
+        if (newItems.length > 0) {
+            // re-init
             this._initNativeViewPager();
         }
     }
@@ -156,13 +157,12 @@ export class Pager extends common.Pager {
         this.top = top;
         this.right = right;
         this.bottom = bottom;
-        if (this.items) {
+        if (this.items && this.items.length > 0) {
             this.items.forEach((item) => {
                 this.prepareView(item);
             });
+            this._initNativeViewPager();
         }
-        // refresh the UIViewController
-        this._initNativeViewPager();
     }
 
     onLoaded() {
