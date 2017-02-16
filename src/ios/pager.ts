@@ -102,6 +102,7 @@ export class Pager extends common.Pager {
 
     updateNativeIndex(oldIndex: number, newIndex: number) {
         console.log(`Pager.updateNativeIndex: ${oldIndex} -> ${newIndex}`);
+        this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
     }
 
     updateNativeItems(oldItems: View[], newItems: View[]) {
@@ -183,6 +184,15 @@ export class Pager extends common.Pager {
     private _initNativeViewPager() {
         let controller = this.getViewController(this.selectedIndex);
         this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, () => {});
+    }
+
+    private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
+        const vc = this.getViewController(toIndex);
+        if (!vc) throw new Error('no VC');
+        // console.log(`Pager._navigateNativeViewPagerToIndex: ${toIndex}`);
+        const direction = fromIndex < toIndex ?
+            UIPageViewControllerNavigationDirection.Forward : UIPageViewControllerNavigationDirection.Reverse;
+        this._ios.setViewControllersDirectionAnimatedCompletion(NSArray.arrayWithObject(vc), direction, true, () => {});
     }
 
     private prepareView(view: View): void {
