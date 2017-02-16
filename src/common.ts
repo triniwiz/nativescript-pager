@@ -42,8 +42,16 @@ export abstract class Pager extends View implements AddArrayFromBuilder {
     get selectedIndex() {
         return this._getValue(Pager.selectedIndexProperty);
     }
-    set selectedIndex(value: number) {
-        this._setValue(Pager.selectedIndexProperty, value);
+    set selectedIndex(newVal: number | any) {
+        if (types.isNumber(newVal)) {
+            newVal = Math.max(0, newVal);
+            if (this.items) {
+                newVal = Math.min(this.items.length - 1, newVal);
+            }
+            this._setValue(Pager.selectedIndexProperty, newVal);
+        } else {
+            throw new Error("invalid selectedIndex, should be between [0, " + (this.items.length - 1) + "]");
+        }
     }
     get disableSwipe(): boolean {
         return this._disableSwipe;
