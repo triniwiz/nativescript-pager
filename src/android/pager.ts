@@ -4,7 +4,9 @@ import { View } from "ui/core/view";
 import { ContentView } from "ui/content-view"
 import * as common from "../common";
 import * as app from "application";
-//declare var com, android;
+declare namespace com.eftimoff {
+    export var viewpagertransformers: any;
+}
 global.moduleMerge(common, exports);
 function onSelectedIndexChanged(data: PropertyChangeData) {
     const item = <Pager>data.object;
@@ -54,7 +56,7 @@ export class Pager extends common.Pager {
         // this._android.setForegroundGravity(android.view.Gravity.FILL)
         // const lp = new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT, android.view.ViewGroup.LayoutParams.FILL_PARENT)
         // this._android.setLayoutParams(lp);
-        this._android.addOnPageChangeListener(new android.support.v4.view.ViewPager.OnPageChangeListener({
+        this._android.setOnPageChangeListener(new android.support.v4.view.ViewPager.OnPageChangeListener({
             onPageSelected: function (position: number) {
                 that.get().selectedIndex = position;
             },

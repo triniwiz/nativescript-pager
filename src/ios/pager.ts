@@ -112,10 +112,9 @@ export class Pager extends common.Pager {
         }
 
         if (!vc) {
-            vc = new PagerView();
+            vc = PagerView.initWithOwner(new WeakRef(this));
         }
         let view: View;
-        vc.owner = new WeakRef(this);
         vc.tag = selectedIndex;
         if (this.items && this.items.length) {
             view = this.items[selectedIndex];
@@ -255,9 +254,7 @@ export class PagerView extends UIViewController {
     tag: number;
 
     public static initWithOwner(owner: WeakRef<Pager>) {
-        const pv = new PagerView();
-        pv.owner = owner;
-        return pv;
+        return PagerView.initWithOwner(owner);
     }
 
     didMoveToParentViewController(parent: UIViewController): void {
