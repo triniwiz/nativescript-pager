@@ -48,8 +48,6 @@ export class Pager extends common.Pager {
         this._ios = UIPageViewController.alloc().initWithTransitionStyleNavigationOrientationOptions(this._transformer, this._orientation, this._options);
         this._ios.dataSource = PagerDataSource.initWithOwner(that);
         this._ios.delegate = PagerViewControllerDelegate.initWithOwner(that);
-        const pc = this._nativeView.subviews[0];
-        pc.hidden = true;
         const sv = this._nativeView.subviews[1];
         if (this.borderRadius) {
             sv.layer.cornerRadius = this.borderRadius;
@@ -63,10 +61,6 @@ export class Pager extends common.Pager {
         if (this.borderWidth) {
             sv.layer.borderWidth = this.borderWidth;
         }
-        // this._ios.view.sendSubviewToBack(pc)
-        // this._ios.view.frame = CGRectMake(0, 0, utils.ios.getter(UIScreen, UIScreen.mainScreen.bounds).size.width, utils.ios.getter(UIScreen, UIScreen.mainScreen.bounds).size.height - 300);
-        // sv.frame = CGRectMake(0, 0, sv.frame.size.width, sv.frame.size.height);
-        // sv.setNeedsLayout();
     }
 
     get views() {
@@ -253,7 +247,7 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
 
     pageViewControllerViewControllerBeforeViewController(pageViewController: UIPageViewController, viewControllerBefore: UIViewController): UIViewController {
         let pos = (<PagerView>viewControllerBefore).tag;
-        if (pos === 0) {
+        if (pos === 0 || !this.owner || !this.owner.items) {
             return null;
         } else {
             let prev = pos - 1;
@@ -263,8 +257,7 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
 
     pageViewControllerViewControllerAfterViewController(pageViewController: UIPageViewController, viewControllerAfter: UIViewController): UIViewController {
         let pos = (<PagerView>viewControllerAfter).tag;
-        let count = this.presentationCountForPageViewController(pageViewController);
-        if (pos === count - 1) {
+        if (!this.owner || !this.owner.items || this.owner.items.length - 1 === pos) {
             return null;
         } else {
             return this.owner.getViewController(pos + 1);
@@ -272,8 +265,9 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
     }
 
     presentationCountForPageViewController(pageViewController: UIPageViewController): number {
-        if (!this.owner || !this.owner.items) {
-            return 0;
+        if (!this.owner || !this.owner.items || !this.owner.showNativePageIndicator) {
+            // Hide the native UIPageControl (dots)
+            return -1;
         }
         return this.owner.items.length;
     }
