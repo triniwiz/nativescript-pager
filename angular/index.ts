@@ -1,6 +1,7 @@
 import { Component, NgModule } from "@angular/core";
-import { Pager, PagerAdapter } from "..";
+import { Pager, PagerAdapter } from "../";
 import { registerElement, ViewClassMeta, NgView, TEMPLATE } from "nativescript-angular/element-registry";
+import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { View } from "ui/core/view";
 import { Placeholder } from "ui/placeholder";
 
@@ -21,7 +22,7 @@ const pagerMeta: ViewClassMeta = {
             let items = (pager.views || []).concat([childView]);
             items.forEach((item) => {
                 pager.items.push(item);
-            })
+            });
         }
     },
     removeChild(parent: any, child: NgView) {
@@ -29,7 +30,7 @@ const pagerMeta: ViewClassMeta = {
         const childView = <any>child;
     }
 };
-registerElement("Pager", () => require("..").Pager, pagerMeta);
+registerElement("Pager", () => require("../").Pager, pagerMeta);
 
 @Component({
     selector: 'Pager',
@@ -40,6 +41,7 @@ class PagerComponent {
 
 @NgModule({
     declarations: [PagerComponent],
+    imports: [NativeScriptFormsModule],
     exports: [PagerComponent]
 })
 export class PagerModule {
