@@ -5,16 +5,16 @@
         "removeComments": true,
         "experimentalDecorators": true,
         "noEmitHelpers": true,
+        "noEmitOnError": false,
         "declaration": true,
+        "skipLibCheck": true,
         "noLib": true
     },
     "files": [
-      "node_modules/typescript/lib/lib.core.d.ts",
-      "manual_typings/base.d.ts",
+      "node_modules/tns-core-modules/lib.core.d.ts",
       "node_modules/tns-core-modules/tns-core-modules.d.ts",
-      "node_modules/tns-platform-declarations/tns-core-modules/android17.d.ts",
-      "node_modules/tns-platform-declarations/tns-core-modules/ios/ios.d.ts",
-      "node_modules/tns-platform-declarations/tns-core-modules/org.nativescript.widgets.d.ts",
+      "node_modules/tns-platform-declarations/android.d.ts",
+      "node_modules/tns-platform-declarations/ios.d.ts",
       "pager.android.ts", 
       "pager.ios.ts",
       "angular/index.ts"

@@ -1,9 +1,12 @@
-import {View, AddArrayFromBuilder} from "ui/core/view";
+import { PropertyChangeData } from "ui/core/dependency-observable";
+import { PropertyMetadata } from "ui/core/proxy";
+import { View, AddArrayFromBuilder } from "ui/core/view";
+import { Label } from "ui/label";
+import { Color } from 'color';
 import * as utils from "utils/utils";
-import {Label} from "ui/label";
-import {Color} from 'color';
-import * as colors from 'color/known-colors';
+import * as types from "utils/types";
 import * as common from "../common";
+
 global.moduleMerge(common, exports);
 
 declare var ADTransitioningDelegate,
@@ -26,13 +29,12 @@ export class Pager extends common.Pager {
     private right = 0;
     private bottom = 0;
 
-    private freeViewControllers = new Array<WeakRef<PagerView>>();
+    private cachedViewControllers: WeakRef<PagerView>[] = [];
 
     borderRadius: number;
     borderWidth: number;
     borderColor: string;
     backgroundColor: any;
-    private initView: boolean = false;
 
     constructor() {
         super();
@@ -87,36 +89,41 @@ export class Pager extends common.Pager {
         return this._ios.view;
     }
 
-    updateIndex(index: number) {
-        if (!this.initView) {
-            let controller = this.getViewController(this.selectedIndex);
-            this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, () => {
-            });
-            this.initView = true;
-        }
+    get _childrenCount(): number {
+        return this.items ? this.items.length : 0;
     }
 
-    updateItems(oldItems: View[], newItems: View[]) {}
+    updateNativeIndex(oldIndex: number, newIndex: number) {
+        // console.log(`Pager.updateNativeIndex: ${oldIndex} -> ${newIndex}`);
+        this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
+    }
+
+    updateNativeItems(oldItems: View[], newItems: View[]) {
+        // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
+        if (oldItems) {
+            this.cachedViewControllers = [];
+        }
+        if (newItems.length > 0) {
+            // re-init
+            this._initNativeViewPager();
+        }
+    }
 
     runUpdate() {}
 
     getViewController(selectedIndex: number): UIViewController {
-
+        // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
-        while (this.freeViewControllers.length > 0) {
-            let controller = this.freeViewControllers.pop().get();
-            if (controller) {
-                vc = controller;
-                break;
-            }
+        if (this.cachedViewControllers[selectedIndex]) {
+            // console.log(`- got PagerView from cache`);
+            vc = this.cachedViewControllers[selectedIndex].get();
         }
-
         if (!vc) {
-            vc = new PagerView();
+            // console.log(`- created new PagerView`);
+            vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
+            this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
         }
         let view: View;
-        vc.owner = new WeakRef(this);
-        vc.tag = selectedIndex;
         if (this.items && this.items.length) {
             view = this.items[selectedIndex];
         } else {
@@ -127,51 +134,78 @@ export class Pager extends common.Pager {
         vc.view = view.ios;
         this.prepareView(view);
         return vc;
-
     }
 
     onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+        // console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`);
         this.widthMeasureSpec = widthMeasureSpec;
         this.heightMeasureSpec = heightMeasureSpec;
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     onLayout(left: number, top: number, right: number, bottom: number): void {
+        // console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
         super.onLayout(left, top, right, bottom);
         this.left = left;
         this.top = top;
         this.right = right;
         this.bottom = bottom;
-        if (this.items && this.selectedIndex < this.items.length) {
-            this.prepareView(this.items[this.selectedIndex]);
+        if (this.items && this.items.length > 0) {
+            this.items.forEach((item) => {
+                this.prepareView(item);
+            });
+            this._initNativeViewPager();
         }
     }
 
-    addReusableViewController(controller: PagerView): void {
-        this.freeViewControllers.push(new WeakRef(controller));
-        controller.tag = undefined;
-        controller.view = undefined;
-        controller.owner = undefined;
+    onLoaded() {
+        // console.log(`Pager.ios.onLoaded`);
     }
 
-    get _childrenCount(): number {
-        return this.items ? this.items.length : 0;
+    onUnloaded() {
+        // console.log(`Pager.ios.onUnloaded`);
+        this._ios.delegate = null;
+        this._ios = null;
+        this.cachedViewControllers = null;
+        super.onUnloaded();
+    }
+
+    _selectedIndexUpdatedFromNative(newIndex: number) {
+        // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
+        const oldIndex = this.selectedIndex;
+        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+    }
+
+    _viewControllerRemovedFromParent(controller: PagerView): void {
+        // console.log(`Pager.viewControllerRemovedFromParent ${controller.tag}`);
+        // this.freeViewControllers.push(new WeakRef(controller));
+        // controller.tag = undefined;
+        // controller.view = undefined;
+        // controller.owner = undefined;
+    }
+    
+    private _initNativeViewPager() {
+        let controller = this.getViewController(this.selectedIndex);
+        this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, () => {});
+    }
+
+    private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
+        const vc = this.getViewController(toIndex);
+        if (!vc) throw new Error('no VC');
+        // console.log(`Pager._navigateNativeViewPagerToIndex: ${toIndex}`);
+        const direction = fromIndex < toIndex ?
+            UIPageViewControllerNavigationDirection.Forward : UIPageViewControllerNavigationDirection.Reverse;
+        this._ios.setViewControllersDirectionAnimatedCompletion(NSArray.arrayWithObject(vc), direction, true, () => {});
     }
 
     private prepareView(view: View): void {
         View.adjustChildLayoutParams(view, this.widthMeasureSpec, this.heightMeasureSpec);
         let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
-        View.layoutChild(this, view, 0, 0, this.right - this.left, this.bottom - this.top);
+        View.layoutChild(this, view, 0, 0, result.measuredWidth, result.measuredHeight);
+        // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
+        // console.log(`Pager.prepareView - layout: ${this.left}, ${this.top}, ${this.right}, ${this.bottom}`);
         View.restoreChildOriginalParams(view);
-    }
-
-    private _eachChildView(callback) {
-        if (!this.items) {
-            return;
-        }
-        for (let i = 0, length = this.items.length; i < length; i++) {
-            callback(this.items[i]);
-        }
     }
 }
 
@@ -194,7 +228,10 @@ class PagerViewControllerDelegate extends NSObject implements UIPageViewControll
     pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted(pageViewController: UIPageViewController, finished: boolean, previousViewControllers: NSArray<any>, completed: boolean) {
         if (finished) {
             let vc = <PagerView>pageViewController.viewControllers[0];
-            this.owner.selectedIndex = vc.tag;
+            const owner = this.owner;
+            if (owner) {
+                owner._selectedIndexUpdatedFromNative(vc.tag);
+            }
         }
     }
 }
@@ -247,26 +284,30 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
         }
         return this.owner.selectedIndex;
     }
-
 }
+
 export class PagerView extends UIViewController {
 
     owner: WeakRef<Pager>;
     tag: number;
 
-    public static initWithOwner(owner: WeakRef<Pager>) {
-        const pv = new PagerView();
+    public static initWithOwnerTag(owner: WeakRef<Pager>, tag: number): PagerView {
+        let pv = new PagerView(null);
         pv.owner = owner;
+        pv.tag = tag;
         return pv;
     }
 
     didMoveToParentViewController(parent: UIViewController): void {
+        // console.log(`PagerView.didMoveToParentViewController`);
         let owner = this.owner.get();
         if (!parent && owner) {
-            owner.addReusableViewController(this);
+            // removed from parent
+            owner._viewControllerRemovedFromParent(this);
         }
     }
 }
+
 export class PagerItem extends common.PagerItem {
 
     private _ios: UIView;

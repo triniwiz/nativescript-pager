@@ -1,8 +1,9 @@
-import {Component, NgModule} from "@angular/core";
-import {Pager, PagerItem, PagerAdapter} from "../pager";
-import {registerElement, ViewClassMeta, NgView, TEMPLATE} from "nativescript-angular/element-registry";
-import {View} from "ui/core/view";
-import {Placeholder} from "ui/placeholder";
+import { Component, NgModule } from "@angular/core";
+import { Pager, PagerAdapter } from "..";
+import { registerElement, ViewClassMeta, NgView, TEMPLATE } from "nativescript-angular/element-registry";
+import { View } from "ui/core/view";
+import { Placeholder } from "ui/placeholder";
+
 const pagerMeta: ViewClassMeta = {
     skipAddToDom: false,
     insertChild(parent: any, child: any, index: number) {
@@ -23,12 +24,12 @@ const pagerMeta: ViewClassMeta = {
             })
         }
     },
-    removeChild(parent: NgView, child: NgView) {
+    removeChild(parent: any, child: NgView) {
         const pager: any = <Pager>parent;
         const childView = <any>child;
     }
 };
-registerElement("Pager", () => require("../pager").Pager, pagerMeta);
+registerElement("Pager", () => require("..").Pager, pagerMeta);
 
 @Component({
     selector: 'Pager',
