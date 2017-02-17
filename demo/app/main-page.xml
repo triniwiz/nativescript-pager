@@ -10,7 +10,7 @@
             <Button text="Last" tap="lastPage" />
         </StackLayout>
         
-        <c:Pager row="2" id="pager" pagesCount="5">
+        <c:Pager row="2" id="pager" pagesCount="10" showNativePageIndicator="true" backgroundColor="lightsteelblue">
             <Pager.items>
                 <GridLayout rows="auto, *, auto" columns="*" class="pager-page">
                     <Label text="Slide 1"></Label>

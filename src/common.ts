@@ -28,6 +28,7 @@ export abstract class Pager extends View implements AddArrayFromBuilder {
     private _pageSpacing: number = 0;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(0, PropertyMetadataSettings.None, null, null, onSelectedIndexChanged));
     public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, null, null, onItemsChanged));
+    public static showNativePageIndicatorProperty = new Property("showNativePageIndicator", "Pager", new PropertyMetadata(false));
     public static selectedIndexChangedEvent = "selectedIndexChanged";
 
     public _addArrayFromBuilder(name: string, value: Array<any>) {
@@ -66,6 +67,12 @@ export abstract class Pager extends View implements AddArrayFromBuilder {
     }
     set pageSpacing(value: number) {
         this._pageSpacing = value;
+    }
+    get showNativePageIndicator() {
+        return this._getValue(Pager.showNativePageIndicatorProperty);
+    }
+    set showNativePageIndicator(value: boolean) {
+        this._setValue(Pager.showNativePageIndicatorProperty, value);
     }
     public abstract updateNativeItems(oldItems: Array<View>, newItems: Array<View>): void;
 
