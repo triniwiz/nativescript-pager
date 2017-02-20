@@ -2,6 +2,7 @@
 *.js.map
 *.log
 *.ngFactory.ts
+*.metadata.json
 !scripts/*.js
 demo/app/*.js
 demo/*.d.ts

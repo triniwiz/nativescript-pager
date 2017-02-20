@@ -5,4 +5,5 @@ demo-ng/
 *.map
 *.ts
 !*.d.ts
+!*.metadata.json
 screenshots/
