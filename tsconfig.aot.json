@@ -3,13 +3,10 @@
     "target": "es5",
     "module": "es2015",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "noEmitHelpers": true,
-    "emitDecoratorMetadata": true,
+    "removeComments": true,
     "experimentalDecorators": true,
-    "removeComments": false,
-    "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
+    "noEmitHelpers": true,
+    "noEmitOnError": false,
     "skipLibCheck": true,
     "noLib": true,
     "types": [],
@@ -39,9 +36,11 @@
       "node_modules/tns-core-modules/tns-core-modules.d.ts",
       "node_modules/tns-platform-declarations/android.d.ts",
       "node_modules/tns-platform-declarations/ios.d.ts",
+      "pager.android.ts", 
+      "pager.ios.ts",
       "angular/index.ts"
   ],
   "angularCompilerOptions": {
-    "genDir": "angular/compiled"
+    "skipTemplateCodegen": true
   }
 }
