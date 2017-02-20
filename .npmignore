@@ -1,11 +1,12 @@
 demo/
 demo-ng/
-angular/compiled
 *.png
 *.log
 *.map
 *.ts
 !*.d.ts
-*.json
-!*.metadata.json
 screenshots/
+.vscode/
+.idea/
+tsconfig.aot.json
+tsconfig.json

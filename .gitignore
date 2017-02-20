@@ -4,6 +4,7 @@
 *.ngFactory.ts
 *.metadata.json
 !scripts/*.js
+src/**/*.d.ts
 demo/app/*.js
 demo/*.d.ts
 demo/lib
