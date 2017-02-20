@@ -48,9 +48,10 @@
   "homepage": "https://github.com/TriniWiz/nativescript-pager",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@angular/compiler": "^2.4.8",
-    "@angular/compiler-cli": "^2.4.8",
-    "@angular/platform-server": "^2.4.8",
+    "@angular/core": "~2.4.8",
+    "@angular/compiler": "~2.4.8",
+    "@angular/compiler-cli": "~2.4.8",
+    "@angular/platform-server": "~2.4.8",
     "zone.js": "~0.7.2",
     "nativescript-angular": "~1.4.0",
     "tns-core-modules": "^2.5.0",
