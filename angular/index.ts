@@ -36,7 +36,7 @@ registerElement("Pager", () => require("../").Pager, pagerMeta);
     selector: 'Pager',
     template: '<ng-content></ng-content>'
 })
-class PagerComponent {
+export class PagerComponent {
 }
 
 @NgModule({

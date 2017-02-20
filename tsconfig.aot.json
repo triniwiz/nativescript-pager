@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "noEmitHelpers": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "noLib": true,
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "ui/*": ["node_modules/tns-core-modules/ui/*"],
+      "xml": ["node_modules/tns-core-modules/xml"],
+      "xhr": ["node_modules/tns-core-modules/xhr"],
+      "text": ["node_modules/tns-core-modules/text"],
+      "data": ["node_modules/tns-core-modules/data"],
+      "fetch": ["node_modules/tns-core-modules/fetch"],
+      "trace": ["node_modules/tns-core-modules/trace"],
+      "color": ["node_modules/tns-core-modules/color"],
+      "http": ["node_modules/tns-core-modules/http"],
+      "timer": ["node_modules/tns-core-modules/timer"],
+      "utils": ["node_modules/tns-core-modules/utils"],
+      "console": ["node_modules/tns-core-modules/console"],
+      "platform": ["node_modules/tns-core-modules/platform"],
+      "application": ["node_modules/tns-core-modules/application"],
+      "image-asset": ["node_modules/tns-core-modules/image-asset"],
+      "image-source": ["node_modules/tns-core-modules/image-source"],
+      "globals": ["node_modules/tns-core-modules/globals"]
+    }
+  },
+  "files": [
+      "node_modules/tns-core-modules/lib.core.d.ts",
+      "node_modules/tns-core-modules/tns-core-modules.d.ts",
+      "node_modules/tns-platform-declarations/android.d.ts",
+      "node_modules/tns-platform-declarations/ios.d.ts",
+      "angular/index.ts",
+      "pager.android.ts",
+      "pager.ios.ts"
+  ],
+  "angularCompilerOptions": {
+    "genDir": "compiled"
+  }
+}

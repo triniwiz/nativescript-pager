@@ -1,6 +1,7 @@
 *.js
 *.js.map
 *.log
+*.ngFactory.ts
 !scripts/*.js
 demo/app/*.js
 demo/*.d.ts
@@ -14,6 +15,7 @@ demo-ng/hooks
 demo-ng/lib
 demo-ng/platforms
 demo-ng/node_modules
+compiled
 node_modules
 .vscode
 .idea

@@ -21,6 +21,8 @@
     "ng.demo.ios": "npm run ng.preparedemo && cd demo-ng && tns emulate ios",
     "ng.demo.ios.device": "npm run ng.preparedemo && cd demo-ng && tns run ios",
     "ng.demo.android": "npm run ng.preparedemo && cd demo-ng && tns run android",
+    "ngc": "npm run ngc.clean && node --max-old-space-size=8192 ./node_modules/.bin/ngc -p tsconfig.aot.json",
+    "ngc.clean": "find src/ angular/ \\( -name '*.metadata.json' -or -name '*.ngsummary.json' -or -name '*.ngfactory.ts' \\) -print -delete",
     "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
     "postclone": "npm i && node scripts/postclone.js"
   },
@@ -45,7 +47,9 @@
   "homepage": "https://github.com/TriniWiz/nativescript-pager",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@angular/core": "~2.4.7",
+    "@angular/compiler": "^2.4.8",
+    "@angular/compiler-cli": "^2.4.8",
+    "@angular/platform-server": "^2.4.8",
     "zone.js": "~0.7.2",
     "nativescript-angular": "~1.4.0",
     "tns-core-modules": "^2.5.0",
