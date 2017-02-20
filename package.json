@@ -24,6 +24,7 @@
     "ngc": "npm run ngc.clean && node --max-old-space-size=8192 ./node_modules/.bin/ngc -p tsconfig.aot.json",
     "ngc.clean": "find src/ angular/ \\( -name '*.metadata.json' -or -name '*.ngsummary.json' -or -name '*.ngfactory.ts' \\) -print -delete",
     "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
+    "prepublish": "npm run build && npm run ngc",
     "postclone": "npm i && node scripts/postclone.js"
   },
   "repository": {
