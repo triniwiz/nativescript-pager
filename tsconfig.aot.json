@@ -10,7 +10,6 @@
     "removeComments": false,
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
-    "declaration": true,
     "skipLibCheck": true,
     "noLib": true,
     "types": [],
@@ -40,11 +39,9 @@
       "node_modules/tns-core-modules/tns-core-modules.d.ts",
       "node_modules/tns-platform-declarations/android.d.ts",
       "node_modules/tns-platform-declarations/ios.d.ts",
-      "angular/index.ts",
-      "pager.android.ts",
-      "pager.ios.ts"
+      "angular/index.ts"
   ],
   "angularCompilerOptions": {
-    "genDir": "compiled"
+    "genDir": "angular/compiled"
   }
 }

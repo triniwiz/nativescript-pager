@@ -15,7 +15,7 @@ demo-ng/hooks
 demo-ng/lib
 demo-ng/platforms
 demo-ng/node_modules
-compiled
+angular/compiled
 node_modules
 .vscode
 .idea
