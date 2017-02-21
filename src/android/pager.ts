@@ -39,7 +39,7 @@ export class Pager extends common.Pager {
     get android() {
         return this._android;
     }
-    
+
     get pagesCount() {
         return this._getValue(Pager.pagesCountProperty);
     }
@@ -223,6 +223,9 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
 
     instantiateItem(collection: android.view.ViewGroup, position: number) {
         const item = this.owner.items[position];
+        if (!item.parent) {
+            this.owner._addView(item);
+        }
         const nativeView: android.support.v4.view.ViewPager = item._nativeView;
         collection.addView(nativeView);
         return nativeView;
