@@ -51,17 +51,17 @@ import { PagerModule } from "nativescript-pager/angular";
 ```html
 <Pager #pager>
 
-<StackLayout *pagerItem>
+<StackLayout>
 <Label text="Slide 1"></Label>
 <Image src="https://upload.wikimedia.org/wikipedia/en/5/59/Hulk_%28comics_character%29.png"></Image>
 </StackLayout>
 
-<StackLayout *pagerItem>
+<StackLayout>
 <Label text="Slide 2"></Label>
 <Image src="https://s-media-cache-ak0.pinimg.com/originals/4c/92/cc/4c92cc1dfbde6a6a40fe799f56fa9294.jpg"></Image>
 </StackLayout>
 
-<StackLayout *pagerItem>
+<StackLayout>
 <Label text="Slide 3"></Label>
 <Image src="http://static.srcdn.com/slir/w1000-h500-q90-c1000:500/wp-content/uploads/Batman-Begins-Batman-with-bats.jpg"></Image>
 </StackLayout>
