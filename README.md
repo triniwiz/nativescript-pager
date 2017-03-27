@@ -12,14 +12,14 @@
 IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page element any element can be used in the pager
 
 ```xml
-<c:Pager items="{{items}}" row="2" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
-            <Pager.itemTemplate>
+<pager:Pager items="{{items}}" row="2" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+            <pager:Pager.itemTemplate>
                 <GridLayout rows="auto, *" columns="*" backgroundColor="red">
                     <Label text="{{title}}"/>
                     <Image row="1" src="{{image}}"/>
                 </GridLayout>
-            </Pager.itemTemplate>
-</c:Pager>
+            </pager:Pager.itemTemplate>
+</pager:Pager>
 ```
 
 ###AngularNative
