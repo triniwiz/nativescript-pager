@@ -2,22 +2,27 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
+        "declaration": true,
         "removeComments": true,
+        "noLib": true,
+        "skipLibCheck": true,
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "sourceMap": true,
+        "pretty": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
         "noEmitHelpers": true,
         "noEmitOnError": false,
-        "declaration": true,
-        "skipLibCheck": true,
-        "noLib": true
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": false,
+        "noFallthroughCasesInSwitch": true
     },
-    "files": [
-      "node_modules/tns-core-modules/lib.core.d.ts",
-      "node_modules/tns-core-modules/tns-core-modules.d.ts",
-      "node_modules/tns-platform-declarations/android.d.ts",
-      "node_modules/tns-platform-declarations/ios.d.ts",
-      "pager.android.ts", 
-      "pager.ios.ts",
-      "angular/index.ts"
+    "exclude": [
+        "demo",
+        "demo-ng",
+        "node_modules"
     ],
     "compileOnSave": false
 }
