@@ -117,15 +117,14 @@ export class Pager extends common.Pager {
     refresh() { }
 
     getViewController(selectedIndex: number): UIViewController {
-        let pos = (this.selectedIndex + 1);
         // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
         if (this.cachedViewControllers[selectedIndex]) {
-          //  console.log(`- got PagerView from cache`);
+            //  console.log(`- got PagerView from cache`);
             vc = this.cachedViewControllers[selectedIndex].get();
         }
         if (!vc) {
-           // console.log(`- created new PagerView`);
+            // console.log(`- created new PagerView`);
             vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
             this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
         }
@@ -152,7 +151,7 @@ export class Pager extends common.Pager {
             lbl.text = "Pager.items not set.";
             view = lbl;
         }
-        this._viewMap.set(pos, view);
+        this._viewMap.set(selectedIndex, view);
         this.prepareView(view);
         vc.view = view._nativeView;
         return vc;
@@ -168,7 +167,7 @@ export class Pager extends common.Pager {
 
 
     public onLayout(left: number, top: number, right: number, bottom: number): void {
-      //  console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
+        //  console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
         super.onLayout(left, top, right, bottom);
         this.left = left;
         this.top = top;

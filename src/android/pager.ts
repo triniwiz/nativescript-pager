@@ -239,9 +239,8 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     instantiateItem(collection: android.view.ViewGroup, position: number) {
-        let pos = (position + 1);
-        if (this.owner._viewMap.has(pos)) {
-            let convertView = this.owner._viewMap.get(pos) ? this.owner._viewMap.get(pos)._nativeView : null;
+        if (this.owner._viewMap.has(position)) {
+            let convertView = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position)._nativeView : null;
             if (convertView) {
                 collection.addView(convertView);
                 return convertView;
@@ -256,7 +255,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
             if (!view.parent) {
                 this.owner._addView(view);
             }
-            this.owner._viewMap.set(pos, view);
+            this.owner._viewMap.set(position, view);
         }
 
         collection.addView(view._nativeView);
@@ -264,12 +263,11 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     destroyItem(collection: android.view.ViewGroup, position: number, object) {
-        let pos = (position + 1)
-        if (this.owner._viewMap.has(pos)) {
-            let convertView: any = this.owner._viewMap.get(pos) ? this.owner._viewMap.get(pos) : null;
+        if (this.owner._viewMap.has(position)) {
+            let convertView: any = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position) : null;
             if (convertView && convertView._nativeView) {
                 collection.removeView(convertView._nativeView);
-                this.owner._viewMap.delete(pos);
+                this.owner._viewMap.delete(position);
             }
         }
     }

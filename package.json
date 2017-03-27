@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pager",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "",
   "main": "pager",
   "nativescript": {
@@ -24,7 +24,7 @@
     "ngc": "npm run ngc.clean && node --max-old-space-size=8192 ./node_modules/.bin/ngc -p tsconfig.aot.json",
     "ngc.clean": "find ./ src/ angular/ -name '*.metadata.json' -delete",
     "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
-    "prepublish": "npm run ngc && npm run build"
+    "prepublishOnly": "npm run ngc && npm run build"
   },
   "repository": {
     "type": "git",
