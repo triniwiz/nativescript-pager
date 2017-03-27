@@ -8,6 +8,7 @@ export interface ComponentView {
 export declare type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 export declare function getItemViewRoot(viewRef: ComponentView, rootLocator?: RootLocator): View;
 export declare class PagerItemTemplate {
+    private owner;
     private templateRef;
     constructor(owner: PagerComponent, templateRef: TemplateRef<any>);
 }
@@ -15,11 +16,11 @@ export declare class PagerComponent {
     private _iterableDiffers;
     private _cdr;
     private loader;
-    viewInitialized: any;
+    private viewInitialized;
     private _selectedIndex;
     private _items;
-    _differ: any;
-    pager: any;
+    private _differ;
+    private pager;
     itemTemplate: TemplateRef<PagerItemContext>;
     constructor(el: ElementRef, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef, loader: ViewContainerRef);
     items: any;

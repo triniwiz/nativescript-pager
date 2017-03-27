@@ -1,5 +1,4 @@
 import { Component, NgModule, Directive, ElementRef, TemplateRef, IterableDiffers, ChangeDetectorRef, ViewContainerRef, Input, Inject, forwardRef, ChangeDetectionStrategy, NO_ERRORS_SCHEMA } from "@angular/core";
-import { Pager, PagerAdapter } from "../src/android/pager";
 import { registerElement, ViewClassMeta, NgView, TEMPLATE } from "nativescript-angular/element-registry";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { View } from "ui/core/view";
@@ -11,7 +10,7 @@ import { convertToInt } from "nativescript-angular/common/utils";
 import { LayoutBase } from "ui/layouts/layout-base";
 import { ObservableArray } from "data/observable-array";
 const NG_VIEW = "_ngViewRef";
-registerElement("Pager", () => require("../src/android/pager").Pager);
+registerElement("Pager", () => require("../").Pager);
 export interface ComponentView {
     rootNodes: Array<any>;
     destroy(): void;
@@ -47,13 +46,12 @@ export function getItemViewRoot(viewRef: ComponentView, rootLocator: RootLocator
     return rootView;
 }
 
-
 @Directive({
     selector: "[pagerItemTemplate]"
 })
 export class PagerItemTemplate {
     constructor(
-        @Inject(forwardRef(() => PagerComponent)) owner: PagerComponent,
+        @Inject(forwardRef(() => PagerComponent)) private owner: PagerComponent,
         private templateRef: TemplateRef<any>
     ) {
         owner.itemTemplate = this.templateRef;
@@ -66,11 +64,11 @@ export class PagerItemTemplate {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PagerComponent {
-    viewInitialized: any;
+    private viewInitialized: any;
     private _selectedIndex: any;
     private _items: any;
-    _differ: any;
-    pager;
+    private _differ: any;
+    private pager;
     itemTemplate: TemplateRef<PagerItemContext>;
     constructor(
         el: ElementRef,
@@ -159,7 +157,6 @@ export class PagerComponent {
     }
 }
 
-
 export class PagerItemContext {
     constructor(
         public $implicit?: any,
@@ -172,8 +169,14 @@ export class PagerItemContext {
 }
 
 @NgModule({
-    declarations: [PagerComponent, PagerItemTemplate],
-    exports: [PagerComponent, PagerItemTemplate],
+    declarations: [
+        PagerComponent,
+        PagerItemTemplate
+    ],
+    exports: [
+        PagerComponent,
+        PagerItemTemplate
+    ],
     schemas: [
         NO_ERRORS_SCHEMA
     ]
