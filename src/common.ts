@@ -1,9 +1,11 @@
 import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
-import { View, AddArrayFromBuilder } from "ui/core/view";
-import { ContentView } from "ui/content-view";
+import { View } from "ui/core/view";
 import * as types from "utils/types";
-
+export const ITEMSLOADING = "itemsLoading";
+export module knownTemplates {
+    export const itemTemplate = "itemTemplate";
+}
 export module knownCollections {
     export const items = "items";
 }
@@ -15,6 +17,11 @@ function onItemsChanged(data: PropertyChangeData) {
     }
 }
 
+function onItemTemplateChanged(data: PropertyChangeData) {
+    const accordion = <Pager>data.object;
+    accordion.itemTemplateUpdated(data.oldValue, data.newValue);
+};
+
 function onSelectedIndexChanged(data: PropertyChangeData) {
     const pager = <Pager>data.object;
     if (pager && pager.items && types.isNumber(data.newValue)) {
@@ -23,23 +30,29 @@ function onSelectedIndexChanged(data: PropertyChangeData) {
     }
 }
 
-export abstract class Pager extends View implements AddArrayFromBuilder {
+export abstract class Pager extends View {
     private _disableSwipe: boolean;
     private _pageSpacing: number = 0;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(0, PropertyMetadataSettings.None, null, null, onSelectedIndexChanged));
     public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, null, null, onItemsChanged));
+    public static itemTemplateProperty = new Property("itemTemplate", "Accordion", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, onItemTemplateChanged));
     public static showNativePageIndicatorProperty = new Property("showNativePageIndicator", "Pager", new PropertyMetadata(false));
     public static selectedIndexChangedEvent = "selectedIndexChanged";
 
-    public _addArrayFromBuilder(name: string, value: Array<any>) {
-        if (name === "items") {
-            this.items = value;
-        }
+    _getData(index: number) {
+        let items = <any>this.items;
+        return items.getItem ? items.getItem(index) : items[index];
+    }
+    get itemTemplate() {
+        return this._getValue(Pager.itemTemplateProperty);
+    }
+    set itemTemplate(value: string) {
+        this._setValue(Pager.itemTemplateProperty, value);
     }
     get items() {
         return this._getValue(Pager.itemsProperty);
     }
-    set items(value: Array<any>) {
+    set items(value: any) {
         this._setValue(Pager.itemsProperty, value);
     }
     get selectedIndex() {
@@ -75,8 +88,8 @@ export abstract class Pager extends View implements AddArrayFromBuilder {
         this._setValue(Pager.showNativePageIndicatorProperty, value);
     }
     public abstract updateNativeItems(oldItems: Array<View>, newItems: Array<View>): void;
-
     public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
+    public abstract itemTemplateUpdated(oldData, newData): void;
 }
 
 export abstract class PagerItem extends View { }

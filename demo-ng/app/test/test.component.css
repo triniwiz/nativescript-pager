@@ -1,0 +1,13 @@
+.pager-item{
+
+}
+.pager-item Label{
+font-size: 20;
+color: white;
+}
+
+.pager-item Image{
+border-radius: 50%;
+border-width: 1;
+background-color: white;
+}
