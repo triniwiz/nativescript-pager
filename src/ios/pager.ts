@@ -108,27 +108,30 @@ export class Pager extends common.Pager {
         if (newItems.length > 0) {
             // re-init
             this._initNativeViewPager();
+
         }
     }
 
     runUpdate() { }
 
-    refresh(){}
+    refresh() { }
 
     getViewController(selectedIndex: number): UIViewController {
+        let pos = (this.selectedIndex + 1);
         // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
         if (this.cachedViewControllers[selectedIndex]) {
-            // console.log(`- got PagerView from cache`);
+          //  console.log(`- got PagerView from cache`);
             vc = this.cachedViewControllers[selectedIndex].get();
         }
         if (!vc) {
-            // console.log(`- created new PagerView`);
+           // console.log(`- created new PagerView`);
             vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
             this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
         }
         let view: any;
         if (this.items && this.items.length) {
+
             // if (this._viewMap.has(selectedIndex)) {
             //     view = this._viewMap.get(selectedIndex);
             // } else {
@@ -149,38 +152,37 @@ export class Pager extends common.Pager {
             lbl.text = "Pager.items not set.";
             view = lbl;
         }
+        this._viewMap.set(pos, view);
         this.prepareView(view);
         vc.view = view._nativeView;
-
         return vc;
     }
 
-    onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-        // console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`);
+
+    public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+        //console.log(`Pager.measure: ${widthMeasureSpec}x${heightMeasureSpec}`)
         this.widthMeasureSpec = widthMeasureSpec;
         this.heightMeasureSpec = heightMeasureSpec;
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.measure(widthMeasureSpec, heightMeasureSpec);
     }
 
 
-    onLayout(left: number, top: number, right: number, bottom: number): void {
-        // console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
+    public onLayout(left: number, top: number, right: number, bottom: number): void {
+      //  console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
         super.onLayout(left, top, right, bottom);
         this.left = left;
         this.top = top;
         this.right = right;
         this.bottom = bottom;
+
         if (this._viewMap && this._viewMap.size > 0) {
             this._viewMap.forEach((item) => {
-                this.prepareView(item);
+                View.layoutChild(this, item, 0, 0, right - left, bottom - top);
             });
             this._initNativeViewPager();
         }
     }
 
-    onLoaded() {
-        // console.log(`Pager.ios.onLoaded`);
-    }
 
     onUnloaded() {
         // console.log(`Pager.ios.onUnloaded`);
