@@ -1,13 +1,13 @@
 [![npm](https://img.shields.io/npm/v/nativescript-pager.svg)](https://www.npmjs.com/package/nativescript-pager)
 [![npm](https://img.shields.io/npm/dt/nativescript-pager.svg?label=npm%20downloads)](https://www.npmjs.com/package/nativescript-pager)
 
-#NativeScript Pager
+# NativeScript Pager
 
-##Install
+## Install
 
 `tns plugin add nativescript-pager`
 
-##Usage
+## Usage
 
 IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page element any element can be used in the pager
 
@@ -22,7 +22,7 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
 </pager:Pager>
 ```
 
-###AngularNative
+### AngularNative
 
 ```js
 import { PagerModule } from "nativescript-pager/angular";
@@ -38,6 +38,8 @@ import { PagerModule } from "nativescript-pager/angular";
 })
 ```
 
+Angular v2
+
 ```html
 <Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
         <template pagerItemTemplate let-i="index" let-item="item">
@@ -49,15 +51,27 @@ import { PagerModule } from "nativescript-pager/angular";
     </Pager>
 ```
 
+Angular v4
 
-##Config
+```html
+<Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
+        <ng-template pagerItemTemplate let-i="index" let-item="item">
+            <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
+                <Label  [text]="item.title"></Label>
+                <Image row="1" [src]="item.image"></Image>
+            </GridLayout>
+        </ng-template>
+    </Pager>
+```
+
+## Config
 
 ```xml
 <Pager disableSwipe="true" selectedIndex="5" transformer="FlipHorizontalTransformer">
 ```
 
 
-###Transformations
+### Transformations
 * AccordionTransformer
 * BackgroundToForegroundTransformer
 * CubeInTransformer
