@@ -13,13 +13,13 @@ export module knownCollections {
 function onItemsChanged(data: PropertyChangeData) {
     const pager = <Pager>data.object;
     if (data.newValue) {
-        pager.updateNativeItems(<Array<View>>data.oldValue, <Array<View>>data.newValue);
+        pager.updateNativeItems(data.oldValue, data.newValue);
     }
 }
 
 function onItemTemplateChanged(data: PropertyChangeData) {
-    const accordion = <Pager>data.object;
-    accordion.itemTemplateUpdated(data.oldValue, data.newValue);
+    const pager = <Pager>data.object;
+    pager.itemTemplateUpdated(data.oldValue, data.newValue);
 };
 
 function onSelectedIndexChanged(data: PropertyChangeData) {
@@ -35,7 +35,7 @@ export abstract class Pager extends View {
     private _pageSpacing: number = 0;
     public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(0, PropertyMetadataSettings.None, null, null, onSelectedIndexChanged));
     public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, null, null, onItemsChanged));
-    public static itemTemplateProperty = new Property("itemTemplate", "Accordion", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, onItemTemplateChanged));
+    public static itemTemplateProperty = new Property("itemTemplate", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, onItemTemplateChanged));
     public static showNativePageIndicatorProperty = new Property("showNativePageIndicator", "Pager", new PropertyMetadata(false));
     public static selectedIndexChangedEvent = "selectedIndexChanged";
 
