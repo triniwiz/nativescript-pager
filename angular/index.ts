@@ -1,5 +1,5 @@
 import { Component, NgModule, Directive, ElementRef, TemplateRef, IterableDiffers, ChangeDetectorRef, ViewContainerRef, Input, Inject, forwardRef, ChangeDetectionStrategy, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement, ViewClassMeta, NgView, TEMPLATE } from "nativescript-angular/element-registry";
+import { registerElement, ViewClassMeta, NgView } from "nativescript-angular/element-registry";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { View } from "ui/core/view";
 import { Placeholder } from "ui/placeholder";

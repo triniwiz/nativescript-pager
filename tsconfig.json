@@ -4,7 +4,6 @@
         "module": "commonjs",
         "declaration": true,
         "removeComments": true,
-        "noLib": true,
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -17,12 +16,26 @@
         "noImplicitAny": false,
         "noImplicitReturns": true,
         "noImplicitUseStrict": false,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "preserveConstEnums": true,
+        "noLib": false,
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        }
     },
     "exclude": [
         "demo",
         "demo-ng",
-        "node_modules"
+        "node_modules",
+        "platforms"
     ],
     "compileOnSave": false
 }

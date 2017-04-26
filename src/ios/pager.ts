@@ -1,5 +1,5 @@
 import { PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
+// import { PropertyMetadata } from "ui/core/proxy";
 import { View, AddArrayFromBuilder } from "ui/core/view";
 import { Label } from "ui/label";
 import { Color } from 'color';
@@ -7,7 +7,7 @@ import * as utils from "utils/utils";
 import * as types from "utils/types";
 import * as common from "../common";
 import { parse } from "ui/builder";
-import { Observable } from "data/observable";
+import { Observable, fromObject } from "data/observable";
 import { ObservableArray } from "data/observable-array";
 
 function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, index: number) {
@@ -33,10 +33,10 @@ export class Pager extends common.Pager {
     _viewMap: Map<any, any>;
     private widthMeasureSpec: number;
     private heightMeasureSpec: number;
-    private left = 0;
-    private top = 0;
-    private right = 0;
-    private bottom = 0;
+    private _left = 0;
+    private _top = 0;
+    private _right = 0;
+    private _bottom = 0;
     private cachedViewControllers: WeakRef<PagerView>[] = [];
     borderRadius: number;
     borderWidth: number;
@@ -69,6 +69,8 @@ export class Pager extends common.Pager {
         if (this.borderWidth) {
             sv.layer.borderWidth = this.borderWidth;
         }
+
+        this.nativeView = this._ios;
     }
 
     get views() {
@@ -143,7 +145,7 @@ export class Pager extends common.Pager {
 
             if (view) {
                 let item = (typeof this.items.getItem === "function") ? this.items.getItem(selectedIndex) : this.items[selectedIndex];
-                view.bindingContext = new Observable(item);
+                view.bindingContext = fromObject(item);
             }
 
         } else {
@@ -169,10 +171,10 @@ export class Pager extends common.Pager {
     public onLayout(left: number, top: number, right: number, bottom: number): void {
         //  console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
         super.onLayout(left, top, right, bottom);
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        this._left = left;
+        this._top = top;
+        this._right = right;
+        this._bottom = bottom;
 
         if (this._viewMap && this._viewMap.size > 0) {
             this._viewMap.forEach((item) => {
@@ -194,7 +196,10 @@ export class Pager extends common.Pager {
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
         const oldIndex = this.selectedIndex;
-        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+
+        //this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+        common.selectedIndexProperty.nativeValueChange(this, newIndex);
+
         this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 
@@ -221,12 +226,12 @@ export class Pager extends common.Pager {
     }
 
     private prepareView(view: View): void {
-        View.adjustChildLayoutParams(view, this.widthMeasureSpec, this.heightMeasureSpec);
+        // View.adjustChildLayoutParams(view, this.widthMeasureSpec, this.heightMeasureSpec);
         let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
         View.layoutChild(this, view, 0, 0, result.measuredWidth, result.measuredHeight);
         // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
         // console.log(`Pager.prepareView - layout: ${this.left}, ${this.top}, ${this.right}, ${this.bottom}`);
-        View.restoreChildOriginalParams(view);
+        // View.restoreChildOriginalParams(view);
 
     }
 }

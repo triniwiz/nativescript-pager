@@ -1,7 +1,7 @@
 import { EventData, PropertyChangeData } from 'data/observable';
 import { Page } from 'ui/page';
 import { HelloWorldModel } from './main-view-model';
-import { Pager } from "./pager/pager";
+import { Pager } from "nativescript-pager";
 import { Button } from "ui/button";
 import { Image } from "ui/image";
 import * as app from "application";
