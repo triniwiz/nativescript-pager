@@ -146,7 +146,8 @@ export class Pager extends common.Pager {
         this._viewMap.clear();
         super.onUnloaded();
     }
-    _eachChildView(callback: (child: View) => boolean): void {
+
+    eachChildView(callback: (child: View) => boolean): void {
         if (this._viewMap.size > 0) {
             this._viewMap.forEach((view, key) => {
                 callback(view);
