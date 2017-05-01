@@ -1,9 +1,7 @@
 import { PropertyChangeData } from "ui/core/dependency-observable";
-// import { PropertyMetadata } from "ui/core/proxy";
 import { View, layout } from "ui/core/view";
 import { Label } from "ui/label";
 import { Color } from 'color';
-import * as utils from "utils/utils";
 import * as types from "utils/types";
 import * as common from "../common";
 import { parse } from "ui/builder";
@@ -27,14 +25,13 @@ export class Pager extends common.Pager {
     }
     private _orientation: UIPageViewControllerNavigationOrientation;
     private _options: NSDictionary<any, any>;
-    // private _views: any[];
     private _transformer;
     private _ios: UIPageViewController;
-    _viewMap: Map<any, any>;
     private widthMeasureSpec: number;
     private heightMeasureSpec: number;
     private layoutWidth = 0;
     private layoutHeight = 0;
+    private _viewMap: Map<number, View>;
     private cachedViewControllers: WeakRef<PagerView>[] = [];
     borderRadius: number;
     borderWidth: number;
@@ -43,7 +40,6 @@ export class Pager extends common.Pager {
 
     constructor() {
         super();
-        // this._views = [];
         this._viewMap = new Map();
         const that = new WeakRef(this);
         this._orientation = UIPageViewControllerNavigationOrientation.Horizontal;
@@ -71,25 +67,9 @@ export class Pager extends common.Pager {
         }
     }
 
-    // get views() {
-    //     return this._views;
-    // }
-
-    // set views(value: any[]) {
-    //     this._views = value;
-    // }
-
     get transformer() {
         return this._transformer;
     }
-
-    // get ios() {
-    //     return this._ios;
-    // }
-
-    // get _childrenCount(): number {
-    //     return this.items ? this.items.length : 0;
-    // }
 
     eachChildView(callback: (child: View) => boolean): void {
         if (this._viewMap.size > 0) {
@@ -107,8 +87,7 @@ export class Pager extends common.Pager {
     updateNativeItems(oldItems: View[], newItems: View[]) {
         // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
         if (oldItems) {
-            this.cachedViewControllers = [];
-            // TOO: more cleanup
+            this._clearCachedItems();
         }
         if (newItems.length > 0) {
             // re-init
@@ -116,24 +95,21 @@ export class Pager extends common.Pager {
         }
     }
 
-    runUpdate() { }
-
     refresh() { }
 
     getViewController(selectedIndex: number): UIViewController {
-        console.log(`Pager.getViewController: ${selectedIndex}`);
+        // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
         if (this.cachedViewControllers[selectedIndex]) {
-            console.log(`- got PagerView from cache`);
+            // console.log(`- got PagerView from cache`);
             vc = this.cachedViewControllers[selectedIndex].get();
         }
         if (!vc) {
-            console.log(`- created new PagerView`);
+            // console.log(`- created new PagerView`);
             vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
             this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
             let view: View;
             if (this.items && this.items.length) {
-
                 // if (this._viewMap.has(selectedIndex)) {
                 //     view = this._viewMap.get(selectedIndex);
                 // } else {
@@ -155,7 +131,7 @@ export class Pager extends common.Pager {
             }
             this._viewMap.set(selectedIndex, view);
 
-            console.log(`Pager._addView for index: ${selectedIndex}`);
+            // console.log(`Pager._addView for index: ${selectedIndex}`);
             this._addView(view);
 
             vc.view = view.nativeView;
@@ -169,12 +145,12 @@ export class Pager extends common.Pager {
         let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
         View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
 
-        console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
-        console.log(`Pager.prepareView - layout: 0, 0, ${this.layoutWidth}, ${this.layoutHeight}`);
+        // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
+        // console.log(`Pager.prepareView - layout: 0, 0, ${this.layoutWidth}, ${this.layoutHeight}`);
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-        console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`)
+        // console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`)
         this.widthMeasureSpec = widthMeasureSpec;
         this.heightMeasureSpec = heightMeasureSpec;
 
@@ -197,7 +173,7 @@ export class Pager extends common.Pager {
     }
 
     public onLayout(left: number, top: number, right: number, bottom: number): void {
-        console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
+        // console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
         super.onLayout(left, top, right, bottom);
         this.layoutWidth = right - left;
         this.layoutHeight = bottom - top;
@@ -206,17 +182,33 @@ export class Pager extends common.Pager {
         View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
     }
 
-
     onUnloaded() {
-        console.log(`Pager.ios.onUnloaded`);
+        // console.log(`Pager.ios.onUnloaded`);
+        this._clearCachedItems();
         this._ios.delegate = null;
         this._ios = null;
-        this.cachedViewControllers = null;
         super.onUnloaded();
     }
 
+    private _clearCachedItems() {
+        if (!this.cachedViewControllers) {
+            return
+        }
+
+        this.cachedViewControllers.forEach(vcRef => {
+            vcRef.clear();
+        });
+
+        this._viewMap.forEach((val, key) => {
+            if (val && val.parent === this) {
+                this._removeView(val);
+            }
+        })
+        this._viewMap.clear();
+    }
+
     _selectedIndexUpdatedFromNative(newIndex: number) {
-        console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
+        // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
         const oldIndex = this.selectedIndex;
 
         //this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
@@ -266,7 +258,7 @@ class PagerViewControllerDelegate extends NSObject implements UIPageViewControll
     }
 
     pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted(pageViewController: UIPageViewController, finished: boolean, previousViewControllers: NSArray<any>, completed: boolean) {
-        console.log("pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted: " + finished)
+        // console.log("pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted: " + finished)
         if (finished) {
             let vc = <PagerView>pageViewController.viewControllers[0];
             const owner = this.owner;
@@ -340,7 +332,7 @@ export class PagerView extends UIViewController {
     }
 
     didMoveToParentViewController(parent: UIViewController): void {
-        console.log(`PagerView.didMoveToParentViewController`);
+        // console.log(`PagerView.didMoveToParentViewController`);
         let owner = this.owner.get();
         if (!parent && owner) {
             // removed from parent
@@ -348,10 +340,3 @@ export class PagerView extends UIViewController {
         }
     }
 }
-
-// export class PagerItem extends common.PagerItem {
-//     constructor() {
-//         super();
-//         this.nativeView = UIView.new();
-//     }
-// }
