@@ -29,6 +29,7 @@
     "angular/index.ts"
   ],
   "angularCompilerOptions": {
+    "skipMetadataEmit": false,
     "skipTemplateCodegen": true
   }
 }
