@@ -1,0 +1,5 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd">
+    <GridLayout>
+       <Label text="Just a test page - go back now"/>
+    </GridLayout>
+</Page>

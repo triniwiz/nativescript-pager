@@ -1,6 +1,6 @@
 // import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
 // import { PropertyMetadata } from "ui/core/proxy";
-import { View, Property, CoercibleProperty } from "ui/core/view";
+import { View, Property, CoercibleProperty, booleanConverter } from "ui/core/view";
 import * as types from "utils/types";
 
 export const ITEMSLOADING = "itemsLoading";
@@ -97,7 +97,8 @@ itemTemplateProperty.register(Pager);
 
 export const showNativePageIndicatorProperty = new Property<Pager, boolean>({
     name: "showNativePageIndicator",
-    defaultValue: false
+    defaultValue: false,
+    valueConverter: booleanConverter,
 });
 showNativePageIndicatorProperty.register(Pager);
 

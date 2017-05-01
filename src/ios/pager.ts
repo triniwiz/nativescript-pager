@@ -134,7 +134,7 @@ export class Pager extends common.Pager {
             // console.log(`Pager._addView for index: ${selectedIndex}`);
             this._addView(view);
 
-            vc.view = view.nativeView;
+            vc.view.addSubview(view.nativeView);
             this.prepareView(view);
         }
 
@@ -142,11 +142,13 @@ export class Pager extends common.Pager {
     }
 
     private prepareView(view: View): void {
-        let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
-        View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
-
-        // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
-        // console.log(`Pager.prepareView - layout: 0, 0, ${this.layoutWidth}, ${this.layoutHeight}`);
+        // console.log(`Pager.prepareView`);
+        if (this.widthMeasureSpec !== undefined && this.heightMeasureSpec != undefined) {
+            let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
+            View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+            // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
+            // console.log(`Pager.prepareView - layout: 0, 0, ${this.layoutWidth}, ${this.layoutHeight}`);
+        }
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
@@ -161,6 +163,7 @@ export class Pager extends common.Pager {
 
         const view = this._viewMap.get(this.selectedIndex);
         let { measuredWidth, measuredHeight } = View.measureChild(this, view, widthMeasureSpec, heightMeasureSpec);
+        // console.log(`Pager.onMeasure - measureChild = (${measuredWidth}x${measuredHeight})`);
 
         // Check against our minimum sizes
         measuredWidth = Math.max(measuredWidth, this.effectiveMinWidth);
@@ -182,12 +185,12 @@ export class Pager extends common.Pager {
         View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
     }
 
-    onUnloaded() {
-        // console.log(`Pager.ios.onUnloaded`);
+    disposeNativeView() {
+        // console.log(`Pager.ios.disposeNativeView`);
         this._clearCachedItems();
         this._ios.delegate = null;
         this._ios = null;
-        super.onUnloaded();
+        super.disposeNativeView();
     }
 
     private _clearCachedItems() {
@@ -304,6 +307,7 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
     }
 
     presentationCountForPageViewController(pageViewController: UIPageViewController): number {
+        // console.log("presentationCountForPageViewController: " + this.owner.showNativePageIndicator)
         if (!this.owner || !this.owner.items || !this.owner.showNativePageIndicator) {
             // Hide the native UIPageControl (dots)
             return -1;

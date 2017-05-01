@@ -10,8 +10,9 @@
         </ng-template>
     </Pager>
 
-    <DockLayout row="1" orientation="horizontal" stretchLastChild="false" class="bg-primary">
+    <DockLayout row="1" orientation="horizontal" stretchLastChild="true" class="bg-primary">
         <Button dock="left" text="Prev" (tap)="prevPage()" class="btn btn-primary"></Button>
         <Button dock="right" text="Next" (tap)="nextPage()" class="btn btn-primary"></Button>
+        <Button text="nav" [nsRouterLink]="['/dummy']" class="btn btn-primary"></Button>
     </DockLayout>
 </GridLayout>

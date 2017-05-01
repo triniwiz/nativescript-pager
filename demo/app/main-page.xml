@@ -1,7 +1,7 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo" loaded="pageLoaded"
       xmlns:c="nativescript-pager">
 
-    <GridLayout rows="auto, auto, *" columns="*" id="sl">
+    <GridLayout rows="auto, auto, *, auto" columns="*" id="sl">
         <Label text="Look Ma No Fragments"/>
         <StackLayout row="1" orientation="horizontal">
             <Button text="Prev" tap="prevPage" />
@@ -18,5 +18,7 @@
                 </GridLayout>
             </Pager.itemTemplate>
         </c:Pager>
+
+        <Button text="Nav" row="3" tap="navigate"/>
     </GridLayout>
 </Page>
