@@ -58,7 +58,7 @@
     "nativescript-angular": "internal-preview",
     "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
     "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
-    "typescript": "^2.2.2",
+    "typescript": "~2.2.2",
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0",
     "rxjs": "~5.0.1"

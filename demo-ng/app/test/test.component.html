@@ -2,12 +2,12 @@
 </ActionBar>
 <GridLayout rows="*, auto" columns="*" class="page">
     <Pager [items]="items | async" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
-        <template pagerItemTemplate let-i="index" let-item="item">
+        <ng-template pagerItemTemplate let-i="index" let-item="item">
             <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
                 <Label [text]="item.title"></Label>
                 <Image stretch="fill" row="1" [src]="item.image"></Image>
             </GridLayout>
-        </template>
+        </ng-template>
     </Pager>
 
     <DockLayout row="1" orientation="horizontal" stretchLastChild="false" class="bg-primary">

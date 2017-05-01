@@ -233,7 +233,7 @@ export class Pager extends common.Pager {
     private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
         const vc = this.getViewController(toIndex);
         if (!vc) throw new Error('no VC');
-        console.log(`Pager._navigateNativeViewPagerToIndex: ${toIndex}`);
+        // console.log(`Pager._navigateNativeViewPagerToIndex: ${toIndex}`);
         const direction = fromIndex < toIndex ?
             UIPageViewControllerNavigationDirection.Forward : UIPageViewControllerNavigationDirection.Reverse;
         this._ios.setViewControllersDirectionAnimatedCompletion(NSArray.arrayWithObject(vc), direction, true, () => { });
