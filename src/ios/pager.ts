@@ -1,13 +1,11 @@
 import { PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
-import { View, AddArrayFromBuilder } from "ui/core/view";
+import { View, layout } from "ui/core/view";
 import { Label } from "ui/label";
 import { Color } from 'color';
-import * as utils from "utils/utils";
 import * as types from "utils/types";
 import * as common from "../common";
 import { parse } from "ui/builder";
-import { Observable } from "data/observable";
+import { Observable, fromObject } from "data/observable";
 import { ObservableArray } from "data/observable-array";
 
 function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, index: number) {
@@ -27,16 +25,13 @@ export class Pager extends common.Pager {
     }
     private _orientation: UIPageViewControllerNavigationOrientation;
     private _options: NSDictionary<any, any>;
-    private _views: any[];
     private _transformer;
     private _ios: UIPageViewController;
-    _viewMap: Map<any, any>;
     private widthMeasureSpec: number;
     private heightMeasureSpec: number;
-    private left = 0;
-    private top = 0;
-    private right = 0;
-    private bottom = 0;
+    private layoutWidth = 0;
+    private layoutHeight = 0;
+    private _viewMap: Map<number, View>;
     private cachedViewControllers: WeakRef<PagerView>[] = [];
     borderRadius: number;
     borderWidth: number;
@@ -45,7 +40,6 @@ export class Pager extends common.Pager {
 
     constructor() {
         super();
-        this._views = [];
         this._viewMap = new Map();
         const that = new WeakRef(this);
         this._orientation = UIPageViewControllerNavigationOrientation.Horizontal;
@@ -56,7 +50,9 @@ export class Pager extends common.Pager {
         this._ios = UIPageViewController.alloc().initWithTransitionStyleNavigationOrientationOptions(this._transformer, this._orientation, this._options);
         this._ios.dataSource = PagerDataSource.initWithOwner(that);
         this._ios.delegate = PagerViewControllerDelegate.initWithOwner(that);
-        const sv = this._nativeView.subviews[1];
+        this.nativeView = this._ios.view;
+        const sv = this.nativeView.subviews[1];
+
         if (this.borderRadius) {
             sv.layer.cornerRadius = this.borderRadius;
         }
@@ -71,28 +67,16 @@ export class Pager extends common.Pager {
         }
     }
 
-    get views() {
-        return this._views;
-    }
-
-    set views(value: any[]) {
-        this._views = value;
-    }
-
     get transformer() {
         return this._transformer;
     }
 
-    get ios() {
-        return this._ios;
-    }
-
-    get _nativeView(): UIView {
-        return this._ios.view;
-    }
-
-    get _childrenCount(): number {
-        return this.items ? this.items.length : 0;
+    eachChildView(callback: (child: View) => boolean): void {
+        if (this._viewMap.size > 0) {
+            this._viewMap.forEach((view, key) => {
+                callback(view);
+            });
+        }
     }
 
     updateNativeIndex(oldIndex: number, newIndex: number) {
@@ -103,16 +87,13 @@ export class Pager extends common.Pager {
     updateNativeItems(oldItems: View[], newItems: View[]) {
         // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
         if (oldItems) {
-            this.cachedViewControllers = [];
+            this._clearCachedItems();
         }
         if (newItems.length > 0) {
             // re-init
             this._initNativeViewPager();
-
         }
     }
-
-    runUpdate() { }
 
     refresh() { }
 
@@ -120,81 +101,122 @@ export class Pager extends common.Pager {
         // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
         if (this.cachedViewControllers[selectedIndex]) {
-            //  console.log(`- got PagerView from cache`);
+            // console.log(`- got PagerView from cache`);
             vc = this.cachedViewControllers[selectedIndex].get();
         }
         if (!vc) {
             // console.log(`- created new PagerView`);
             vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
             this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
-        }
-        let view: any;
-        if (this.items && this.items.length) {
+            let view: View;
+            if (this.items && this.items.length) {
+                // if (this._viewMap.has(selectedIndex)) {
+                //     view = this._viewMap.get(selectedIndex);
+                // } else {
+                //     view = !types.isNullOrUndefined(this.itemTemplate) ? parse(this.itemTemplate, this) : null;
+                // }
 
-            // if (this._viewMap.has(selectedIndex)) {
-            //     view = this._viewMap.get(selectedIndex);
-            // } else {
-            //     view = !types.isNullOrUndefined(this.itemTemplate) ? parse(this.itemTemplate, this) : null;
-            // }
+                view = !types.isNullOrUndefined(this.itemTemplate) ? parse(this.itemTemplate, this) : null;
+                let _args: any = notifyForItemAtIndex(this, view ? view.nativeView : null, view, common.ITEMSLOADING, selectedIndex);
+                view = view || _args.view;
 
-            view = !types.isNullOrUndefined(this.itemTemplate) ? parse(this.itemTemplate, this) : null;
-            let _args: any = notifyForItemAtIndex(this, view ? view._nativeView : null, view, common.ITEMSLOADING, selectedIndex);
-            view = view || _args.view;
-
-            if (view) {
-                let item = (typeof this.items.getItem === "function") ? this.items.getItem(selectedIndex) : this.items[selectedIndex];
-                view.bindingContext = new Observable(item);
+                if (view) {
+                    let item = (typeof this.items.getItem === "function") ? this.items.getItem(selectedIndex) : this.items[selectedIndex];
+                    view.bindingContext = fromObject(item);
+                }
+            } else {
+                let lbl = new Label();
+                lbl.text = "Pager.items not set.";
+                view = lbl;
             }
+            this._viewMap.set(selectedIndex, view);
 
-        } else {
-            let lbl = new Label();
-            lbl.text = "Pager.items not set.";
-            view = lbl;
+            // console.log(`Pager._addView for index: ${selectedIndex}`);
+            this._addView(view);
+
+            vc.view.addSubview(view.nativeView);
+            this.prepareView(view);
         }
-        this._viewMap.set(selectedIndex, view);
-        this.prepareView(view);
-        vc.view = view._nativeView;
+
         return vc;
     }
 
-
-    public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-        //console.log(`Pager.measure: ${widthMeasureSpec}x${heightMeasureSpec}`)
-        this.widthMeasureSpec = widthMeasureSpec;
-        this.heightMeasureSpec = heightMeasureSpec;
-        super.measure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-
-    public onLayout(left: number, top: number, right: number, bottom: number): void {
-        //  console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
-        super.onLayout(left, top, right, bottom);
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-
-        if (this._viewMap && this._viewMap.size > 0) {
-            this._viewMap.forEach((item) => {
-                View.layoutChild(this, item, 0, 0, right - left, bottom - top);
-            });
-            this._initNativeViewPager();
+    private prepareView(view: View): void {
+        // console.log(`Pager.prepareView`);
+        if (this.widthMeasureSpec !== undefined && this.heightMeasureSpec != undefined) {
+            let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
+            View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+            // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
+            // console.log(`Pager.prepareView - layout: 0, 0, ${this.layoutWidth}, ${this.layoutHeight}`);
         }
     }
 
+    public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+        // console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`)
+        this.widthMeasureSpec = widthMeasureSpec;
+        this.heightMeasureSpec = heightMeasureSpec;
 
-    onUnloaded() {
-        // console.log(`Pager.ios.onUnloaded`);
+        const width = layout.getMeasureSpecSize(widthMeasureSpec);
+        const widthMode = layout.getMeasureSpecMode(widthMeasureSpec);
+        const height = layout.getMeasureSpecSize(heightMeasureSpec);
+        const heightMode = layout.getMeasureSpecMode(heightMeasureSpec);
+
+        const view = this._viewMap.get(this.selectedIndex);
+        let { measuredWidth, measuredHeight } = View.measureChild(this, view, widthMeasureSpec, heightMeasureSpec);
+        // console.log(`Pager.onMeasure - measureChild = (${measuredWidth}x${measuredHeight})`);
+
+        // Check against our minimum sizes
+        measuredWidth = Math.max(measuredWidth, this.effectiveMinWidth);
+        measuredHeight = Math.max(measuredHeight, this.effectiveMinHeight);
+
+        const widthAndState = View.resolveSizeAndState(measuredWidth, width, widthMode, 0);
+        const heightAndState = View.resolveSizeAndState(measuredHeight, height, heightMode, 0);
+
+        this.setMeasuredDimension(widthAndState, heightAndState);
+    }
+
+    public onLayout(left: number, top: number, right: number, bottom: number): void {
+        // console.log(`Pager.onLayout ${left}, ${top}, ${right}, ${bottom}`);
+        super.onLayout(left, top, right, bottom);
+        this.layoutWidth = right - left;
+        this.layoutHeight = bottom - top;
+
+        const view = this._viewMap.get(this.selectedIndex);
+        View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+    }
+
+    disposeNativeView() {
+        // console.log(`Pager.ios.disposeNativeView`);
+        this._clearCachedItems();
         this._ios.delegate = null;
         this._ios = null;
-        this.cachedViewControllers = null;
-        super.onUnloaded();
+        super.disposeNativeView();
+    }
+
+    private _clearCachedItems() {
+        if (!this.cachedViewControllers) {
+            return
+        }
+
+        this.cachedViewControllers.forEach(vcRef => {
+            vcRef.clear();
+        });
+
+        this._viewMap.forEach((val, key) => {
+            if (val && val.parent === this) {
+                this._removeView(val);
+            }
+        })
+        this._viewMap.clear();
     }
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
         const oldIndex = this.selectedIndex;
-        this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+
+        //this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+        common.selectedIndexProperty.nativeValueChange(this, newIndex);
+
         this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 
@@ -208,7 +230,7 @@ export class Pager extends common.Pager {
 
     private _initNativeViewPager() {
         let controller = this.getViewController(this.selectedIndex);
-        this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, () => { });
+        this._ios.setViewControllersDirectionAnimatedCompletion(NSArray.arrayWithObject(controller), UIPageViewControllerNavigationDirection.Forward, false, () => { });
     }
 
     private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
@@ -220,15 +242,6 @@ export class Pager extends common.Pager {
         this._ios.setViewControllersDirectionAnimatedCompletion(NSArray.arrayWithObject(vc), direction, true, () => { });
     }
 
-    private prepareView(view: View): void {
-        View.adjustChildLayoutParams(view, this.widthMeasureSpec, this.heightMeasureSpec);
-        let result = View.measureChild(this, view, this.widthMeasureSpec, this.heightMeasureSpec);
-        View.layoutChild(this, view, 0, 0, result.measuredWidth, result.measuredHeight);
-        // console.log(`Pager.prepareView - measureChild = (${result.measuredWidth}x${result.measuredHeight})`);
-        // console.log(`Pager.prepareView - layout: ${this.left}, ${this.top}, ${this.right}, ${this.bottom}`);
-        View.restoreChildOriginalParams(view);
-
-    }
 }
 
 class PagerViewControllerDelegate extends NSObject implements UIPageViewControllerDelegate {
@@ -248,6 +261,7 @@ class PagerViewControllerDelegate extends NSObject implements UIPageViewControll
     }
 
     pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted(pageViewController: UIPageViewController, finished: boolean, previousViewControllers: NSArray<any>, completed: boolean) {
+        // console.log("pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted: " + finished)
         if (finished) {
             let vc = <PagerView>pageViewController.viewControllers[0];
             const owner = this.owner;
@@ -293,6 +307,7 @@ class PagerDataSource extends NSObject implements UIPageViewControllerDataSource
     }
 
     presentationCountForPageViewController(pageViewController: UIPageViewController): number {
+        // console.log("presentationCountForPageViewController: " + this.owner.showNativePageIndicator)
         if (!this.owner || !this.owner.items || !this.owner.showNativePageIndicator) {
             // Hide the native UIPageControl (dots)
             return -1;
@@ -328,23 +343,4 @@ export class PagerView extends UIViewController {
             owner._viewControllerRemovedFromParent(this);
         }
     }
-}
-
-export class PagerItem extends common.PagerItem {
-
-    private _ios: UIView;
-
-    constructor() {
-        super();
-        this._ios = UIView.new();
-    }
-
-    get ios() {
-        return this._ios;
-    }
-
-    get _nativeView() {
-        return this._ios;
-    }
-
 }

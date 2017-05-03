@@ -1,12 +1,12 @@
-import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
-import { View } from "ui/core/view";
+// import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
+// import { PropertyMetadata } from "ui/core/proxy";
+import { View, Property } from "ui/core/view";
 import { ContentView } from "ui/content-view"
 import * as types from "utils/types";
 import * as common from "../common";
 import * as app from "application";
 import { parse } from "ui/builder";
-import { Observable } from "data/observable";
+import { Observable, fromObject } from "data/observable";
 global.moduleMerge(common, exports);
 
 function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, index: number) {
@@ -15,27 +15,23 @@ function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: stri
     return args;
 }
 
-
 declare namespace com.eftimoff {
     export var viewpagertransformers: any;
 }
 
-function onPagesCountChanged(data: PropertyChangeData) {
-    const item = <Pager>data.object;
-    item.updatePagesCount(item.pagesCount);
-}
-
-
 export class Pager extends common.Pager {
+    // Make TypeScript happy
+    public pagesCount: number;
+
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
+
 
     private _android: android.support.v4.view.ViewPager;
     private _pagerAdapter: android.support.v4.view.PagerAdapter;
     private _views: Array<any>;
     private _transformer;
-    _viewMap: Map<any, any>;
-    public static pagesCountProperty = new Property("pagesCount", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.None, onPagesCountChanged));
+    _viewMap: Map<number, View>;
 
     constructor() {
         super();
@@ -53,26 +49,26 @@ export class Pager extends common.Pager {
         return this._android;
     }
 
-    get pagesCount() {
-        return this._getValue(Pager.pagesCountProperty);
-    }
-    set pagesCount(value: number) {
-        this._setValue(Pager.pagesCountProperty, value);
-    }
+    // get pagesCount() {
+    //     return this._getValue(Pager.pagesCountProperty);
+    // }
+    // set pagesCount(value: number) {
+    //     this._setValue(Pager.pagesCountProperty, value);
+    // }
 
     get pagerAdapter() {
         return this._pagerAdapter;
     }
 
-    get _nativeView() {
-        return this._android;
-    }
+    // get _nativeView() {
+    //     return this._android;
+    // }
 
     get _childrenCount(): number {
         return this.items ? this.items.length : 0;
     }
 
-    _createUI() {
+    public createNativeView() : android.support.v4.view.ViewPager {
         const that = new WeakRef(this);
         if (this.disableSwipe) {
             this._android = new TNSViewPager(app.android.context, true); //new android.support.v4.view.ViewPager(this._context);
@@ -110,6 +106,8 @@ export class Pager extends common.Pager {
         if (this.pageSpacing) {
             this._android.setPageMargin(this.pageSpacing);
         }
+
+        return this._android;
     }
 
     refresh() {
@@ -148,7 +146,8 @@ export class Pager extends common.Pager {
         this._viewMap.clear();
         super.onUnloaded();
     }
-    _eachChildView(callback: (child: View) => boolean): void {
+
+    eachChildView(callback: (child: View) => boolean): void {
         if (this._viewMap.size > 0) {
             this._viewMap.forEach((view, key) => {
                 callback(view);
@@ -221,14 +220,24 @@ export class Pager extends common.Pager {
     }
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
-        console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
+        // console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
         if (this.selectedIndex !== newIndex) {
             const oldIndex = this.selectedIndex;
-            this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
+            common.selectedIndexProperty.nativeValueChange(this, newIndex);
+            // this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
             this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
         }
     }
 }
+
+export const pagesCountProperty = new Property<Pager, number>({
+    name: "pagesCount",
+    valueChanged: (pager: Pager, oldValue, newValue) => {
+        pager.updatePagesCount(pager.pagesCount);
+    }
+});
+pagesCountProperty.register(Pager);
+
 
 export class PagerAdapter extends android.support.v4.view.PagerAdapter {
     private owner: Pager;
@@ -240,7 +249,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
 
     instantiateItem(collection: android.view.ViewGroup, position: number) {
         if (this.owner._viewMap.has(position)) {
-            let convertView = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position)._nativeView : null;
+            let convertView = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position).nativeView : null;
             if (convertView) {
                 collection.addView(convertView);
                 return convertView;
@@ -248,25 +257,25 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
 
         }
         let view: any = !types.isNullOrUndefined(this.owner.itemTemplate) ? parse(this.owner.itemTemplate, this.owner) : null;
-        let _args: any = notifyForItemAtIndex(this.owner, view ? view._nativeView : null, view, common.ITEMSLOADING, position)
+        let _args: any = notifyForItemAtIndex(this.owner, view ? view.nativeView : null, view, common.ITEMSLOADING, position)
         view = view || _args.view;
         if (view) {
-            view.bindingContext = new Observable(this.owner._getData(position));
+            view.bindingContext = fromObject(this.owner._getData(position));
             if (!view.parent) {
                 this.owner._addView(view);
             }
             this.owner._viewMap.set(position, view);
         }
 
-        collection.addView(view._nativeView);
-        return view._nativeView;
+        collection.addView(view.nativeView);
+        return view.nativeView;
     }
 
     destroyItem(collection: android.view.ViewGroup, position: number, object) {
         if (this.owner._viewMap.has(position)) {
             let convertView: any = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position) : null;
-            if (convertView && convertView._nativeView) {
-                collection.removeView(convertView._nativeView);
+            if (convertView && convertView.nativeView) {
+                collection.removeView(convertView.nativeView);
                 this.owner._viewMap.delete(position);
             }
         }

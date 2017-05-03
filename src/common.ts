@@ -1,95 +1,106 @@
-import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
-import { PropertyMetadata } from "ui/core/proxy";
-import { View } from "ui/core/view";
+// import { PropertyMetadataSettings, Property, PropertyChangeData } from "ui/core/dependency-observable";
+// import { PropertyMetadata } from "ui/core/proxy";
+import { View, Property, CoercibleProperty, booleanConverter } from "ui/core/view";
 import * as types from "utils/types";
+
 export const ITEMSLOADING = "itemsLoading";
+
 export module knownTemplates {
     export const itemTemplate = "itemTemplate";
 }
+
 export module knownCollections {
     export const items = "items";
 }
 
-function onItemsChanged(data: PropertyChangeData) {
-    const pager = <Pager>data.object;
-    if (data.newValue) {
-        pager.updateNativeItems(data.oldValue, data.newValue);
-    }
-}
-
-function onItemTemplateChanged(data: PropertyChangeData) {
-    const pager = <Pager>data.object;
-    pager.itemTemplateUpdated(data.oldValue, data.newValue);
-};
-
-function onSelectedIndexChanged(data: PropertyChangeData) {
-    const pager = <Pager>data.object;
-    if (pager && pager.items && types.isNumber(data.newValue)) {
-        pager.updateNativeIndex(data.oldValue, data.newValue);
-        pager.notify({ eventName: Pager.selectedIndexChangedEvent, object: pager, oldIndex: data.oldValue, newIndex: data.newValue });
-    }
-}
-
 export abstract class Pager extends View {
+    // Make TS happy
+    public items: any;
+    public selectedIndex: number;
+    public showNativePageIndicator: boolean;
+    public itemTemplate: any;
+
+
     private _disableSwipe: boolean;
     private _pageSpacing: number = 0;
-    public static selectedIndexProperty = new Property("selectedIndex", "Pager", new PropertyMetadata(0, PropertyMetadataSettings.None, null, null, onSelectedIndexChanged));
-    public static itemsProperty = new Property("items", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, null, null, onItemsChanged));
-    public static itemTemplateProperty = new Property("itemTemplate", "Pager", new PropertyMetadata(undefined, PropertyMetadataSettings.AffectsLayout, onItemTemplateChanged));
-    public static showNativePageIndicatorProperty = new Property("showNativePageIndicator", "Pager", new PropertyMetadata(false));
+
     public static selectedIndexChangedEvent = "selectedIndexChanged";
 
     _getData(index: number) {
         let items = <any>this.items;
         return items.getItem ? items.getItem(index) : items[index];
     }
-    get itemTemplate() {
-        return this._getValue(Pager.itemTemplateProperty);
-    }
-    set itemTemplate(value: string) {
-        this._setValue(Pager.itemTemplateProperty, value);
-    }
-    get items() {
-        return this._getValue(Pager.itemsProperty);
-    }
-    set items(value: any) {
-        this._setValue(Pager.itemsProperty, value);
-    }
-    get selectedIndex() {
-        return this._getValue(Pager.selectedIndexProperty);
-    }
-    set selectedIndex(newVal: number | any) {
-        if (types.isNumber(newVal)) {
-            newVal = Math.max(0, newVal);
-            if (this.items) {
-                newVal = Math.min(this.items.length - 1, newVal);
-            }
-            this._setValue(Pager.selectedIndexProperty, newVal);
-        } else {
-            throw new Error("invalid selectedIndex, should be between [0, " + (this.items.length - 1) + "]");
-        }
-    }
+
     get disableSwipe(): boolean {
         return this._disableSwipe;
     }
     set disableSwipe(value: boolean) {
         this._disableSwipe = value;
     }
+
     get pageSpacing() {
         return this._pageSpacing;
     }
     set pageSpacing(value: number) {
         this._pageSpacing = value;
     }
-    get showNativePageIndicator() {
-        return this._getValue(Pager.showNativePageIndicatorProperty);
-    }
-    set showNativePageIndicator(value: boolean) {
-        this._setValue(Pager.showNativePageIndicatorProperty, value);
-    }
+    
     public abstract updateNativeItems(oldItems: Array<View>, newItems: Array<View>): void;
     public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
     public abstract itemTemplateUpdated(oldData, newData): void;
 }
+
+function onItemsChanged(pager: Pager, oldValue, newValue) {
+    if (newValue) {
+        pager.updateNativeItems(oldValue, newValue);
+    }
+}
+
+function onItemTemplateChanged(pager: Pager, oldValue, newValue) {
+    pager.itemTemplateUpdated(oldValue, newValue);
+};
+
+function onSelectedIndexChanged(pager: Pager, oldValue, newValue) {
+    if (pager && pager.items && types.isNumber(newValue)) {
+        pager.updateNativeIndex(oldValue, newValue);
+        pager.notify({ eventName: Pager.selectedIndexChangedEvent, object: pager, oldIndex: oldValue, newIndex: newValue });
+    }
+}
+
+export const selectedIndexProperty = new CoercibleProperty<Pager, number>({
+    name: "selectedIndex",
+    defaultValue: 0,
+    valueChanged: onSelectedIndexChanged,
+    coerceValue: (target, value) => {
+        const max = target.items ? target.items.length - 1 : 0;
+        value = Math.min(value, max);
+        value = Math.max(value, 0);
+        return value;
+    },
+    valueConverter: (v) => parseInt(v)
+});
+selectedIndexProperty.register(Pager);
+
+export const itemsProperty = new Property<Pager, any>({
+    name: "items",
+    affectsLayout: true,
+    valueChanged: onItemsChanged
+});
+itemsProperty.register(Pager);
+
+export const itemTemplateProperty = new Property<Pager, any>({
+    name: "itemTemplate",
+    affectsLayout: true,
+    valueChanged: onItemTemplateChanged
+});
+itemTemplateProperty.register(Pager);
+
+export const showNativePageIndicatorProperty = new Property<Pager, boolean>({
+    name: "showNativePageIndicator",
+    defaultValue: false,
+    valueConverter: booleanConverter,
+});
+showNativePageIndicatorProperty.register(Pager);
+
 
 export abstract class PagerItem extends View { }

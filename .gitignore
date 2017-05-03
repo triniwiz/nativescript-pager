@@ -21,3 +21,5 @@ angular/compiled
 node_modules
 .vscode
 .idea
+.nsbuildinfo
+.nslivesyncinfo
