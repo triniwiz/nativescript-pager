@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pager",
-  "version": "3.0.5",
+  "version": "4.0.0",
   "description": "",
   "main": "pager",
   "nativescript": {
@@ -50,15 +50,20 @@
     "tns-core-modules": "3.0.0 || ^3.0.0-rc.1"
   },
   "devDependencies": {
-    "@angular/core": "~4.0.1",
-    "@angular/compiler": "~4.0.1",
-    "@angular/compiler-cli": "~4.0.1",
-    "@angular/platform-server": "~4.0.1",
+    "@angular/common": "~4.0.0",
+    "@angular/compiler": "~4.0.0",
+    "@angular/compiler-cli": "~4.0.0",
+    "@angular/core": "~4.0.0",
+    "@angular/forms": "~4.0.0",
+    "@angular/http": "~4.0.0",
+    "@angular/platform-browser": "~4.0.0",
+    "@angular/platform-browser-dynamic": "~4.0.0",
+    "@angular/router": "~4.0.0",
     "zone.js": "^0.8.2",
-    "nativescript-angular": "internal-preview",
+    "nativescript-angular": "3.0.0",
     "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
     "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
-    "typescript": "~2.2.2",
+    "typescript": "~2.3.0",
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0",
     "rxjs": "~5.0.1"
