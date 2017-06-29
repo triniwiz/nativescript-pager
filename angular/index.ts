@@ -6,6 +6,7 @@ import { Placeholder } from "ui/placeholder";
 export const ITEMSLOADING = "itemsLoading";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
+import { convertToInt } from "nativescript-angular/common/utils";
 import { LayoutBase } from "ui/layouts/layout-base";
 import { ObservableArray } from "data/observable-array";
 const NG_VIEW = "_ngViewRef";
@@ -102,7 +103,7 @@ export class PagerComponent {
     }
 
     set selectedIndex(value) {
-        this._selectedIndex = parseInt(<any>value);
+        this._selectedIndex = convertToInt(value);
         if (this.viewInitialized) {
             this.pager.selectedIndex = this._selectedIndex;
         }

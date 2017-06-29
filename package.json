@@ -5,8 +5,8 @@
   "main": "pager",
   "nativescript": {
     "platforms": {
-      "android": "3.1.0",
-      "ios": "3.1.0"
+      "android": "3.0.0",
+      "ios": "3.0.0"
     }
   },
   "scripts": {
@@ -47,7 +47,7 @@
   "homepage": "https://github.com/TriniWiz/nativescript-pager",
   "readmeFilename": "README.md",
   "peerDependencies": {
-    "tns-core-modules": "^3.1.0"
+    "tns-core-modules": "3.0.0 || ^3.0.0-rc.1"
   },
   "devDependencies": {
     "@angular/common": "~4.0.0",
@@ -60,9 +60,9 @@
     "@angular/platform-browser-dynamic": "~4.0.0",
     "@angular/router": "~4.0.0",
     "zone.js": "^0.8.2",
-    "nativescript-angular": "3.1.0",
-    "tns-core-modules": "^3.1.0",
-    "tns-platform-declarations": "^3.1.0",
+    "nativescript-angular": "3.0.0",
+    "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
+    "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",
     "typescript": "~2.3.0",
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0",
