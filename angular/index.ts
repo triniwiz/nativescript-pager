@@ -16,7 +16,6 @@ export interface ComponentView {
 };
 
 function getSingleViewRecursive(nodes: Array<any>, nestLevel: number): View {
-    // const actualNodes = nodes.filter((n) => !!n && n.nodeName !== "#text");
     const actualNodes = nodes.filter((n) => !(n as any instanceof CommentNode));
 
     if (actualNodes.length === 0) {
