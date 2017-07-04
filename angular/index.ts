@@ -1,5 +1,5 @@
 import { Component, NgModule, Directive, ElementRef, TemplateRef, IterableDiffers, ChangeDetectorRef, ViewContainerRef, Input, Inject, forwardRef, ChangeDetectionStrategy, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement, ViewClassMeta, NgView } from "nativescript-angular/element-registry";
+import { registerElement, ViewClassMeta, NgView, CommentNode } from "nativescript-angular/element-registry";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { View } from "ui/core/view";
 import { Placeholder } from "ui/placeholder";
@@ -16,7 +16,7 @@ export interface ComponentView {
 };
 
 function getSingleViewRecursive(nodes: Array<any>, nestLevel: number): View {
-    const actualNodes = nodes.filter((n) => !!n && n.nodeName !== "#text");
+    const actualNodes = nodes.filter((n) => !(n as any instanceof CommentNode));
 
     if (actualNodes.length === 0) {
         throw new Error("No suitable views found in list template! Nesting level: " + nestLevel);
@@ -102,7 +102,7 @@ export class PagerComponent {
     }
 
     set selectedIndex(value) {
-        this._selectedIndex = parseInt(<any>value);
+        this._selectedIndex = parseInt(<any>value, 10);
         if (this.viewInitialized) {
             this.pager.selectedIndex = this._selectedIndex;
         }
@@ -182,4 +182,3 @@ export class PagerItemContext {
 })
 export class PagerModule {
 }
-
