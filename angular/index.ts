@@ -1,39 +1,18 @@
 import { Component, NgModule, Directive, ElementRef, TemplateRef, IterableDiffers, ChangeDetectorRef, ViewContainerRef, Input, Inject, forwardRef, ChangeDetectionStrategy, NO_ERRORS_SCHEMA } from "@angular/core";
-import { registerElement, ViewClassMeta, NgView, CommentNode } from "nativescript-angular/element-registry";
-import { NativeScriptFormsModule } from "nativescript-angular/forms";
+import { registerElement, getSingleViewRecursive } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
-import { Placeholder } from "ui/placeholder";
-export const ITEMSLOADING = "itemsLoading";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
-import { LayoutBase } from "ui/layouts/layout-base";
 import { ObservableArray } from "data/observable-array";
+
+export const ITEMSLOADING = "itemsLoading";
 const NG_VIEW = "_ngViewRef";
+
 registerElement("Pager", () => require("../").Pager);
 export interface ComponentView {
     rootNodes: Array<any>;
     destroy(): void;
 };
-
-function getSingleViewRecursive(nodes: Array<any>, nestLevel: number): View {
-    const actualNodes = nodes.filter((n) => !(n as any instanceof CommentNode));
-
-    if (actualNodes.length === 0) {
-        throw new Error("No suitable views found in list template! Nesting level: " + nestLevel);
-    } else if (actualNodes.length > 1) {
-        throw new Error("More than one view found in list template! Nesting level: " + nestLevel);
-    } else {
-        if (actualNodes[0]) {
-            let parentLayout = actualNodes[0].parent;
-            if (parentLayout instanceof LayoutBase) {
-                parentLayout.removeChild(actualNodes[0]);
-            }
-            return actualNodes[0];
-        } else {
-            return getSingleViewRecursive(actualNodes[0].children, nestLevel + 1);
-        }
-    }
-}
 
 export type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 
