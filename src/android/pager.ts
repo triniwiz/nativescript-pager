@@ -222,10 +222,10 @@ export class Pager extends common.Pager {
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
         if (this.selectedIndex !== newIndex) {
-            const oldIndex = this.selectedIndex;
+           // const oldIndex = this.selectedIndex;
             common.selectedIndexProperty.nativeValueChange(this, newIndex);
             // this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
-            this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+           // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
         }
     }
 }

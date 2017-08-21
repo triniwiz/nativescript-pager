@@ -212,12 +212,12 @@ export class Pager extends common.Pager {
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
-        const oldIndex = this.selectedIndex;
+       // const oldIndex = this.selectedIndex;
 
         //this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
         common.selectedIndexProperty.nativeValueChange(this, newIndex);
 
-        this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+       // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 
     _viewControllerRemovedFromParent(controller: PagerView): void {
