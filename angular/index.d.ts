@@ -26,6 +26,7 @@ export declare class PagerComponent {
     items: any;
     selectedIndex: number;
     ngAfterViewInit(): void;
+    ngOnDestroy(): void;
     itemsLoading(args: any): void;
     setupViewRef(viewRef: any, data: any, index: any): void;
     detectChangesOnChild(viewRef: any, index: any): void;

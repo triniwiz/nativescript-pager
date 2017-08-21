@@ -1,4 +1,18 @@
-import { Component, NgModule, Directive, ElementRef, TemplateRef, IterableDiffers, ChangeDetectorRef, ViewContainerRef, Input, Inject, forwardRef, ChangeDetectionStrategy, NO_ERRORS_SCHEMA } from "@angular/core";
+import {
+    Component,
+    NgModule,
+    Directive,
+    ElementRef,
+    TemplateRef,
+    IterableDiffers,
+    ChangeDetectorRef,
+    ViewContainerRef,
+    Input,
+    Inject,
+    forwardRef,
+    ChangeDetectionStrategy,
+    NO_ERRORS_SCHEMA
+} from "@angular/core";
 import { registerElement, getSingleViewRecursive } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
 import { isListLikeIterable } from "nativescript-angular/collection-facade"
@@ -9,29 +23,25 @@ export const ITEMSLOADING = "itemsLoading";
 const NG_VIEW = "_ngViewRef";
 
 registerElement("Pager", () => require("../").Pager);
+
 export interface ComponentView {
     rootNodes: Array<any>;
+
     destroy(): void;
 };
 
 export type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 
 export function getItemViewRoot(viewRef: ComponentView, rootLocator: RootLocator = getSingleViewRecursive): View {
-    const rootView = rootLocator(viewRef.rootNodes, 0);
-    rootView.on("unloaded", () => {
-        viewRef.destroy();
-    });
-    return rootView;
+    return rootLocator(viewRef.rootNodes, 0);
 }
 
 @Directive({
     selector: "[pagerItemTemplate]"
 })
 export class PagerItemTemplate {
-    constructor(
-        @Inject(forwardRef(() => PagerComponent)) private owner: PagerComponent,
-        private templateRef: TemplateRef<any>
-    ) {
+    constructor(@Inject(forwardRef(() => PagerComponent)) private owner: PagerComponent,
+                private templateRef: TemplateRef<any>) {
         owner.itemTemplate = this.templateRef;
     }
 }
@@ -48,19 +58,20 @@ export class PagerComponent {
     private _differ: any;
     private pager;
     itemTemplate: TemplateRef<PagerItemContext>;
-    constructor(
-        el: ElementRef,
-        private _iterableDiffers: IterableDiffers,
-        private _cdr: ChangeDetectorRef,
-        private loader: ViewContainerRef
-    ) {
+
+    constructor(el: ElementRef,
+                private _iterableDiffers: IterableDiffers,
+                private _cdr: ChangeDetectorRef,
+                private loader: ViewContainerRef) {
         this.pager = el.nativeElement;
         this.pager.on(ITEMSLOADING, this.itemsLoading, this);
     }
+
     @Input()
     get items() {
         return this._items;
     }
+
     set items(value: any) {
         this._items = value;
         let needDiffer = true;
@@ -69,7 +80,9 @@ export class PagerComponent {
         }
         if (needDiffer && !this._differ && isListLikeIterable(value)) {
             this._differ = this._iterableDiffers.find(this._items)
-                .create(this._cdr, (_index, item) => { return item; });
+                .create(this._cdr, (_index, item) => {
+                    return item;
+                });
         }
 
         this.pager.items = this._items;
@@ -94,6 +107,10 @@ export class PagerComponent {
         }
     }
 
+    ngOnDestroy() {
+        this.pager.off(ITEMSLOADING, this.itemsLoading, this);
+    }
+
     itemsLoading(args): void {
         if (this.itemTemplate) {
             const data = this.pager._getData(args.index);
@@ -104,6 +121,7 @@ export class PagerComponent {
             this.detectChangesOnChild(viewRef, args.index);
         }
     }
+
     setupViewRef(viewRef, data, index): void {
         if (isBlank(viewRef)) {
             return;
@@ -123,6 +141,7 @@ export class PagerComponent {
         childChangeDetector.markForCheck();
         childChangeDetector.detectChanges();
     }
+
     ngDoCheck(): void {
         if (this._differ) {
             const changes = this._differ.diff(this._items);
@@ -136,13 +155,11 @@ export class PagerComponent {
 }
 
 export class PagerItemContext {
-    constructor(
-        public $implicit?: any,
-        public item?: any,
-        public index?: number,
-        public even?: boolean,
-        public odd?: boolean
-    ) {
+    constructor(public $implicit?: any,
+                public item?: any,
+                public index?: number,
+                public even?: boolean,
+                public odd?: boolean) {
     }
 }
 
