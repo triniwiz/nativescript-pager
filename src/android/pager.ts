@@ -266,7 +266,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
             }
             this.owner._viewMap.set(position, view);
         }
-
+        view.nativeView.setTag(position);
         collection.addView(view.nativeView);
         return view.nativeView;
     }
