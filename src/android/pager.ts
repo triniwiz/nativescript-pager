@@ -68,7 +68,7 @@ export class Pager extends common.Pager {
         return this.items ? this.items.length : 0;
     }
 
-    public createNativeView() : android.support.v4.view.ViewPager {
+    public createNativeView(): android.support.v4.view.ViewPager {
         const that = new WeakRef(this);
         if (this.disableSwipe) {
             this._android = new TNSViewPager(app.android.context, true); //new android.support.v4.view.ViewPager(this._context);
@@ -222,10 +222,10 @@ export class Pager extends common.Pager {
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.selectedIndexUpdatedFromNative -> ${newIndex}`);
         if (this.selectedIndex !== newIndex) {
-           // const oldIndex = this.selectedIndex;
+            // const oldIndex = this.selectedIndex;
             common.selectedIndexProperty.nativeValueChange(this, newIndex);
             // this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
-           // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+            // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
         }
     }
 }
@@ -248,6 +248,10 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     instantiateItem(collection: android.view.ViewGroup, position: number) {
+        if (!this.owner) {
+            return null;
+        }
+
         if (this.owner._viewMap.has(position)) {
             let convertView = this.owner._viewMap.get(position) ? this.owner._viewMap.get(position).nativeView : null;
             if (convertView) {
@@ -266,7 +270,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
             }
             this.owner._viewMap.set(position, view);
         }
-        view.nativeView.setTag(position);
+
         collection.addView(view.nativeView);
         return view.nativeView;
     }
