@@ -82,7 +82,8 @@ export class Pager extends common.Pager {
             onPageSelected: function (position: number) {
                 const owner = that.get();
                 if (owner) {
-                    owner._selectedIndexUpdatedFromNative(position);
+                    // owner._selectedIndexUpdatedFromNative(position);
+                    owner.selectedIndex = position;
                 }
             },
             onPageScrolled: function (position, positionOffset, positionOffsetPixels) {
@@ -110,6 +111,25 @@ export class Pager extends common.Pager {
         return this._android;
     }
 
+    [common.itemsProperty.getDefault](): any {
+        return null;
+    }
+
+    [common.itemsProperty.setNative](value: any) {
+        if (value) {
+            this._pagerAdapter.notifyDataSetChanged();
+            common.selectedIndexProperty.coerce(this);
+        }
+
+    }
+
+    [common.selectedIndexProperty.getDefault](): number {
+        return -1;
+    }
+    [common.selectedIndexProperty.setNative](value: number) {
+        this._android.setCurrentItem(value, true);
+    }
+
     refresh() {
         if (this._android && this._pagerAdapter) {
             // this._android.setAdapter(this._pagerAdapter);
@@ -125,26 +145,31 @@ export class Pager extends common.Pager {
 
     updateNativeIndex(oldIndex: number, newIndex: number) {
         // console.log(`Pager.updateNativeIndex ${newIndex}`);
-        if (this._android) {
-            this._android.setCurrentItem(newIndex);
-        }
+        // if (this._android) {
+        //     this._android.setCurrentItem(newIndex);
+        // }
     }
 
     updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {
         // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
-        if (oldItems) {
-            this._pagerAdapter.notifyDataSetChanged();
-        }
-        if (newItems) {
-            if (this._pagerAdapter) {
-                this._pagerAdapter.notifyDataSetChanged();
-            }
-        }
+        // if (oldItems) {
+        //     this._pagerAdapter.notifyDataSetChanged();
+        // }
+        // if (newItems) {
+        //     if (this._pagerAdapter) {
+        //         this._pagerAdapter.notifyDataSetChanged();
+        //     }
+        // }
     }
 
     onUnloaded() {
-        this._viewMap.clear();
+        this._android.setAdapter(null);
         super.onUnloaded();
+    }
+
+    public disposeNativeView() {
+        this._viewMap.clear();
+        super.disposeNativeView();
     }
 
     eachChildView(callback: (child: View) => boolean): void {

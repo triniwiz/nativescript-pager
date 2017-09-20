@@ -44,7 +44,7 @@ export abstract class Pager extends View {
     set pageSpacing(value: number) {
         this._pageSpacing = value;
     }
-    
+
     public abstract updateNativeItems(oldItems: Array<View>, newItems: Array<View>): void;
     public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
     public abstract itemTemplateUpdated(oldData, newData): void;
@@ -63,13 +63,13 @@ function onItemTemplateChanged(pager: Pager, oldValue, newValue) {
 function onSelectedIndexChanged(pager: Pager, oldValue, newValue) {
     if (pager && pager.items && types.isNumber(newValue)) {
         pager.updateNativeIndex(oldValue, newValue);
-        pager.notify({ eventName: Pager.selectedIndexChangedEvent, object: pager, oldIndex: oldValue, newIndex: newValue });
+        // pager.notify({ eventName: Pager.selectedIndexChangedEvent, object: pager, oldIndex: oldValue, newIndex: newValue });
     }
 }
 
 export const selectedIndexProperty = new CoercibleProperty<Pager, number>({
     name: "selectedIndex",
-    defaultValue: 0,
+    defaultValue: -1,
     valueChanged: onSelectedIndexChanged,
     coerceValue: (target, value) => {
         const max = target.items ? target.items.length - 1 : 0;
@@ -77,7 +77,7 @@ export const selectedIndexProperty = new CoercibleProperty<Pager, number>({
         value = Math.max(value, 0);
         return value;
     },
-    valueConverter: (v) => parseInt(v)
+    valueConverter: (v) => parseInt(v, 10)
 });
 selectedIndexProperty.register(Pager);
 

@@ -33,6 +33,7 @@ export class Pager extends common.Pager {
     private layoutHeight = 0;
     private _viewMap: Map<number, View>;
     private cachedViewControllers: WeakRef<PagerView>[] = [];
+    private delegate: PagerViewControllerDelegate;
     borderRadius: number;
     borderWidth: number;
     borderColor: string;
@@ -49,22 +50,8 @@ export class Pager extends common.Pager {
         this._options = NSDictionary.dictionaryWithObjectsForKeys(nsKey, nsVal);
         this._ios = UIPageViewController.alloc().initWithTransitionStyleNavigationOrientationOptions(this._transformer, this._orientation, this._options);
         this._ios.dataSource = PagerDataSource.initWithOwner(that);
-        this._ios.delegate = PagerViewControllerDelegate.initWithOwner(that);
-        this.nativeView = this._ios.view;
-        const sv = this.nativeView.subviews[1];
-
-        if (this.borderRadius) {
-            sv.layer.cornerRadius = this.borderRadius;
-        }
-        if (this.borderColor) {
-            sv.layer.borderColor = new Color(this.borderColor).ios.CGColor;
-        }
-        if (this.backgroundColor) {
-            sv.layer.backgroundColor = new Color(this.backgroundColor).ios.CGColor;
-        }
-        if (this.borderWidth) {
-            sv.layer.borderWidth = this.borderWidth;
-        }
+        this.delegate = PagerViewControllerDelegate.initWithOwner(that);
+        this.nativeViewProtected = this._ios.view;
     }
 
     get transformer() {
@@ -84,6 +71,16 @@ export class Pager extends common.Pager {
         this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
     }
 
+    [common.selectedIndexProperty.getDefault](): number {
+        return -1;
+    }
+
+    [common.selectedIndexProperty.setNative](value: number) {
+        if (value > -1) {
+            this.selectedIndex = value;
+        }
+    }
+
     updateNativeItems(oldItems: View[], newItems: View[]) {
         // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
         if (oldItems) {
@@ -91,17 +88,21 @@ export class Pager extends common.Pager {
         }
         if (newItems.length > 0) {
             // re-init
+            common.selectedIndexProperty.coerce(this);
             this._initNativeViewPager();
         }
     }
 
-    refresh() { }
+    refresh() {
+        this._initNativeViewPager();
+    }
 
     getViewController(selectedIndex: number): UIViewController {
         // console.log(`Pager.getViewController: ${selectedIndex}`);
         let vc: PagerView;
         if (this.cachedViewControllers[selectedIndex]) {
             // console.log(`- got PagerView from cache`);
+            this.prepareView(this._viewMap.get(selectedIndex))
             vc = this.cachedViewControllers[selectedIndex].get();
         }
         if (!vc) {
@@ -139,6 +140,33 @@ export class Pager extends common.Pager {
         }
 
         return vc;
+    }
+
+    public onLoaded() {
+        super.onLoaded();
+        this._ios.delegate = this.delegate;
+        const sv = this.nativeView.subviews[1];
+        if (this.borderRadius) {
+            sv.layer.cornerRadius = this.borderRadius;
+        }
+        if (this.borderColor) {
+            sv.layer.borderColor = new Color(this.borderColor).ios.CGColor;
+        }
+        if (this.backgroundColor) {
+            sv.layer.backgroundColor = new Color(this.backgroundColor).ios.CGColor;
+        }
+        if (this.borderWidth) {
+            sv.layer.borderWidth = this.borderWidth;
+        }
+    }
+    public onUnloaded() {
+        this._ios.delegate = null;
+        super.onUnloaded();
+    }
+
+    public disposeNativeView() {
+        this._clearCachedItems();
+        super.disposeNativeView();
     }
 
     private prepareView(view: View): void {
@@ -185,14 +213,6 @@ export class Pager extends common.Pager {
         View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
     }
 
-    disposeNativeView() {
-        // console.log(`Pager.ios.disposeNativeView`);
-        this._clearCachedItems();
-        this._ios.delegate = null;
-        this._ios = null;
-        super.disposeNativeView();
-    }
-
     private _clearCachedItems() {
         if (!this.cachedViewControllers) {
             return
@@ -212,12 +232,12 @@ export class Pager extends common.Pager {
 
     _selectedIndexUpdatedFromNative(newIndex: number) {
         // console.log(`Pager.updateSelectedIndexFromNative: -> ${newIndex}`);
-       // const oldIndex = this.selectedIndex;
+        // const oldIndex = this.selectedIndex;
 
         //this._onPropertyChangedFromNative(common.Pager.selectedIndexProperty, newIndex);
         common.selectedIndexProperty.nativeValueChange(this, newIndex);
 
-       // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
+        // this.notify({ eventName: common.Pager.selectedIndexChangedEvent, object: this, oldIndex, newIndex });
     }
 
     _viewControllerRemovedFromParent(controller: PagerView): void {
@@ -266,7 +286,8 @@ class PagerViewControllerDelegate extends NSObject implements UIPageViewControll
             let vc = <PagerView>pageViewController.viewControllers[0];
             const owner = this.owner;
             if (owner) {
-                owner._selectedIndexUpdatedFromNative(vc.tag);
+                // owner._selectedIndexUpdatedFromNative(vc.tag);
+                owner.selectedIndex = vc.tag;
             }
         }
     }
