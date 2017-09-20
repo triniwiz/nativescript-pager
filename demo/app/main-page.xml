@@ -10,7 +10,7 @@
             <Button text="Last" tap="lastPage" />
         </StackLayout>
         
-        <c:Pager items="{{items}}" row="2" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+        <c:Pager selectedIndex="3" items="{{items}}" row="2" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
             <Pager.itemTemplate>
                 <GridLayout rows="auto, *" columns="*" backgroundColor="red">
                     <Label text="{{title}}"/>

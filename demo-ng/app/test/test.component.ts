@@ -9,7 +9,7 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 })
 export class TestComponent implements OnInit {
     numItems;
-    currentPagerIndex = 0;
+    currentPagerIndex = 3;
     latestReceivedIndex = 0;
     items: any;
     @ViewChild('pager') pager: any;
@@ -76,13 +76,13 @@ export class TestComponent implements OnInit {
 
     prevPage() {
         // this.debugObj(this.pager);
-        const newIndex = Math.max(0, this.latestReceivedIndex - 1);
+        const newIndex = Math.max(0, this.currentPagerIndex - 1);
         this.currentPagerIndex = newIndex;
         this.latestReceivedIndex = newIndex;
     }
 
     nextPage() {
-        const newIndex = Math.min(this.numItems - 1, this.latestReceivedIndex + 1);
+        const newIndex = Math.min(this.numItems - 1, this.currentPagerIndex + 1);
         this.currentPagerIndex = newIndex;
         this.latestReceivedIndex = newIndex;
     }

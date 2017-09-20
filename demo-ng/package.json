@@ -6,47 +6,46 @@
   "nativescript": {
     "id": "org.nativescript.demong",
     "tns-android": {
-      "version": "3.1.0"
+      "version": "3.2.0"
     },
     "tns-ios": {
-      "version": "3.1.0"
+      "version": "3.2.0"
     }
   },
   "dependencies": {
-    "@angular/common": "~4.1.2",
-    "@angular/compiler": "~4.1.2",
-    "@angular/core": "~4.1.2",
-    "@angular/forms": "~4.1.2",
-    "@angular/http": "~4.1.2",
-    "@angular/platform-browser": "~4.1.2",
-    "@angular/platform-browser-dynamic": "~4.1.2",
-    "@angular/router": "~4.1.2",
-    "nativescript-angular": "~3.1.0",
-    "nativescript-pager":"file:..",
+    "@angular/common": "~4.2.0",
+    "@angular/compiler": "~4.2.0",
+    "@angular/core": "~4.2.0",
+    "@angular/forms": "~4.2.0",
+    "@angular/http": "~4.2.0",
+    "@angular/platform-browser": "~4.2.0",
+    "@angular/platform-browser-dynamic": "~4.2.0",
+    "@angular/router": "~4.2.0",
+    "nativescript-angular": "~4.2.0",
+    "nativescript-pager": "file:..",
     "nativescript-theme-core": "~1.0.4",
     "reflect-metadata": "~0.1.8",
-    "rxjs": "~5.0.1",
-    "tns-core-modules": "~3.1.0",
+    "rxjs": "^5.0.1",
+    "tns-core-modules": "~3.2.0",
     "zone.js": "~0.8.4"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~4.1.2",
-    "@ngtools/webpack": "1.3.0",
+    "@angular/compiler-cli": "~4.2.0",
+    "@ngtools/webpack": "~1.5.0",
     "babel-traverse": "6.23.1",
     "babel-types": "6.23.0",
     "babylon": "6.15.0",
     "copy-webpack-plugin": "~4.0.1",
-    "extract-text-webpack-plugin": "~2.1.0",
+    "extract-text-webpack-plugin": "~3.0.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-android-snapshot": "^0.*.*",
     "nativescript-dev-typescript": "~0.5.0",
     "nativescript-dev-webpack": "^0.7.1",
     "raw-loader": "~0.5.1",
-    "resolve-url-loader": "~2.0.2",
-    "typescript": "~2.2.0",
-    "webpack": "~2.3.3",
-    "webpack-sources": "~0.2.3",
+    "resolve-url-loader": "~2.1.0",
+    "typescript": "~2.3.4",
+    "webpack": "~3.2.0",
+    "webpack-sources": "~1.0.1",
     "webpack-bundle-analyzer": "^2.8.2"
   },
   "scripts": {

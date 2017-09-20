@@ -1,7 +1,7 @@
 <ActionBar title="My NG Demo" class="action-bar">
 </ActionBar>
 <GridLayout rows="*, auto" columns="*" class="page">
-    <Pager [items]="items | async" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
+    <Pager [items]="items | async" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager">
         <ng-template pagerItemTemplate let-i="index" let-item="item">
             <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
                 <Label [text]="item.title"></Label>
