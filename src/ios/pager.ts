@@ -71,30 +71,20 @@ export class Pager extends common.Pager {
         this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
     }
 
-    [common.selectedIndexProperty.getDefault](): number {
-        return -1;
-    }
-
-    [common.selectedIndexProperty.setNative](value: number) {
-        if (value > -1) {
-            this.selectedIndex = value;
-        }
-    }
-
     updateNativeItems(oldItems: View[], newItems: View[]) {
-        // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
-        if (oldItems) {
-            this._clearCachedItems();
-        }
-        if (newItems.length > 0) {
-            // re-init
-            common.selectedIndexProperty.coerce(this);
-            this._initNativeViewPager();
-        }
+        // // console.log(`Pager.updateNativeItems: ${newItems ? newItems.length : 0}`);
+        // if (oldItems) {
+        //     this._clearCachedItems();
+        // }
+        // if (newItems.length > 0) {
+        //     // re-init
+        //     common.selectedIndexProperty.coerce(this);
+        //     this._initNativeViewPager();
+        // }
     }
 
     refresh() {
-        this._initNativeViewPager();
+        // this._initNativeViewPager();
     }
 
     getViewController(selectedIndex: number): UIViewController {
@@ -142,22 +132,31 @@ export class Pager extends common.Pager {
         return vc;
     }
 
+    [common.itemsProperty.getDefault](): any {
+        return null;
+    }
+
+    [common.itemsProperty.setNative](value: any) {
+        common.selectedIndexProperty.coerce(this);
+    }
+
+
     public onLoaded() {
         super.onLoaded();
         this._ios.delegate = this.delegate;
-        const sv = this.nativeView.subviews[1];
-        if (this.borderRadius) {
-            sv.layer.cornerRadius = this.borderRadius;
-        }
-        if (this.borderColor) {
-            sv.layer.borderColor = new Color(this.borderColor).ios.CGColor;
-        }
-        if (this.backgroundColor) {
-            sv.layer.backgroundColor = new Color(this.backgroundColor).ios.CGColor;
-        }
-        if (this.borderWidth) {
-            sv.layer.borderWidth = this.borderWidth;
-        }
+        // const sv = this.nativeView.subviews[1];
+        // if (this.borderRadius) {
+        //     sv.layer.cornerRadius = this.borderRadius;
+        // }
+        // if (this.borderColor) {
+        //     sv.layer.borderColor = new Color(this.borderColor).ios.CGColor;
+        // }
+        // if (this.backgroundColor) {
+        //     sv.layer.backgroundColor = new Color(this.backgroundColor).ios.CGColor;
+        // }
+        // if (this.borderWidth) {
+        //     sv.layer.borderWidth = this.borderWidth;
+        // }
     }
     public onUnloaded() {
         this._ios.delegate = null;
