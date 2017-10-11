@@ -13,15 +13,15 @@
     }
   },
   "dependencies": {
-    "@angular/common": "~4.2.0",
-    "@angular/compiler": "~4.2.0",
-    "@angular/core": "~4.2.0",
-    "@angular/forms": "~4.2.0",
-    "@angular/http": "~4.2.0",
-    "@angular/platform-browser": "~4.2.0",
-    "@angular/platform-browser-dynamic": "~4.2.0",
-    "@angular/router": "~4.2.0",
-    "nativescript-angular": "~4.2.0",
+    "@angular/common": "~4.4.4",
+    "@angular/compiler": "~4.4.4",
+    "@angular/core": "~4.4.4",
+    "@angular/forms": "~4.4.4",
+    "@angular/http": "~4.4.4",
+    "@angular/platform-browser": "~4.4.4",
+    "@angular/platform-browser-dynamic": "~4.4.4",
+    "@angular/router": "~4.4.4",
+    "nativescript-angular": "~4.4.0",
     "nativescript-pager": "file:..",
     "nativescript-theme-core": "~1.0.4",
     "reflect-metadata": "~0.1.8",
@@ -30,7 +30,7 @@
     "zone.js": "~0.8.4"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~4.2.0",
+    "@angular/compiler-cli": "~4.4.4",
     "@ngtools/webpack": "~1.5.0",
     "babel-traverse": "6.23.1",
     "babel-types": "6.23.0",

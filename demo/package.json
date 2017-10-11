@@ -13,7 +13,7 @@
     }
   },
   "dependencies": {
-    "nativescript-pager": "file:..",
+    "nativescript-pager": "file:///Users/danielgek/WebProjects/nativescript-pager",
     "tns-core-modules": "^3.1.0"
   },
   "devDependencies": {
