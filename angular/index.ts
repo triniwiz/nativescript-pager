@@ -11,11 +11,11 @@ import {
     Inject,
     forwardRef,
     ChangeDetectionStrategy,
-    NO_ERRORS_SCHEMA
+    NO_ERRORS_SCHEMA,
+    ɵisListLikeIterable as isListLikeIterable
 } from "@angular/core";
 import { registerElement, getSingleViewRecursive } from "nativescript-angular/element-registry";
 import { View } from "ui/core/view";
-import { isListLikeIterable } from "nativescript-angular/collection-facade"
 import { isBlank } from "nativescript-angular/lang-facade";
 import { ObservableArray } from "data/observable-array";
 
