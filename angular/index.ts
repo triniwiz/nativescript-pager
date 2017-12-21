@@ -40,8 +40,8 @@ export function getItemViewRoot(viewRef: ComponentView, rootLocator: RootLocator
     selector: "[pagerItemTemplate]"
 })
 export class PagerItemTemplate {
-    constructor(@Inject(forwardRef(() => PagerComponent)) private owner: PagerComponent,
-                private templateRef: TemplateRef<any>) {
+    constructor( @Inject(forwardRef(() => PagerComponent)) private owner: PagerComponent,
+        private templateRef: TemplateRef<any>) {
         owner.itemTemplate = this.templateRef;
     }
 }
@@ -60,9 +60,9 @@ export class PagerComponent {
     itemTemplate: TemplateRef<PagerItemContext>;
 
     constructor(el: ElementRef,
-                private _iterableDiffers: IterableDiffers,
-                private _cdr: ChangeDetectorRef,
-                private loader: ViewContainerRef) {
+        private _iterableDiffers: IterableDiffers,
+        private _cdr: ChangeDetectorRef,
+        private loader: ViewContainerRef) {
         this.pager = el.nativeElement;
         this.pager.on(ITEMSLOADING, this.itemsLoading, this);
     }
@@ -74,17 +74,6 @@ export class PagerComponent {
 
     set items(value: any) {
         this._items = value;
-        let needDiffer = true;
-        if (value instanceof ObservableArray) {
-            needDiffer = false;
-        }
-        if (needDiffer && !this._differ && isListLikeIterable(value)) {
-            this._differ = this._iterableDiffers.find(this._items)
-                .create(this._cdr, (_index, item) => {
-                    return item;
-                });
-        }
-
         this.pager.items = this._items;
     }
 
@@ -156,10 +145,10 @@ export class PagerComponent {
 
 export class PagerItemContext {
     constructor(public $implicit?: any,
-                public item?: any,
-                public index?: number,
-                public even?: boolean,
-                public odd?: boolean) {
+        public item?: any,
+        public index?: number,
+        public even?: boolean,
+        public odd?: boolean) {
     }
 }
 
