@@ -22,8 +22,6 @@ function notifyForItemAtIndex(
   eventName: string,
   index: number
 ) {
-  console.log(index);
-  console.log(owner.selectedIndex);
   let args = {
     eventName: eventName,
     object: owner,

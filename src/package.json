@@ -1,6 +1,6 @@
 {
     "name": "nativescript-pager",
-    "version": "7.0.1",
+    "version": "7.0.2",
     "description": "",
     "main": "pager",
     "typings": "index.d.ts",
@@ -30,7 +30,7 @@
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'",
         "ngc": "npm run ngc.clean && node --max-old-space-size=8192 ./node_modules/.bin/ngc -p tsconfig.aot.json",
         "ngc.clean": "find ./ angular/ -name '*.metadata.json' -delete",
-        "prepublish": "npm run ngc"
+        "prepublishOnly": "npm run ngc"
     },
     "keywords": [
         "NativeScript",
