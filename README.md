@@ -133,4 +133,4 @@ _Angular v4+_
 
 | IOS                                    | Android                                    |
 | ------------------------------------------ | ------------------------------------------ |
-| ![ios](https://i.imgur.com/mvkqXOa.gif) | ![android](https://i.imgur.com/LQgOZ0w.gif) |
+| ![ios](https://i.imgur.com/mvkqXOa.gif) | ![android](https://i.imgur.com/LQgOZ0wh.gif) |
