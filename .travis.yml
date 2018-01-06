@@ -20,7 +20,7 @@ matrix:
         - WebPack="Android"
       jdk: oraclejdk8
       before_install: nvm install 6.10.3
-      script: cd demo-ng && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+      script: cd demo-ng && npm run build.plugin && npm i && tns build android --bundle --env.uglify
     - language: android
       env:
         - BuildAndroid="26"
