@@ -1,0 +1,36 @@
+<ActionBar title="My NG Demo" class="action-bar">
+</ActionBar>
+<GridLayout rows="auto,*,auto" columns="*" class="page">
+
+    <Button text="Single Template" [nsRouterLink]="['/test']" class="btn btn-primary"></Button>
+
+    <Pager row="1" [items]="items | async" [itemTemplateSelector]="templateSelector" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager" backgroundColor="lightsteelblue">
+
+        <ng-template pagerTemplateKey="even" let-i="index" let-item="item">
+            <GridLayout class="pager-item" rows="auto,auto,*" columns="*">
+                <Label text="Even"></Label>
+                <Label row="1" [text]="item.title"></Label>
+                <Image loaded="loadedImage" row="2" [src]="item.image"></Image>
+            </GridLayout>
+        </ng-template>
+
+        <ng-template pagerTemplateKey="odd" let-i="index" let-item="item">
+            <GridLayout class="pager-item" rows="auto,auto,auto,*" columns="*" backgroundColor="white">
+                <Label text="Odd"></Label>
+                <Label row="1" [text]="item.title"></Label>
+                <StackLayout row="2">
+                    <Label [text]="item.image"></Label>
+                </StackLayout>
+                <Image loaded="loadedImage" row="3" [src]="item.image" ></Image>
+            </GridLayout>
+        </ng-template>
+
+    </Pager>
+
+
+    <DockLayout row="2" orientation="horizontal" stretchLastChild="true" class="bg-primary">
+        <Button dock="left" text="Prev" (tap)="prevPage()" class="btn btn-primary"></Button>
+        <Button dock="right" text="Next" (tap)="nextPage()" class="btn btn-primary"></Button>
+        <Button text="nav" [nsRouterLink]="['/dummy']" class="btn btn-primary"></Button>
+    </DockLayout>
+</GridLayout>
