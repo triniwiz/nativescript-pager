@@ -6,12 +6,13 @@ import {
   KeyedTemplate,
   Template
 } from 'tns-core-modules/ui/core/view';
+import { isIOS } from 'tns-core-modules/platform';
 import * as types from 'tns-core-modules/utils/types';
 import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
 import { Label } from 'tns-core-modules/ui/label/label';
 import { write, categories, messageType } from 'tns-core-modules/trace';
 export const ITEMLOADING = 'itemLoading';
-
+export const LOADMOREITEMS = 'loadMoreItems';
 export namespace knownTemplates {
   export const itemTemplate = 'itemTemplate';
 }
@@ -35,6 +36,7 @@ export function PagerError(message: string): void {
 }
 
 export abstract class PagerBase extends View {
+  public disableCache: boolean;
   public items: any;
   public selectedIndex: number;
   public showNativePageIndicator: boolean;
@@ -170,10 +172,21 @@ export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
   name: 'selectedIndex',
   defaultValue: -1,
   valueChanged: onSelectedIndexChanged,
+  affectsLayout: isIOS,
   coerceValue: (target, value) => {
-    const max = target.items ? target.items.length - 1 : 0;
-    value = Math.min(value, max);
-    value = Math.max(value, 0);
+    let items = target.items;
+    if (items) {
+      let max = items.length - 1;
+      if (value < 0) {
+        value = 0;
+      }
+      if (value > max) {
+        value = max;
+      }
+    } else {
+      value = -1;
+    }
+
     return value;
   },
   valueConverter: v => parseInt(v, 10)

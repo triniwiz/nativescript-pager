@@ -1,4 +1,4 @@
-import { ElementRef, TemplateRef, IterableDiffers, ViewContainerRef, AfterContentInit, DoCheck, OnDestroy, EventEmitter, EmbeddedViewRef } from '@angular/core';
+import { ElementRef, TemplateRef, IterableDiffers, ViewContainerRef, AfterContentInit, DoCheck, OnDestroy, EventEmitter, EmbeddedViewRef, AfterViewInit } from '@angular/core';
 import { View } from 'tns-core-modules/ui/core/view';
 import { Pager } from '../';
 export interface ComponentView {
@@ -21,7 +21,7 @@ export interface SetupItemViewArgs {
     index: number;
     context: PagerItemContext;
 }
-export declare class PagerComponent implements DoCheck, OnDestroy, AfterContentInit {
+export declare class PagerComponent implements DoCheck, OnDestroy, AfterViewInit, AfterContentInit {
     private _iterableDiffers;
     private viewInitialized;
     private _selectedIndex;
@@ -35,6 +35,8 @@ export declare class PagerComponent implements DoCheck, OnDestroy, AfterContentI
     itemTemplateQuery: TemplateRef<PagerItemContext>;
     constructor(el: ElementRef, _iterableDiffers: IterableDiffers);
     ngAfterContentInit(): void;
+    selectedIndex: number;
+    ngAfterViewInit(): void;
     readonly nativeElement: Pager;
     items: any;
     private setItemTemplates();

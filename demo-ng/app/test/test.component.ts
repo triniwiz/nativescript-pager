@@ -83,7 +83,7 @@ export class TestComponent implements OnInit {
   }
 
   loadedImage($event) {
-    console.log(`loaded image ${JSON.stringify($event)}`);
+    console.log(`loaded image ${$event}`);
   }
 
   prevPage() {

@@ -12,7 +12,8 @@ import {
   ITEMLOADING,
   itemsProperty,
   selectedIndexProperty,
-  itemTemplatesProperty
+  itemTemplatesProperty,
+  LOADMOREITEMS
 } from './pager.common';
 
 function notifyForItemAtIndex(
@@ -59,7 +60,7 @@ export class Pager extends PagerBase {
   borderWidth: number;
   borderColor: string;
   backgroundColor: any;
-
+  private _isDataDirty: boolean;
   constructor() {
     super();
     this._viewMap = new Map();
@@ -98,7 +99,18 @@ export class Pager extends PagerBase {
   updateNativeItems(oldItems: View[], newItems: View[]) {}
 
   refresh() {
-    this._initNativeViewPager();
+    // this._viewMap.forEach((view, index, array) => {
+    //   if (!(view.bindingContext instanceof Observable)) {
+    //     view.bindingContext = null;
+    //   }
+    // });
+    if (this.isLoaded) {
+      this._initNativeViewPager();
+      this.requestLayout();
+      this._isDataDirty = false;
+    } else {
+      this._isDataDirty = true;
+    }
   }
   [itemTemplatesProperty.getDefault](): KeyedTemplate[] {
     return null;
@@ -114,20 +126,25 @@ export class Pager extends PagerBase {
     this.refresh();
   }
 
-  getViewController(selectedIndex: number, refresh = false): UIViewController {
+  public getViewController(
+    selectedIndex: number,
+    refresh = false
+  ): UIViewController {
     let vc: PagerView;
-    if (refresh) {
+    const cachedCtrl = this.cachedViewControllers[selectedIndex];
+    if (cachedCtrl && refresh) {
+      cachedCtrl.clear();
       this.cachedViewControllers[selectedIndex] = null;
+    } else if (cachedCtrl) {
+      vc = cachedCtrl.get();
     }
-    if (this.cachedViewControllers[selectedIndex]) {
-      this.prepareView(this._viewMap.get(selectedIndex));
-      vc = this.cachedViewControllers[selectedIndex].get();
-    }
+
     if (!vc) {
       vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
       let view: View;
       if (this.items && this.items.length) {
         view = this._getItemTemplate(selectedIndex).createView();
+
         let _args: any = notifyForItemAtIndex(
           this,
           view ? view.nativeView : null,
@@ -135,7 +152,16 @@ export class Pager extends PagerBase {
           ITEMLOADING,
           selectedIndex
         );
+
         view = _args.view || this._getDefaultItemContent(selectedIndex);
+
+        // Proxy containers should not get treated as layouts.
+        // Wrap them in a real layout as well.
+        if (view instanceof ProxyViewContainer) {
+          let sp = new StackLayout();
+          sp.addChild(view);
+          view = sp;
+        }
 
         if (view) {
           this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
@@ -156,7 +182,6 @@ export class Pager extends PagerBase {
       }
       this.prepareView(view);
     }
-
     return vc;
   }
 
@@ -166,31 +191,39 @@ export class Pager extends PagerBase {
 
   [itemsProperty.setNative](value: any[]) {
     selectedIndexProperty.coerce(this);
-    this.refresh();
+    if (this.isLoaded) {
+      this._initNativeViewPager();
+      this.requestLayout();
+      this._isDataDirty = false;
+    } else {
+      this._isDataDirty = true;
+    }
   }
+
+  /*public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+    this.widthMeasureSpec = widthMeasureSpec;
+    const changed = (this as any)._setCurrentMeasureSpecs(
+      widthMeasureSpec,
+      heightMeasureSpec
+    );
+    super.measure(widthMeasureSpec, heightMeasureSpec);
+    if (changed) {
+      if (this._viewMap && this._viewMap.has(this.selectedIndex)) {
+        const view = this._viewMap.get(this.selectedIndex);
+        this.prepareView(view);
+      }
+    }
+  } */
 
   public onLoaded() {
     super.onLoaded();
-    this.refresh();
+    if (this._isDataDirty) {
+      this.refresh();
+    }
     if (!this.disableSwipe) {
       this._ios.dataSource = this.dataSource;
     }
     this._ios.delegate = this.delegate;
-    // const view = this._viewMap.get(this.selectedIndex);
-    // this.prepareView(view);
-    // const sv = this.nativeView.subviews[1];
-    // if (this.borderRadius) {
-    //     sv.layer.cornerRadius = this.borderRadius;
-    // }
-    // if (this.borderColor) {
-    //     sv.layer.borderColor = new Color(this.borderColor).ios.CGColor;
-    // }
-    // if (this.backgroundColor) {
-    //     sv.layer.backgroundColor = new Color(this.backgroundColor).ios.CGColor;
-    // }
-    // if (this.borderWidth) {
-    //     sv.layer.borderWidth = this.borderWidth;
-    // }
   }
 
   get disableSwipe(): boolean {
@@ -207,7 +240,6 @@ export class Pager extends PagerBase {
   }
   public onUnloaded() {
     this._ios.delegate = null;
-    this._ios.dataSource = null;
     super.onUnloaded();
   }
 
@@ -228,7 +260,15 @@ export class Pager extends PagerBase {
         this.heightMeasureSpec
       );
 
-      View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+      // View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+      View.layoutChild(
+        this,
+        view,
+        0,
+        0,
+        result.measuredWidth,
+        result.measuredHeight
+      );
     }
   }
 
@@ -279,8 +319,10 @@ export class Pager extends PagerBase {
     super.onLayout(left, top, right, bottom);
     this.layoutWidth = right - left;
     this.layoutHeight = bottom - top;
-    const view = this._viewMap.get(this.selectedIndex);
-    View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+    if (this._viewMap && this._viewMap.has(this.selectedIndex)) {
+      const view = this._viewMap.get(this.selectedIndex);
+      View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+    }
   }
 
   private _clearCachedItems() {
@@ -289,7 +331,9 @@ export class Pager extends PagerBase {
     }
 
     this.cachedViewControllers.forEach(vcRef => {
-      vcRef.clear();
+      if (vcRef && typeof vcRef.clear === 'function') {
+        vcRef.clear();
+      }
     });
 
     this._viewMap.forEach((val, key) => {
@@ -308,12 +352,11 @@ export class Pager extends PagerBase {
 
   private _initNativeViewPager() {
     let controller = this.getViewController(this.selectedIndex, true);
-    this._ios.setViewControllersDirectionAnimatedCompletion(
-      <any>[controller],
-      UIPageViewControllerNavigationDirection.Forward,
-      false,
-      null
-    );
+    if (this._ios.viewControllers && this._ios.viewControllers.lastObject) {
+      this._ios.viewControllers.lastObject.removeFromParentViewController();
+      this._ios.addChildViewController(controller);
+    }
+    // this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, null);
   }
 
   private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
@@ -328,8 +371,10 @@ export class Pager extends PagerBase {
     this._ios.setViewControllersDirectionAnimatedCompletion(
       NSArray.arrayWithObject(vc),
       direction,
-      true,
-      null
+      this.isLoaded ? true : false,
+      () => {
+        this.prepareView(view);
+      }
     );
   }
 }
@@ -401,14 +446,17 @@ class PagerDataSource extends NSObject
     viewControllerAfter: UIViewController
   ): UIViewController {
     let pos = (<PagerView>viewControllerAfter).tag;
-    if (
-      !this.owner ||
-      !this.owner.items ||
-      this.owner.items.length - 1 === pos
-    ) {
+    if (!this.owner || !this.owner.items) {
+      return null;
+    } else if (this.owner.items.length - 1 === pos) {
+      this.owner.notify({
+        eventName: LOADMOREITEMS,
+        object: this.owner
+      });
       return null;
     } else {
-      return this.owner.getViewController(pos + 1);
+      const newPos = pos + 1;
+      return this.owner.getViewController(newPos);
     }
   }
 
@@ -439,7 +487,6 @@ class PagerDataSource extends NSObject
 export class PagerView extends UIViewController {
   owner: WeakRef<Pager>;
   tag: number;
-
   public static initWithOwnerTag(
     owner: WeakRef<Pager>,
     tag: number

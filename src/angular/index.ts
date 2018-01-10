@@ -22,7 +22,8 @@ import {
   EmbeddedViewRef,
   ContentChild,
   Host,
-  IterableDiffer
+  IterableDiffer,
+  AfterViewInit
 } from '@angular/core';
 import {
   registerElement,
@@ -78,7 +79,8 @@ export interface SetupItemViewArgs {
         </DetachedContainer>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PagerComponent implements DoCheck, OnDestroy, AfterContentInit {
+export class PagerComponent
+  implements DoCheck, OnDestroy, AfterViewInit, AfterContentInit {
   private viewInitialized: any;
   private _selectedIndex: any;
   private _items: any;
@@ -102,6 +104,24 @@ export class PagerComponent implements DoCheck, OnDestroy, AfterContentInit {
     this.setItemTemplates();
   }
 
+  @Input()
+  get selectedIndex(): number {
+    return this._selectedIndex;
+  }
+
+  set selectedIndex(value) {
+    this._selectedIndex = value;
+    if (this.viewInitialized) {
+      this.pager.selectedIndex = this._selectedIndex;
+    }
+  }
+
+  ngAfterViewInit() {
+    this.viewInitialized = true;
+    if (!isBlank(this._selectedIndex)) {
+      this.pager.selectedIndex = this._selectedIndex;
+    }
+  }
   get nativeElement() {
     return this.pager;
   }

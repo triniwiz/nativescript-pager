@@ -9,7 +9,8 @@ import {
   selectedIndexProperty,
   itemsProperty,
   ITEMLOADING,
-  itemTemplatesProperty
+  itemTemplatesProperty,
+  LOADMOREITEMS
 } from './pager.common';
 import * as common from './pager.common';
 global.moduleMerge(common, exports);
@@ -296,6 +297,9 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
   instantiateItem(collection: android.view.ViewGroup, position: number) {
     if (!this.owner) {
       return null;
+    }
+    if (position === this.owner.items.length - 1) {
+      this.owner.notify({ eventName: LOADMOREITEMS, object: this.owner });
     }
     const template = this.owner._getItemTemplate(position);
     if (this.owner._viewMap.has(position)) {
