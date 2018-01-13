@@ -1,6 +1,6 @@
 {
     "name": "nativescript-pager",
-    "version": "7.0.4",
+    "version": "7.0.6",
     "description": "",
     "main": "pager",
     "typings": "index.d.ts",

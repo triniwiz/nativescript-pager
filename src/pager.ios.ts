@@ -354,9 +354,13 @@ export class Pager extends PagerBase {
     let controller = this.getViewController(this.selectedIndex, true);
     if (this._ios.viewControllers && this._ios.viewControllers.lastObject) {
       this._ios.viewControllers.lastObject.removeFromParentViewController();
-      this._ios.addChildViewController(controller);
     }
-    // this._ios.setViewControllersDirectionAnimatedCompletion(<any>[controller], UIPageViewControllerNavigationDirection.Forward, false, null);
+    this._ios.setViewControllersDirectionAnimatedCompletion(
+      <any>[controller],
+      UIPageViewControllerNavigationDirection.Forward,
+      false,
+      null
+    );
   }
 
   private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
@@ -412,6 +416,7 @@ class PagerViewControllerDelegate extends NSObject
     }
   }
 }
+
 class PagerDataSource extends NSObject
   implements UIPageViewControllerDataSource {
   private _owner: WeakRef<Pager>;
