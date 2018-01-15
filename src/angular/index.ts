@@ -80,7 +80,7 @@ export interface SetupItemViewArgs {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PagerComponent
-  implements DoCheck, OnDestroy, AfterViewInit, AfterContentInit {
+  implements DoCheck, OnDestroy, AfterViewInit {
   private viewInitialized: any;
   private _selectedIndex: any;
   private _items: any;
@@ -98,10 +98,6 @@ export class PagerComponent
   constructor(el: ElementRef, private _iterableDiffers: IterableDiffers) {
     this.pager = el.nativeElement;
     this.pager.on(ITEMLOADING, this.onItemLoading, this);
-  }
-
-  public ngAfterContentInit() {
-    this.setItemTemplates();
   }
 
   @Input()
@@ -144,6 +140,8 @@ export class PagerComponent
           return item;
         });
     }
+
+    this.setItemTemplates();
     this.pager.items = this._items;
   }
 

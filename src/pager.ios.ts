@@ -99,11 +99,11 @@ export class Pager extends PagerBase {
   updateNativeItems(oldItems: View[], newItems: View[]) {}
 
   refresh() {
-    // this._viewMap.forEach((view, index, array) => {
-    //   if (!(view.bindingContext instanceof Observable)) {
-    //     view.bindingContext = null;
-    //   }
-    // });
+    this._viewMap.forEach((view, index, array) => {
+      if (!(view.bindingContext instanceof Observable)) {
+        view.bindingContext = null;
+      }
+    });
     if (this.isLoaded) {
       this._initNativeViewPager();
       this.requestLayout();
@@ -352,9 +352,6 @@ export class Pager extends PagerBase {
 
   private _initNativeViewPager() {
     let controller = this.getViewController(this.selectedIndex, true);
-    if (this._ios.viewControllers && this._ios.viewControllers.lastObject) {
-      this._ios.viewControllers.lastObject.removeFromParentViewController();
-    }
     this._ios.setViewControllersDirectionAnimatedCompletion(
       <any>[controller],
       UIPageViewControllerNavigationDirection.Forward,
@@ -376,9 +373,7 @@ export class Pager extends PagerBase {
       NSArray.arrayWithObject(vc),
       direction,
       this.isLoaded ? true : false,
-      () => {
-        this.prepareView(view);
-      }
+      null
     );
   }
 }
