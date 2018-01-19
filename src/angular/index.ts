@@ -271,7 +271,7 @@ export class PagerComponent
       const changes = this._differ.diff(this._items);
       if (changes) {
         PagerLog('ngDoCheck() - refresh');
-        this.pager.refresh();
+        this.pager.refresh(false);
       }
     }
   }

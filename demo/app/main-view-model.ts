@@ -1,11 +1,12 @@
 import { Observable } from 'tns-core-modules/data/observable';
+import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 
 export class HelloWorldModel extends Observable {
-  items: any[];
+  items: ObservableArray<any>;
   index: number;
   constructor() {
     super();
-    this.items = [
+    this.items = new ObservableArray([
       { title: 'Slide 1', image: '~/images/Hulk_(comics_character).png' },
       {
         title: 'Slide 2',
@@ -50,6 +51,6 @@ export class HelloWorldModel extends Observable {
         image:
           'https://images.unsplash.com/photo-1474861644511-0f2775ae97cc?auto=format&fit=crop&w=2391&q=80'
       }
-    ];
+    ]);
   }
 }

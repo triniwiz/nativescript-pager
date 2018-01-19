@@ -145,7 +145,7 @@ export class Pager extends PagerBase {
     }
   }
 
-  refresh() {
+  refresh(hardReset = false) {
     if (this._android && this._pagerAdapter) {
       this._pagerAdapter.notifyDataSetChanged();
     }

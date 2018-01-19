@@ -11,6 +11,7 @@ export class TestComponent implements OnInit {
   numItems;
   currentPagerIndex = 5;
   latestReceivedIndex = 0;
+  selectedIndex = 5;
   items: any;
   @ViewChild('pager') pager: ElementRef;
   // tslint:disable-next-line:semicolon
@@ -87,22 +88,30 @@ export class TestComponent implements OnInit {
   }
 
   prevPage() {
-    const newIndex = Math.max(0, this.currentPagerIndex - 1);
+    const newIndex = Math.max(0, this.selectedIndex - 1);
     this.currentPagerIndex = newIndex;
-    this.latestReceivedIndex = newIndex;
     this.pager.nativeElement.selectedIndex = newIndex;
   }
 
   nextPage() {
     const newIndex = Math.min(this.numItems - 1, this.currentPagerIndex + 1);
     this.currentPagerIndex = newIndex;
-    this.latestReceivedIndex = newIndex;
     this.pager.nativeElement.selectedIndex = newIndex;
   }
 
   onIndexChanged($event) {
     debugObj($event);
-    this.latestReceivedIndex = $event.newIndex;
+    this.latestReceivedIndex = $event.value;
+    this.selectedIndex = $event.value;
+    if (($event.value + 2) % 3 === 0) {
+      let newItems = (<BehaviorSubject<any>>this.items).value;
+      newItems.push({
+        title: 'Slide ' + (newItems.length + 1),
+        image: `https://robohash.org/${newItems.length + 1}.png`
+      });
+      this.items.next(newItems);
+      this.numItems = this.items.value.length;
+    }
   }
 
   pageChanged(index: number) {

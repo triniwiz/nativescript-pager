@@ -48,7 +48,7 @@ export abstract class PagerBase extends View {
 
   // TODO: get rid of such hacks.
   public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
-  abstract refresh(): void;
+  abstract refresh(hardReset: boolean): void;
   private _itemTemplateSelector: (
     item: any,
     index: number,
@@ -213,7 +213,7 @@ export const itemTemplateProperty = new Property<PagerBase, string | Template>({
   name: 'itemTemplate',
   affectsLayout: true,
   valueChanged: target => {
-    target.refresh();
+    target.refresh(true);
   }
 });
 itemTemplateProperty.register(PagerBase);

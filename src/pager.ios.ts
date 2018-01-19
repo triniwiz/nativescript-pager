@@ -98,14 +98,16 @@ export class Pager extends PagerBase {
 
   updateNativeItems(oldItems: View[], newItems: View[]) {}
 
-  refresh() {
+  refresh(hardReset = false) {
     this._viewMap.forEach((view, index, array) => {
       if (!(view.bindingContext instanceof Observable)) {
         view.bindingContext = null;
       }
     });
     if (this.isLoaded) {
-      this._initNativeViewPager();
+      if (hardReset) {
+        this._initNativeViewPager();
+      }
       this.requestLayout();
       this._isDataDirty = false;
     } else {
@@ -123,7 +125,7 @@ export class Pager extends PagerBase {
     if (value) {
       this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
     }
-    this.refresh();
+    this.refresh(true);
   }
 
   public getViewController(
@@ -191,13 +193,7 @@ export class Pager extends PagerBase {
 
   [itemsProperty.setNative](value: any[]) {
     selectedIndexProperty.coerce(this);
-    if (this.isLoaded) {
-      this._initNativeViewPager();
-      this.requestLayout();
-      this._isDataDirty = false;
-    } else {
-      this._isDataDirty = true;
-    }
+    this.refresh(true);
   }
 
   /*public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
@@ -217,9 +213,7 @@ export class Pager extends PagerBase {
 
   public onLoaded() {
     super.onLoaded();
-    if (this._isDataDirty) {
-      this.refresh();
-    }
+    this.refresh(false);
     if (!this.disableSwipe) {
       this._ios.dataSource = this.dataSource;
     }

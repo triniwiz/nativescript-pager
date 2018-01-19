@@ -48,14 +48,29 @@ export function lastPage() {
 
 export function loadedImage($event: any) {
   const image: Image = $event.object;
-  console.log(
-    `onLoaded: ${image}, size: ${JSON.stringify(image.getActualSize())}}`
-  );
+  // console.log(
+  //   `onLoaded: ${image}, size: ${JSON.stringify(image.getActualSize())}}`
+  // );
+}
+
+export function itemTemplateSelector(
+  item: any,
+  index: number,
+  items: Array<any>
+) {
+  return index % 2 === 0 ? 'even' : 'odd';
 }
 
 export function selectedIndexChange(event: any) {
   const selectedIndex = event.object.get('selectedIndex');
-  vm.set('index', event.object.get('selectedIndex'));
+  // vm.set('index', event.object.get('selectedIndex'));
+
+  if ((selectedIndex + 2) % 3 === 0) {
+    vm.items.push({
+      title: 'Slide ' + (vm.items.length + 1),
+      image: 'https://source.unsplash.com/random'
+    });
+  }
 }
 export function navigate() {
   topmost().navigate('dummy-page');
