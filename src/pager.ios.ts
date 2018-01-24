@@ -34,6 +34,7 @@ function notifyForItemAtIndex(
   owner.notify(args);
   return args;
 }
+const main_queue = dispatch_get_current_queue();
 import * as common from './pager.common';
 global.moduleMerge(common, exports);
 
@@ -47,7 +48,7 @@ export class Pager extends PagerBase {
   private _orientation: UIPageViewControllerNavigationOrientation;
   private _options: NSDictionary<any, any>;
   private _transformer;
-  private _ios: UIPageViewController;
+  _ios: UIPageViewController;
   private widthMeasureSpec: number;
   private heightMeasureSpec: number;
   private layoutWidth = 0;
@@ -213,7 +214,7 @@ export class Pager extends PagerBase {
 
   public onLoaded() {
     super.onLoaded();
-    this.refresh(false);
+    this.refresh(true);
     if (!this.disableSwipe) {
       this._ios.dataSource = this.dataSource;
     }
@@ -345,13 +346,17 @@ export class Pager extends PagerBase {
   }
 
   private _initNativeViewPager() {
+    const ref = new WeakRef(this);
     let controller = this.getViewController(this.selectedIndex, true);
-    this._ios.setViewControllersDirectionAnimatedCompletion(
-      <any>[controller],
-      UIPageViewControllerNavigationDirection.Forward,
-      false,
-      null
-    );
+    dispatch_async(main_queue, () => {
+      const owner = ref.get();
+      owner._ios.setViewControllersDirectionAnimatedCompletion(
+        <any>[controller],
+        UIPageViewControllerNavigationDirection.Forward,
+        false,
+        null
+      );
+    });
   }
 
   private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
@@ -363,12 +368,17 @@ export class Pager extends PagerBase {
       fromIndex < toIndex
         ? UIPageViewControllerNavigationDirection.Forward
         : UIPageViewControllerNavigationDirection.Reverse;
-    this._ios.setViewControllersDirectionAnimatedCompletion(
-      NSArray.arrayWithObject(vc),
-      direction,
-      this.isLoaded ? true : false,
-      null
-    );
+
+    const ref = new WeakRef(this);
+    dispatch_async(main_queue, () => {
+      const owner = ref.get();
+      owner._ios.setViewControllersDirectionAnimatedCompletion(
+        NSArray.arrayWithObject(vc),
+        direction,
+        false,
+        null
+      );
+    });
   }
 }
 
@@ -400,7 +410,7 @@ class PagerViewControllerDelegate extends NSObject
       let vc = <PagerView>pageViewController.viewControllers[0];
       const owner = this.owner;
       if (owner) {
-        selectedIndexProperty.nativeValueChange(owner, vc.tag);
+        owner.selectedIndex = vc.tag;
       }
     }
   }

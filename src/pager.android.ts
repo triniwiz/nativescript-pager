@@ -81,9 +81,7 @@ export class Pager extends PagerBase {
         onPageSelected: function(position: number) {
           const owner = that.get();
           if (owner) {
-            // owner._selectedIndexUpdatedFromNative(position);
-            // owner.selectedIndex = position;
-            selectedIndexProperty.nativeValueChange(owner, position);
+            owner.selectedIndex = position;
           }
         },
         onPageScrolled: function(
