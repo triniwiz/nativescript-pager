@@ -133,7 +133,7 @@ export class Pager extends PagerBase {
   [itemsProperty.setNative](value: any) {
     if (value) {
       selectedIndexProperty.coerce(this);
-      this._pagerAdapter.notifyDataSetChanged();
+      this.refresh();
     }
   }
 
@@ -158,7 +158,9 @@ export class Pager extends PagerBase {
 
   updateNativeIndex(oldIndex: number, newIndex: number) {}
 
-  updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {}
+  updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {
+    this.refresh();
+  }
 
   onUnloaded() {
     // this._android.setAdapter(null);
