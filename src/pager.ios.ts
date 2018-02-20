@@ -100,6 +100,9 @@ export class Pager extends PagerBase {
   updateNativeItems(oldItems: View[], newItems: View[]) {}
 
   refresh(hardReset = false) {
+    if (!types.isBoolean(hardReset)) {
+      hardReset = false;
+    }
     this._viewMap.forEach((view, index, array) => {
       if (!(view.bindingContext instanceof Observable)) {
         view.bindingContext = null;

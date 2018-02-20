@@ -6,11 +6,17 @@ import {
   KeyedTemplate,
   Template
 } from 'tns-core-modules/ui/core/view';
+import {} from 'tns-core-modules/';
 import { isIOS } from 'tns-core-modules/platform';
 import * as types from 'tns-core-modules/utils/types';
 import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
-import { Label } from 'tns-core-modules/ui/label/label';
+import { Label } from 'tns-core-modules/ui/label';
 import { write, categories, messageType } from 'tns-core-modules/trace';
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import {
+  addWeakEventListener,
+  removeWeakEventListener
+} from 'tns-core-modules/ui/core/weak-event-listener';
 export const ITEMLOADING = 'itemLoading';
 export const LOADMOREITEMS = 'loadMoreItems';
 export namespace knownTemplates {
@@ -48,7 +54,7 @@ export abstract class PagerBase extends View {
 
   // TODO: get rid of such hacks.
   public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
-  abstract refresh(hardReset: boolean): void;
+  abstract refresh(hardReset): void;
   private _itemTemplateSelector: (
     item: any,
     index: number,
@@ -153,6 +159,25 @@ export abstract class PagerBase extends View {
 }
 
 function onItemsChanged(pager: PagerBase, oldValue, newValue) {
+  if (oldValue instanceof ObservableArray) {
+    removeWeakEventListener(
+      oldValue,
+      ObservableArray.changeEvent,
+      pager.refresh,
+      pager
+    );
+  }
+
+  if (newValue instanceof ObservableArray) {
+    addWeakEventListener(
+      newValue,
+      ObservableArray.changeEvent,
+      pager.refresh,
+      pager
+    );
+  }
+
+  pager.refresh(false);
   if (newValue) {
     pager.updateNativeItems(oldValue, newValue);
   }

@@ -79,8 +79,7 @@ export interface SetupItemViewArgs {
         </DetachedContainer>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PagerComponent
-  implements DoCheck, OnDestroy, AfterViewInit {
+export class PagerComponent implements DoCheck, OnDestroy, AfterViewInit {
   private viewInitialized: any;
   private _selectedIndex: any;
   private _items: any;
@@ -181,6 +180,7 @@ export class PagerComponent
     };
 
     this._templateMap.set(key, keyedTemplate);
+    this.setItemTemplates();
   }
 
   ngOnDestroy() {
