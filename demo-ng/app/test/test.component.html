@@ -1,9 +1,9 @@
 <ActionBar title="My NG Demo" class="action-bar">
 </ActionBar>
-<GridLayout rows="auto,*, auto" columns="*" class="page">
+<GridLayout rows="auto,auto,*, auto" columns="*" class="page">
     <Button text="Multi Template" [nsRouterLink]="['/multi']" class="btn btn-primary"></Button>
-
-    <Pager row="1" [items]="items | async" #pager selectedIndex="5" (selectedIndexChange)="onIndexChanged($event)" class="pager"
+    <Button row="1" text="Pager With List" [nsRouterLink]="['/list']" class="btn btn-primary"></Button>
+    <Pager row="2" [items]="items | async" #pager selectedIndex="5" (selectedIndexChange)="onIndexChanged($event)" class="pager"
         backgroundColor="lightsteelblue">
         <ng-template let-i="index" let-item="item">
             <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
@@ -13,7 +13,7 @@
         </ng-template>
     </Pager>
 
-    <DockLayout row="2" orientation="horizontal" stretchLastChild="true" class="bg-primary">
+    <DockLayout row="3" orientation="horizontal" stretchLastChild="true" class="bg-primary">
         <Button dock="left" text="Prev" (tap)="prevPage()" class="btn btn-primary"></Button>
         <Button dock="right" text="Next" (tap)="nextPage()" class="btn btn-primary"></Button>
         <Button text="nav" [nsRouterLink]="['/dummy']" class="btn btn-primary"></Button>

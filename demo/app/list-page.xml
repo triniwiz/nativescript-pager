@@ -1,0 +1,28 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo" loaded="pageLoaded"
+    xmlns:c="nativescript-pager">
+    <GridLayout rows="auto,auto ,auto,auto, *, auto" columns="*" id="sl">
+        <Label text="Pager With List"/>
+        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+            <Pager.itemTemplate>
+                <GridLayout rows="auto,*">
+                    <GridLayout height="40%" rows="auto,auto,*" columns="*">
+                        <Label text="Even"/>
+                        <Label row="1" text="{{title}}"/>
+                        <Image loaded="loadedImage" row="2" src="{{image}}"/>
+                    </GridLayout>
+                    <ListView items="{{items}}" row="1">
+                        <ListView.itemTemplate>
+                            <GridLayout rows="auto,auto,*" columns="*">
+                                <Label text="Even"/>
+                                <Label row="1" text="{{title}}"/>
+                                <Image loaded="loadedImage" row="2" src="{{image}}"/>
+                            </GridLayout>
+                        </ListView.itemTemplate>
+                    </ListView>
+                </GridLayout>
+            </Pager.itemTemplate>
+        </c:Pager>
+        <Button text="Nav" row="5" tap="navigate"/>
+    </GridLayout>
+</Page>

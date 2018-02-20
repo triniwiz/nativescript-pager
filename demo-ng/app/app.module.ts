@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { TestComponent } from './test/test.component';
 import { DummyComponent } from './dummy.component';
 import { TestMultiComponent } from './test-multi/test-multi.component';
+import { TestListComponent } from './test-list/test-list.component';
 
 @NgModule({
   bootstrap: [AppComponent],
@@ -23,6 +24,7 @@ import { TestMultiComponent } from './test-multi/test-multi.component';
     AppComponent,
     TestComponent,
     TestMultiComponent,
+    TestListComponent,
     DummyComponent
   ],
   providers: [],

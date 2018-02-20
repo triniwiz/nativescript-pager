@@ -18,6 +18,10 @@ export function navigatingTo(args: NavigatedData) {
   if (!args.isBackNavigation) {
     page.bindingContext = vm;
   }
+  setTimeout(() => {
+    const pager: Pager = <Pager>page.getViewById('pager');
+    pager.refresh(false);
+  }, 5000);
 }
 export function pageLoaded() {}
 
@@ -26,7 +30,7 @@ export function toggleSwipe() {
   pager.disableSwipe = !pager.disableSwipe;
 }
 
-export function goToPagerWithLists(event) {
+export function goToPagerWithList(event) {
   topmost().navigate('list-page');
 }
 

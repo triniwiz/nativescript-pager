@@ -1,11 +1,22 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-export class HelloWorldModel extends Observable {
-  items: ObservableArray<any>;
-  index: number;
+@Component({
+  selector: 'ns-test-list',
+  moduleId: module.id,
+  templateUrl: './test-list.component.html',
+  styleUrls: ['test-list.component.css']
+})
+export class TestListComponent implements OnInit {
+  numItems;
+  currentPagerIndex = 5;
+  latestReceivedIndex = 0;
+  items: any;
   private _items = [
-    { title: 'Slide 1', image: '~/images/Hulk_(comics_character).png' },
+    {
+      title: 'Slide 1',
+      image: '~/images/Hulk_(comics_character).png'
+    },
     {
       title: 'Slide 2',
       image:
@@ -50,9 +61,14 @@ export class HelloWorldModel extends Observable {
         'https://images.unsplash.com/photo-1474861644511-0f2775ae97cc?auto=format&fit=crop&w=2391&q=80'
     }
   ];
+  @ViewChild('pager') pager: any;
+  // tslint:disable-next-line:semicolon
+  public templateSelector = (item: any, index: number, items: any) => {
+    return index % 2 === 0 ? 'even' : 'odd';
+  }
+
   constructor() {
-    super();
-    this.items = new ObservableArray([
+    this.items = new BehaviorSubject([
       {
         title: 'Slide 1',
         image: '~/images/Hulk_(comics_character).png',
@@ -111,5 +127,50 @@ export class HelloWorldModel extends Observable {
         items: this._items
       }
     ]);
+    this.numItems = this.items.value.length;
+  }
+  ngOnInit(): void {
+    // setTimeout(() => {
+    //   let newItems = (<BehaviorSubject<any>>this.items).value;
+    //   newItems.push({
+    //     title: 'Slide 11',
+    //     image: '~/images/Hulk_(comics_character).png'
+    //   });
+    //   this.items.next(newItems);
+    //   this.numItems = this.items.value.length;
+    // }, 1000);
+  }
+
+  loadedImage($event) {
+    console.log(`loaded image ${JSON.stringify($event)}`);
+  }
+
+  prevPage() {
+    // this.debugObj(this.pager);
+    const newIndex = Math.max(0, this.currentPagerIndex - 1);
+    this.currentPagerIndex = newIndex;
+    this.latestReceivedIndex = newIndex;
+  }
+
+  nextPage() {
+    const newIndex = Math.min(this.numItems - 1, this.currentPagerIndex + 1);
+    this.currentPagerIndex = newIndex;
+    this.latestReceivedIndex = newIndex;
+  }
+
+  onIndexChanged($event) {
+    debugObj($event);
+    this.latestReceivedIndex = $event.newIndex;
+  }
+
+  pageChanged(index: number) {
+    console.log(`pageChanged ${JSON.stringify(index)}`);
+    debugObj(index);
+  }
+}
+
+function debugObj(obj: any) {
+  for (const key of Object.keys(obj)) {
+    console.log(`${key} = ${obj[key]}`);
   }
 }
