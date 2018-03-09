@@ -1,12 +1,13 @@
 .vscode
 .idea
 .DS_Store
+!src/vue/index.js
+!src/demo-vue/*.js
 *.js
 *.js.map
 *.log
 *.metadata.json
 src/*.d.ts
-!src/vue/index.js
 !src/index.d.ts
 !src/references.d.ts
 !src/scripts/*.js
