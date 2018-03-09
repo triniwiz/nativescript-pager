@@ -1,7 +1,7 @@
 .vscode
 .idea
 .DS_Store
-!src/vue/index.js
+!src/vue/*.js
 !src/demo-vue/*.js
 *.js
 *.js.map

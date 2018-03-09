@@ -1,6 +1,5 @@
 import Vue from 'nativescript-vue'
 import Pager from 'nativescript-pager/vue'
-Vue.use(Pager)
 
 // Could not get vue-router working
 // Not finding the HelloWorld component
@@ -10,11 +9,11 @@ const Master = {
       <ActionBar title="Master" />
       <StackLayout>
         <Button text="To Details directly" @tap="$navigateTo(detailPage)" />
-        <Pager for="item in items">
+        <Pager :items="items" +alias="item">
         <v-template>
-            <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
-                <Label [text]="item.title"></Label>
-                <Image (loaded)="loadedImage($event)" stretch="fill" row="1" [src]="item.image"></Image>
+            <GridLayout class="pager-item" rows="auto, *" columns="*">
+                <Label :text="item.title"></Label>
+                <Image  stretch="fill" row="1" :src="item.image"></Image>
             </GridLayout>
         </v-template>
         </Pager>

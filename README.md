@@ -50,6 +50,24 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
     </c:Pager>
 ```
 
+#Vue
+
+```js
+import Pager from 'nativescript-pager/vue'
+```
+```html
+<template>
+<Pager :items="items" +alias="item">
+        <v-template>
+            <GridLayout class="pager-item" rows="auto, *" columns="*">
+                <Label :text="item.title"></Label>
+                <Image  stretch="fill" row="1" :src="item.image"></Image>
+            </GridLayout>
+        </v-template>
+        </Pager>
+</template>
+```
+
 ### Angular
 
 ```js
