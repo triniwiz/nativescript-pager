@@ -50,7 +50,7 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
     </c:Pager>
 ```
 
-#Vue
+### Vue
 
 ```js
 import Pager from 'nativescript-pager/vue'
