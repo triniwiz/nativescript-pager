@@ -1,6 +1,7 @@
 import Vue from 'nativescript-vue'
 import Pager from 'nativescript-pager/vue'
 
+Vue.use(Pager)
 // Could not get vue-router working
 // Not finding the HelloWorld component
 const Master = {
@@ -10,12 +11,12 @@ const Master = {
       <StackLayout>
         <Button text="To Details directly" @tap="$navigateTo(detailPage)" />
         <Pager :items="items" +alias="item">
-        <v-template>
-            <GridLayout class="pager-item" rows="auto, *" columns="*">
-                <Label :text="item.title"></Label>
-                <Image  stretch="fill" row="1" :src="item.image"></Image>
-            </GridLayout>
-        </v-template>
+          <v-template>
+              <GridLayout class="pager-item" rows="auto, *" columns="*">
+                  <Label :text="item.title"></Label>
+                  <Image  stretch="fill" row="1" :src="item.image"></Image>
+              </GridLayout>
+          </v-template>
         </Pager>
       </StackLayout>
     </Page>
@@ -91,7 +92,7 @@ const Detail = {
 //import './styles.scss';
 
 // Uncommment the following to see NativeScript-Vue output logs
-//Vue.config.silent = false;
+Vue.config.silent = false;
 
 
 new Vue({

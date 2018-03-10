@@ -52,19 +52,24 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
 
 ### Vue
 
+
 ```js
+import Vue from 'nativescript-vue'
 import Pager from 'nativescript-pager/vue'
+
+Vue.use(Pager)
 ```
+
 ```html
 <template>
-<Pager :items="items" +alias="item">
+    <Pager :items="items" +alias="item">
         <v-template>
             <GridLayout class="pager-item" rows="auto, *" columns="*">
-                <Label :text="item.title"></Label>
-                <Image  stretch="fill" row="1" :src="item.image"></Image>
+                <Label :text="item.title" />
+                <Image  stretch="fill" row="1" :src="item.image" />
             </GridLayout>
         </v-template>
-        </Pager>
+    </Pager>
 </template>
 ```
 
