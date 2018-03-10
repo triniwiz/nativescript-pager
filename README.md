@@ -62,11 +62,17 @@ Vue.use(Pager)
 
 ```html
 <template>
-    <Pager :items="items" +alias="item">
+    <Pager for="item in items">
         <v-template>
             <GridLayout class="pager-item" rows="auto, *" columns="*">
                 <Label :text="item.title" />
                 <Image  stretch="fill" row="1" :src="item.image" />
+            </GridLayout>
+        </v-template>
+        <v-template if="$odd">
+            <GridLayout class="pager-item" rows="auto, *" columns="*">
+                <Image  stretch="fill" :src="item.image" />
+                <Label :text="item.title" row="1"/>
             </GridLayout>
         </v-template>
     </Pager>

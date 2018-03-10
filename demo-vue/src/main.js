@@ -10,7 +10,7 @@ const Master = {
       <ActionBar title="Master" />
       <StackLayout>
         <Button text="To Details directly" @tap="$navigateTo(detailPage)" />
-        <Pager :items="items" +alias="item">
+        <Pager for="item in items">
           <v-template>
               <GridLayout class="pager-item" rows="auto, *" columns="*">
                   <Label :text="item.title"></Label>
