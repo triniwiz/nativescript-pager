@@ -183,8 +183,8 @@ export class Pager extends PagerBase {
         this._addView(view);
       }
       const nativeView = view.nativeView as UIView;
-      if (!nativeView.superview) {
-        vc.view.addSubview(view.nativeView);
+      if (nativeView && !nativeView.superview) {
+        vc.view.addSubview(nativeView);
       }
       this.prepareView(view);
     }
