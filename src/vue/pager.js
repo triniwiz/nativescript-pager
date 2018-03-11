@@ -1,6 +1,9 @@
-export default function pager(Vue) {
+module.exports = function pager(Vue) {
   return {
-    // name: 'pager',
+    model: {
+      prop: 'selectedIndex',
+      event: 'selectedIndexChange'
+    },
     props: {
       items: {
         type: Array,
@@ -11,7 +14,12 @@ export default function pager(Vue) {
         default: 'item'
       },
       '+index': {
-        type: String
+        type: String,
+        default: '$index'
+      },
+      selectedIndex: {
+        type: Number,
+        default: 0
       }
     },
     template: `
@@ -20,7 +28,7 @@ export default function pager(Vue) {
       :items="items"
       v-bind="$attrs"
       v-on="listeners"
-      @itemTap="onItemTap"
+      :selectedIndex="selectedIndex"
       @itemLoading="onItemLoading">
       <slot />
     </native-pager>
@@ -34,12 +42,12 @@ export default function pager(Vue) {
         deep: true
       }
     },
-    created() {
-      // we need to remove the itemTap handler from a clone of the $listeners
-      // object because we are emitting the event ourselves with added data.
-      const listeners = Object.assign({}, this.$listeners);
-      delete listeners.itemTap;
-      this.listeners = listeners;
+    computed: {
+      listeners() {
+        return Object.assign({}, this.$listeners, {
+          selectedIndexChange: this.onSelectedIndexChange
+        })
+      }
     },
     mounted() {
       this.getItemContext = (item, index) =>
@@ -57,12 +65,6 @@ export default function pager(Vue) {
       );
     },
     methods: {
-      onItemTap(args) {
-        this.$emit(
-          'itemTap',
-          Object.assign({item: this.items[args.index]}, args)
-        );
-      },
       onItemLoading(args) {
         const index = args.index;
         const items = args.object.items;
@@ -74,6 +76,9 @@ export default function pager(Vue) {
         const context = this.getItemContext(currentItem, index);
         const oldVnode = args.view && args.view[Vue.VUE_VIEW];
         args.view = this.$templates.patchTemplate(name, context, oldVnode);
+      },
+      onSelectedIndexChange({value}) {
+        this.$emit('selectedIndexChange', value)
       }
     }
   };
@@ -81,7 +86,7 @@ export default function pager(Vue) {
   function getItemContext(item, index, alias, index_alias) {
     return {
       [alias]: item,
-      [index_alias || '$index']: index,
+      [index_alias]: index,
       $even: index % 2 === 0,
       $odd: index % 2 !== 0
     };
