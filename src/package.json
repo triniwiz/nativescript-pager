@@ -1,7 +1,7 @@
 {
     "name": "nativescript-pager",
-    "version": "7.1.2",
-    "description": "",
+    "version": "7.1.3",
+    "description": "A Carousel/Pager plugin for NativeScript",
     "main": "pager",
     "typings": "index.d.ts",
     "nativescript": {
@@ -36,7 +36,17 @@
         "NativeScript",
         "JavaScript",
         "Android",
-        "iOS"
+        "iOS",
+        "pager",
+        "viewpager",
+        "UIPageViewController",
+        "slides",
+        "Carousel",
+        "ng",
+        "angular",
+        "vue",
+        "nativescript-angular",
+        "nativescript-vue"
     ],
     "author": {
         "name": "Osei Fortune",
