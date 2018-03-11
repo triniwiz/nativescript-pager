@@ -53,7 +53,7 @@ export class Pager extends PagerBase {
   private heightMeasureSpec: number;
   private layoutWidth = 0;
   private layoutHeight = 0;
-  private _viewMap: Map<number, View>;
+  private _viewMap: Map<string, View>;
   private cachedViewControllers: WeakRef<PagerView>[] = [];
   private delegate: PagerViewControllerDelegate;
   private dataSource: PagerDataSource;
@@ -148,8 +148,10 @@ export class Pager extends PagerBase {
     if (!vc) {
       vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
       let view: View;
+      let template;
       if (this.items && this.items.length) {
-        view = this._getItemTemplate(selectedIndex).createView();
+        template = this._getItemTemplate(selectedIndex);
+        view = template.createView();
 
         let _args: any = notifyForItemAtIndex(
           this,
@@ -172,7 +174,7 @@ export class Pager extends PagerBase {
         if (view) {
           this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
           this._prepareItem(view, selectedIndex);
-          this._viewMap.set(selectedIndex, view);
+          this._viewMap.set(`${selectedIndex}-${template.key}`, view);
         }
       } else {
         let lbl = new Label();
@@ -279,8 +281,8 @@ export class Pager extends PagerBase {
     const widthMode = layout.getMeasureSpecMode(widthMeasureSpec);
     const height = layout.getMeasureSpecSize(heightMeasureSpec);
     const heightMode = layout.getMeasureSpecMode(heightMeasureSpec);
-
-    const view = this._viewMap.get(this.selectedIndex);
+    const template = this._getItemTemplate(this.selectedIndex);
+    const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
     let { measuredWidth, measuredHeight } = View.measureChild(
       this,
       view,
@@ -317,8 +319,9 @@ export class Pager extends PagerBase {
     super.onLayout(left, top, right, bottom);
     this.layoutWidth = right - left;
     this.layoutHeight = bottom - top;
-    if (this._viewMap && this._viewMap.has(this.selectedIndex)) {
-      const view = this._viewMap.get(this.selectedIndex);
+    const template = this._getItemTemplate(this.selectedIndex);
+    if (this._viewMap && this._viewMap.has(`${this.selectedIndex}-${template.key}`)) {
+      const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
       View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
     }
   }
@@ -364,7 +367,8 @@ export class Pager extends PagerBase {
 
   private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
     const vc = this.getViewController(toIndex);
-    const view = this._viewMap.get(toIndex);
+    const template = this._getItemTemplate(toIndex);
+    const view = this._viewMap.get(`${toIndex}-${template.key}`);
     this.prepareView(view);
     if (!vc) throw new Error('no VC');
     const direction =

@@ -47,7 +47,7 @@ export class Pager extends PagerBase {
   private _views: Array<any>;
   private _transformer;
   private _pageListener: any;
-  _viewMap: Map<number, View>;
+  _viewMap: Map<string, View>;
   public _realizedItems = new Map<android.view.View, View>();
   public _realizedTemplates = new Map<string, Map<android.view.View, View>>();
   constructor() {
@@ -294,6 +294,9 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
     return global.__native(this);
   }
 
+  getItemPosition(obj) {
+    return android.support.v4.view.PagerAdapter.POSITION_NONE;
+  }
   instantiateItem(collection: android.view.ViewGroup, position: number) {
     if (!this.owner) {
       return null;
@@ -302,8 +305,8 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
       this.owner.notify({ eventName: LOADMOREITEMS, object: this.owner });
     }
     const template = this.owner._getItemTemplate(position);
-    if (this.owner._viewMap.has(position)) {
-      const cachedView = this.owner._viewMap.get(position);
+    if (this.owner._viewMap.has(`${position}-${template.key}`)) {
+      const cachedView = this.owner._viewMap.get(`${position}-${template.key}`);
       let convertView = cachedView ? cachedView.nativeView : null;
       if (convertView) {
         // collection.addView(convertView);
@@ -324,7 +327,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
       if (!view.parent) {
         this.owner._addView(view);
       }
-      this.owner._viewMap.set(position, view);
+      this.owner._viewMap.set(`${position}-${template.key}`, view);
     }
 
     collection.addView(view.nativeView);
@@ -332,13 +335,16 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
   }
 
   destroyItem(collection: android.view.ViewGroup, position: number, object) {
-    if (this.owner._viewMap.has(position)) {
-      let convertView: any = this.owner._viewMap.get(position)
-        ? this.owner._viewMap.get(position)
+    const template = this.owner._getItemTemplate(position);
+    if (this.owner._viewMap.has(`${position}-${template.key}`)) {
+      let convertView: any = this.owner._viewMap.get(
+        `${position}-${template.key}`
+      )
+        ? this.owner._viewMap.get(`${position}-${template.key}`)
         : null;
       if (convertView && convertView.nativeView) {
         collection.removeView(convertView.nativeView);
-        this.owner._viewMap.delete(position);
+        this.owner._viewMap.delete(`${position}-${template.key}`);
       }
     }
   }
