@@ -40,6 +40,7 @@ declare namespace com.eftimoff {
 export class Pager extends PagerBase {
   _androidViewId: number;
   disableSwipe: boolean;
+  private _disableAnimation: boolean;
   public pagesCount: number;
   public itemTemplateUpdated(oldData: any, newData: any): void {}
   private _android: android.support.v4.view.ViewPager;
@@ -118,6 +119,13 @@ export class Pager extends PagerBase {
     this.nativeView.setId(this._androidViewId);
   }
 
+  get disableAnimation(): boolean {
+    return this._disableAnimation;
+  }
+  set disableAnimation(value: boolean) {
+    this._disableAnimation = value;
+  }
+
   get pagerAdapter() {
     return this._pagerAdapter;
   }
@@ -139,7 +147,7 @@ export class Pager extends PagerBase {
 
   [selectedIndexProperty.setNative](value: number) {
     if (this._android) {
-      this._android.setCurrentItem(value, true);
+      this._android.setCurrentItem(value, this.disableAnimation);
     }
   }
 

@@ -43,7 +43,8 @@ declare const ADTransitioningDelegate,
   ADTransitioningViewController;
 
 export class Pager extends PagerBase {
-  private _disableSwipe: any;
+  private _disableSwipe: boolean;
+  private _disableAnimation: boolean;
   public itemTemplateUpdated(oldData: any, newData: any): void {}
   private _orientation: UIPageViewControllerNavigationOrientation;
   private _options: NSDictionary<any, any>;
@@ -238,6 +239,14 @@ export class Pager extends PagerBase {
       this._ios.dataSource = this.dataSource;
     }
   }
+
+  get disableAnimation(): boolean {
+    return this._disableAnimation;
+  }
+  set disableAnimation(value: boolean) {
+    this._disableAnimation = value;
+  }
+
   public onUnloaded() {
     this._ios.delegate = null;
     super.onUnloaded();
@@ -260,7 +269,6 @@ export class Pager extends PagerBase {
         this.heightMeasureSpec
       );
 
-      // View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
       View.layoutChild(
         this,
         view,
@@ -273,7 +281,7 @@ export class Pager extends PagerBase {
   }
 
   public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-    // console.log(`Pager.onMeasure: ${widthMeasureSpec}x${heightMeasureSpec}`)
+
     this.widthMeasureSpec = widthMeasureSpec;
     this.heightMeasureSpec = heightMeasureSpec;
 
@@ -289,7 +297,6 @@ export class Pager extends PagerBase {
       widthMeasureSpec,
       heightMeasureSpec
     );
-    // console.log(`Pager.onMeasure - measureChild = (${measuredWidth}x${measuredHeight})`);
 
     // Check against our minimum sizes
     measuredWidth = Math.max(measuredWidth, this.effectiveMinWidth);
@@ -382,7 +389,7 @@ export class Pager extends PagerBase {
       owner._ios.setViewControllersDirectionAnimatedCompletion(
         NSArray.arrayWithObject(vc),
         direction,
-        false,
+        this.disableAnimation,
         null
       );
     });

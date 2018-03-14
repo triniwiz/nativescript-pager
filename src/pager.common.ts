@@ -142,7 +142,8 @@ export abstract class PagerBase extends View {
 
   abstract get disableSwipe(): boolean;
   abstract set disableSwipe(value: boolean);
-
+  abstract get disableAnimation(): boolean;
+  abstract set disableAnimation(value: boolean);
   get pageSpacing() {
     return this._pageSpacing;
   }
