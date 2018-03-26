@@ -216,11 +216,11 @@ export class Pager extends PagerBase {
 
     public onLoaded() {
         super.onLoaded();
-        this.refresh(true);
         if (!this.disableSwipe) {
             this._ios.dataSource = this.dataSource;
         }
         this._ios.delegate = this.delegate;
+        this.refresh(true);
     }
 
     get disableSwipe(): boolean {
