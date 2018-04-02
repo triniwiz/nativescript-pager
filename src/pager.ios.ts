@@ -129,7 +129,9 @@ export class Pager extends PagerBase {
         if (value) {
             this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
         }
-        this.refresh(true);
+        if (this.isLoaded) {
+            this.refresh(true);
+        }
     }
 
     public getViewController(selectedIndex: number, refresh = false): UIViewController {
@@ -196,23 +198,10 @@ export class Pager extends PagerBase {
 
     [itemsProperty.setNative](value: any[]) {
         selectedIndexProperty.coerce(this);
-        this.refresh(true);
-    }
-
-    /*public measure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-      this.widthMeasureSpec = widthMeasureSpec;
-      const changed = (this as any)._setCurrentMeasureSpecs(
-        widthMeasureSpec,
-        heightMeasureSpec
-      );
-      super.measure(widthMeasureSpec, heightMeasureSpec);
-      if (changed) {
-        if (this._viewMap && this._viewMap.has(this.selectedIndex)) {
-          const view = this._viewMap.get(this.selectedIndex);
-          this.prepareView(view);
+        if (this.isLoaded) {
+            this.refresh(true);
         }
-      }
-    } */
+    }
 
     public onLoaded() {
         super.onLoaded();
@@ -384,7 +373,7 @@ export class Pager extends PagerBase {
             owner._ios.setViewControllersDirectionAnimatedCompletion(
                 NSArray.arrayWithObject(vc),
                 direction,
-                !this.disableAnimation,
+                this.isLoaded ? !this.disableAnimation : false,
                 null
             );
         });
