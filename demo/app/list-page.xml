@@ -4,7 +4,7 @@
     <GridLayout rows="auto,auto ,auto,auto, *, auto" columns="*" id="sl">
         <Label text="Pager With List"/>
         <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
-            <Pager.itemTemplate>
+            <c:Pager.itemTemplate>
                 <GridLayout rows="auto,*">
                     <GridLayout height="40%" rows="auto,auto,*" columns="*">
                         <Label text="Even"/>
@@ -21,7 +21,7 @@
                         </ListView.itemTemplate>
                     </ListView>
                 </GridLayout>
-            </Pager.itemTemplate>
+            </c:Pager.itemTemplate>
         </c:Pager>
         <Button text="Nav" row="5" tap="navigate"/>
     </GridLayout>
