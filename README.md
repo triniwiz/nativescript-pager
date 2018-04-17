@@ -9,15 +9,15 @@
 
 #### NativeScript 4x
 
-* `tns plugin add nativescript-downloader`
+* `tns plugin add nativescript-pager`
 
 #### NativeScript 3x
 
-* `tns plugin add nativescript-downloader@7.2.3`
+* `tns plugin add nativescript-pager@7.2.3`
 
 #### NativeScript 2x
 
-* `tns plugin add nativescript-downloader@2.3.0`
+* `tns plugin add nativescript-pager@2.3.0`
 
 ## Usage
 
