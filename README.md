@@ -6,7 +6,18 @@
 
 ## Install
 
-`tns plugin add nativescript-pager`
+
+#### NativeScript 4x
+
+* `tns plugin add nativescript-downloader`
+
+#### NativeScript 3x
+
+* `tns plugin add nativescript-downloader@7.2.3`
+
+#### NativeScript 2x
+
+* `tns plugin add nativescript-downloader@2.3.0`
 
 ## Usage
 
