@@ -425,7 +425,9 @@ class PagerDataSource extends NSObject
 
     pageViewControllerViewControllerBeforeViewController(pageViewController: UIPageViewController, viewControllerBefore: UIViewController): UIViewController {
         let pos = (<PagerView>viewControllerBefore).tag;
-        if (pos === 0 || !this.owner || !this.owner.items) {
+        if(!this.owner.canGoLeft){
+            return null;
+        } else if (pos === 0 || !this.owner || !this.owner.items) {
             return null;
         } else {
             let prev = pos - 1;
@@ -436,7 +438,9 @@ class PagerDataSource extends NSObject
     pageViewControllerViewControllerAfterViewController(pageViewController: UIPageViewController,
                                                         viewControllerAfter: UIViewController): UIViewController {
         let pos = (<PagerView>viewControllerAfter).tag;
-        if (!this.owner || !this.owner.items) {
+        if(!this.owner.canGoRight){
+            return null;
+        } else if (!this.owner || !this.owner.items) {
             return null;
         } else if (this.owner.items.length - 1 === pos) {
             this.owner.notify({

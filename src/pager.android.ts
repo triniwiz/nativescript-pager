@@ -391,8 +391,19 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         const disableSwipe = owner.disableSwipe;
         if (disableSwipe) {
             return false;
+        } else if ((!owner.canGoLeft || !owner.canGoRight)
+                    && ev.getAction() == android.view.MotionEvent.ACTION_MOVE) {
+            if (TNSViewPager.isSwipeRight(ev)) {
+                return owner.canGoLeft ? super.onTouchEvent(ev) : false;
+            } else {
+                return owner.canGoRight ? super.onTouchEvent(ev) : false;
+            }
         } else {
             return super.onTouchEvent(ev);
         }
+    }
+
+    private static isSwipeRight(ev): boolean {
+        return ev.getX(0) > ev.getHistoricalX(ev.getHistorySize() - 1);
     }
 }

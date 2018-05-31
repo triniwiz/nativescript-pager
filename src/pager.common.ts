@@ -45,6 +45,8 @@ export abstract class PagerBase extends View {
     public showNativePageIndicator: boolean;
     public itemTemplate: string | Template;
     public itemTemplates: string | Array<KeyedTemplate>;
+    public canGoRight = true;
+    public canGoLeft = true;
     private _pageSpacing: number = 0;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
@@ -253,3 +255,21 @@ export const itemTemplatesProperty = new Property<PagerBase,
     }
 });
 itemTemplatesProperty.register(PagerBase);
+
+export const canGoRightProperty = new Property<PagerBase, boolean>(
+    {
+        name: 'canGoRight',
+        defaultValue: false,
+        valueConverter: booleanConverter
+    }
+);
+canGoRightProperty.register(PagerBase);
+
+export const canGoLeftProperty = new Property<PagerBase, boolean>(
+    {
+        name: 'canGoLeft',
+        defaultValue: false,
+        valueConverter: booleanConverter
+    }
+);
+canGoLeftProperty.register(PagerBase);
