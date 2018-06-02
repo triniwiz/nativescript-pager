@@ -369,6 +369,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
 export class TNSViewPager extends android.support.v4.view.ViewPager {
     disableSwipe: boolean;
     owner: WeakRef<Pager>;
+    lastEventX;
 
     constructor(context, owner: WeakRef<Pager>) {
         super(context);
@@ -378,32 +379,29 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
 
     onInterceptTouchEvent(ev) {
         const owner = this.owner.get();
-        const disableSwipe = owner.disableSwipe;
-        if (disableSwipe) {
-            return false;
-        } else {
-            return super.onInterceptTouchEvent(ev);
-        }
+        return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
     }
 
     onTouchEvent(ev) {
         const owner = this.owner.get();
-        const disableSwipe = owner.disableSwipe;
-        if (disableSwipe) {
-            return false;
-        } else if ((!owner.canGoLeft || !owner.canGoRight)
-                    && ev.getAction() == android.view.MotionEvent.ACTION_MOVE) {
-            if (TNSViewPager.isSwipeRight(ev)) {
-                return owner.canGoLeft ? super.onTouchEvent(ev) : false;
-            } else {
-                return owner.canGoRight ? super.onTouchEvent(ev) : false;
-            }
-        } else {
-            return super.onTouchEvent(ev);
-        }
+        return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
     }
 
-    private static isSwipeRight(ev): boolean {
-        return ev.getX(0) > ev.getHistoricalX(ev.getHistorySize() - 1);
+
+    isSwipeAllowed(owner, ev){
+        if(owner.disableSwipe) return false;
+
+        const action = ev.getAction();
+        if(action === android.view.MotionEvent.ACTION_DOWN) {
+            this.lastEventX = ev.getX();
+            return true;
+        }
+
+        if(action === android.view.MotionEvent.ACTION_MOVE) {
+            const dx = ev.getX() - this.lastEventX;
+            return dx > 0 ? owner.canGoLeft : owner.canGoRight;
+        }
+
+        return true;
     }
 }
