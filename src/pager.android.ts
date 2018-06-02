@@ -369,6 +369,7 @@ export class PagerAdapter extends android.support.v4.view.PagerAdapter {
 export class TNSViewPager extends android.support.v4.view.ViewPager {
     disableSwipe: boolean;
     owner: WeakRef<Pager>;
+    lastEventX;
 
     constructor(context, owner: WeakRef<Pager>) {
         super(context);
@@ -378,21 +379,29 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
 
     onInterceptTouchEvent(ev) {
         const owner = this.owner.get();
-        const disableSwipe = owner.disableSwipe;
-        if (disableSwipe) {
-            return false;
-        } else {
-            return super.onInterceptTouchEvent(ev);
-        }
+        return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
     }
 
     onTouchEvent(ev) {
         const owner = this.owner.get();
-        const disableSwipe = owner.disableSwipe;
-        if (disableSwipe) {
-            return false;
-        } else {
-            return super.onTouchEvent(ev);
+        return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
+    }
+
+
+    isSwipeAllowed(owner, ev){
+        if(owner.disableSwipe) return false;
+
+        const action = ev.getAction();
+        if(action === android.view.MotionEvent.ACTION_DOWN) {
+            this.lastEventX = ev.getX();
+            return true;
         }
+
+        if(action === android.view.MotionEvent.ACTION_MOVE) {
+            const dx = ev.getX() - this.lastEventX;
+            return dx > 0 ? owner.canGoLeft : owner.canGoRight;
+        }
+
+        return true;
     }
 }
