@@ -109,7 +109,7 @@ import { PagerModule } from "nativescript-pager/angular";
 _Angular v2_
 
 ```html
-<Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
+<Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager">
         <template let-i="index" let-item="item">
             <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
                 <Label  [text]="item.title"></Label>
@@ -122,7 +122,7 @@ _Angular v2_
 _Angular v4+_
 
 ```html
-<Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChanged)="onIndexChanged($event)" class="pager">
+<Pager [items]="items" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager">
         <ng-template let-i="index" let-item="item">
             <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
                 <Label  [text]="item.title"></Label>
