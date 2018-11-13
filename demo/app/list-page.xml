@@ -9,14 +9,14 @@
                     <GridLayout height="40%" rows="auto,auto,*" columns="*">
                         <Label text="Even"/>
                         <Label row="1" text="{{title}}"/>
-                        <Image loaded="loadedImage" row="2" src="{{image}}"/>
+                        <Image height="300" loaded="loadedImage" row="2" src="{{image}}"/>
                     </GridLayout>
                     <ListView items="{{items}}" row="1">
                         <ListView.itemTemplate>
                             <GridLayout rows="auto,auto,*" columns="*">
                                 <Label text="Even"/>
                                 <Label row="1" text="{{title}}"/>
-                                <Image loaded="loadedImage" row="2" src="{{image}}"/>
+                                <Image height="300" loaded="loadedImage" row="2" src="{{image}}"/>
                             </GridLayout>
                         </ListView.itemTemplate>
                     </ListView>

@@ -18,11 +18,20 @@
             "*": [
                 "./node_modules/tns-core-modules/*",
                 "./node_modules/*"
+            ],
+            "~/*": [
+                "app/*"
             ]
         }
     },
+    "include": [
+        "../src",
+        "**/*"
+    ],
     "exclude": [
         "node_modules",
-        "platforms"
+        "platforms",
+        "../src/node_modules",
+        "**/*.spec.ts"
     ]
 }

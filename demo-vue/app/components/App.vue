@@ -1,34 +1,31 @@
-import Vue from 'nativescript-vue'
-import Pager from 'nativescript-pager/vue'
-
-Vue.use(Pager)
-// Could not get vue-router working
-// Not finding the HelloWorld component
-const Master = {
-  template: `
+<template>
     <Page>
-      <ActionBar title="Master" />
+        <ActionBar title="Welcome to NativeScript-Vue!"/>
+          <ActionBar title="Master" />
       <StackLayout>
         <Button text="To Details directly" @tap="$navigateTo(detailPage)" />
         <Pager for="item in items">
           <v-template>
               <GridLayout class="pager-item" rows="auto, *" columns="*">
                   <Label :text="item.title"></Label>
-                  <Image  stretch="fill" row="1" :src="item.image"></Image>
+                  <Image stretch="fill" row="1" :src="item.image"></Image>
               </GridLayout>
           </v-template>
         </Pager>
       </StackLayout>
     </Page>
-  `,
+</template>
 
+<script>
+import Detail from './Detail'
+export default {
   data() {
     return {
       detailPage: Detail,
       items:[
         {
           title: 'Slide 1',
-          image: '~/images/Hulk_(comics_character).png'
+          image: '~/assets/images/Hulk_(comics_character).png'
         },
         {
           title: 'Slide 2',
@@ -61,7 +58,7 @@ const Master = {
         },
         {
           title: 'Slide 8',
-          image: 'http://cartoonbros.com/wp-content/uploads/2016/05/Batman-4.jpg'
+          image: 'https://i.ytimg.com/vi/DKbkKJWYT6E/maxresdefault.jpg'
         },
         {
           title: 'Slide 9',
@@ -77,24 +74,18 @@ const Master = {
     };
   }
 };
+</script>
 
-const Detail = {
-  template: `
-    <Page>
-      <ActionBar title="Detail"/>
-      <StackLayout>
-        <Label text="Details.." />
-      </StackLayout>
-    </Page>
-  `
-};
+<style scoped>
+ActionBar {
+  background-color: #53ba82;
+  color: #ffffff;
+}
 
-//import './styles.scss';
-
-// Uncommment the following to see NativeScript-Vue output logs
-Vue.config.silent = false;
-
-
-new Vue({
-  render: h => h(Master)
-}).$start();
+.message {
+  vertical-align: center;
+  text-align: center;
+  font-size: 20;
+  color: #333333;
+}
+</style>

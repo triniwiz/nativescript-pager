@@ -24,10 +24,18 @@
         "paths": {
             "*": [
                 "./node_modules/*"
+            ],
+            "~/*": [
+                "app/*"
             ]
         }
     },
+    "include": [
+        "../src",
+        "**/*"
+    ],
     "exclude": [
+        "../src/node_modules",
         "node_modules",
         "platforms"
     ],

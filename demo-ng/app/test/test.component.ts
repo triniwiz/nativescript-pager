@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'ns-test',
@@ -105,6 +105,14 @@ export class TestComponent implements OnInit {
     this.selectedIndex = $event.value;
     if (($event.value + 2) % 3 === 0) {
       let newItems = (<BehaviorSubject<any>>this.items).value;
+      newItems.push({
+        title: 'Slide ' + (newItems.length + 1),
+        image: `https://robohash.org/${newItems.length + 1}.png`
+      });
+      newItems.push({
+        title: 'Slide ' + (newItems.length + 1),
+        image: `https://robohash.org/${newItems.length + 1}.png`
+      });
       newItems.push({
         title: 'Slide ' + (newItems.length + 1),
         image: `https://robohash.org/${newItems.length + 1}.png`

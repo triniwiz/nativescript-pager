@@ -23,7 +23,7 @@ module.exports = function pager(Vue) {
       }
     },
     template: `
-    <native-pager
+    <NativePager
       ref="pagerView"
       :items="items"
       v-bind="$attrs"
@@ -31,7 +31,7 @@ module.exports = function pager(Vue) {
       :selectedIndex="selectedIndex"
       @itemLoading="onItemLoading">
       <slot />
-    </native-pager>
+    </NativePager>
   `,
     watch: {
       items: {

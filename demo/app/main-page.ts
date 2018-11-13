@@ -67,12 +67,20 @@ export function itemTemplateSelector(
 
 export function selectedIndexChange(event: any) {
   const selectedIndex = event.object.get('selectedIndex');
-  // vm.set('index', event.object.get('selectedIndex'));
+  vm.set('index', selectedIndex);
 
   if ((selectedIndex + 2) % 3 === 0) {
     vm.items.push({
       title: 'Slide ' + (vm.items.length + 1),
-      image: 'https://source.unsplash.com/random'
+      image: `https://robohash.org/${vm.items.length + 1}.png`
+    });
+    vm.items.push({
+      title: 'Slide ' + (vm.items.length + 1),
+      image: `https://robohash.org/${vm.items.length + 1}.png`
+    });
+    vm.items.push({
+      title: 'Slide ' + (vm.items.length + 1),
+      image: `https://robohash.org/${vm.items.length + 1}.png`
     });
   }
 }

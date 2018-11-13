@@ -1,5 +1,5 @@
 import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
 export class HelloWorldModel extends Observable {
   items: ObservableArray<any>;
@@ -95,7 +95,7 @@ export class HelloWorldModel extends Observable {
       },
       {
         title: 'Slide 8',
-        image: 'http://cartoonbros.com/wp-content/uploads/2016/05/Batman-4.jpg',
+        image: 'https://i.ytimg.com/vi/DKbkKJWYT6E/maxresdefault.jpg',
         items: this._items
       },
       {

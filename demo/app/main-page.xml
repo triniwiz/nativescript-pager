@@ -1,6 +1,6 @@
-<Page
-        xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo" loaded="pageLoaded"
-        xmlns:c="nativescript-pager">
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo"                       loaded="pageLoaded"
+    xmlns:c="nativescript-pager"
+    xmlns:i="nativescript-image-cache-it">
     <GridLayout rows="auto,auto,auto,auto,auto, *, auto" columns="*" id="sl">
         <Label text="Look Ma No Fragments"/>
         <Label row="1" text="{{index}}"/>
@@ -12,29 +12,13 @@
             <Button text="First" tap="firstPage"/>
             <Button text="Last" tap="lastPage"/>
         </StackLayout>
-        <c:Pager selectedIndexChange="selectedIndexChange" itemTemplateSelector="itemTemplateSelector" selectedIndex="5"
-                 items="{{items}}" row="5" id="pager" pagesCount="10" showNativePageIndicator="false"
-                 backgroundColor="lightsteelblue">
-            <c:Pager.itemTemplates>
-                <template key="even">
-                    <GridLayout rows="auto,auto,*" columns="*">
-                        <Label text="Even"/>
-                        <Label row="1" text="{{title}}"/>
-                        <Image loaded="loadedImage" row="2" src="{{image}}"/>
-                    </GridLayout>
-                </template>
-                <template key="odd">
-                    <GridLayout rows="auto,auto ,auto,*" columns="*" backgroundColor="white">
-                        <Label text="Odd"/>
-                        <Label row="1" text="{{title}}"/>
-                        <StackLayout row="2">
-                            <Label text="{{image}}"/>
-                        </StackLayout>
-                        <Image loaded="loadedImage" row="3" src="{{image}}"/>
-                    </GridLayout>
-                </template>
-            </c:Pager.itemTemplates>
-            <!-- <Pager.itemTemplate><GridLayout rows="auto,*" columns="*"><Label row="1" text="{{title}}"/><Image loaded="loadedImage" row="2" src="{{image}}"/></GridLayout></Pager.itemTemplate> -->
+        <c:Pager selectedIndexChange="selectedIndexChange" items="{{items}}" row="5" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+            <Pager.itemTemplate>
+                <GridLayout rows="auto,*" columns="*">
+                    <Label row="0" text="{{title}}"/>
+                    <i:ImageCacheIt height="400" width="400" loaded="loadedImage" row="2" imageUri="{{image}}"/>
+                </GridLayout>
+            </Pager.itemTemplate>
         </c:Pager>
         <Button text="Nav" row="6" tap="navigate"/>
     </GridLayout>
