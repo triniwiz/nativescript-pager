@@ -3,7 +3,7 @@
     xmlns:c="nativescript-pager">
     <GridLayout rows="auto,auto ,auto,auto, *, auto" columns="*" id="sl">
         <Label text="Pager With List"/>
-        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager" showNativePageIndicator="false" backgroundColor="lightsteelblue">
             <c:Pager.itemTemplate>
                 <GridLayout rows="auto,*">
                     <GridLayout height="40%" rows="auto,auto,*" columns="*">

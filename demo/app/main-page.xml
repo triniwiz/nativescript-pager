@@ -12,11 +12,11 @@
             <Button text="First" tap="firstPage"/>
             <Button text="Last" tap="lastPage"/>
         </StackLayout>
-        <c:Pager selectedIndexChange="selectedIndexChange" items="{{items}}" row="5" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+        <c:Pager spacing="25%" selectedIndexChange="selectedIndexChange" items="{{items}}" row="5" id="pager" showNativePageIndicator="false" backgroundColor="lightsteelblue">
             <Pager.itemTemplate>
-                <GridLayout rows="auto,*" columns="*">
+                <GridLayout backgroundColor="red" rows="auto,*" columns="*">
                     <Label row="0" text="{{title}}"/>
-                    <i:ImageCacheIt height="400" width="400" loaded="loadedImage" row="2" imageUri="{{image}}"/>
+                    <i:ImageCacheIt resize="300,300"  loaded="loadedImage" row="2" imageUri="{{image}}"/>
                 </GridLayout>
             </Pager.itemTemplate>
         </c:Pager>

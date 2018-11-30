@@ -28,9 +28,9 @@
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-typescript": "^0.7.5",
     "nativescript-dev-webpack": "^0.18.0",
-    "tns-platform-declarations": "^3.1.0",
+    "tns-platform-declarations": "^5.0.0",
     "tslint": "~5.4.3",
-    "typescript": "~2.7.2"
+    "typescript": "~3.1.0"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
