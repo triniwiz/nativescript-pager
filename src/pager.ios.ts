@@ -6,33 +6,33 @@ import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 import { ProxyViewContainer } from 'tns-core-modules/ui/proxy-view-container';
 import * as common from './pager.common';
 import {
-  ITEMLOADING,
-  itemsProperty,
-  itemTemplatesProperty,
-  LOADMOREITEMS,
-  PagerBase,
-  selectedIndexProperty,
-  orientationProperty,
-  Orientation
+    ITEMLOADING,
+    itemsProperty,
+    itemTemplatesProperty,
+    LOADMOREITEMS,
+    Orientation,
+    orientationProperty,
+    PagerBase,
+    selectedIndexProperty
 } from './pager.common';
 
 function notifyForItemAtIndex(
-  owner,
-  nativeView: any,
-  view: any,
-  eventName: string,
-  index: number
+    owner,
+    nativeView: any,
+    view: any,
+    eventName: string,
+    index: number
 ) {
-  let args = {
-    eventName: eventName,
-    object: owner,
-    index: index,
-    view: view,
-    ios: nativeView,
-    android: undefined
-  };
-  owner.notify(args);
-  return args;
+    let args = {
+        eventName: eventName,
+        object: owner,
+        index: index,
+        view: view,
+        ios: nativeView,
+        android: undefined
+    };
+    owner.notify(args);
+    return args;
 }
 
 const main_queue = dispatch_get_current_queue();
@@ -40,532 +40,536 @@ const main_queue = dispatch_get_current_queue();
 global.moduleMerge(common, exports);
 
 export class Pager extends PagerBase {
-  private _disableSwipe: boolean;
-  private _disableAnimation: boolean;
+    private _disableSwipe: boolean;
+    private _disableAnimation: boolean;
 
-  public itemTemplateUpdated(oldData: any, newData: any): void {}
-
-  private _orientation: UIPageViewControllerNavigationOrientation;
-  private _options: NSDictionary<any, any>;
-  private _transformer;
-  _ios: UIPageViewController;
-  private widthMeasureSpec: number;
-  private heightMeasureSpec: number;
-  private layoutWidth = 0;
-  private layoutHeight = 0;
-  private _viewMap: Map<string, View>;
-  private cachedViewControllers: WeakRef<PagerView>[] = [];
-  private delegate: PagerViewControllerDelegate;
-  private dataSource: PagerDataSource;
-  borderRadius: number;
-  borderWidth: number;
-  borderColor: string;
-  backgroundColor: any;
-  private _transition: 'scroll' | 'curl' = 'scroll';
-  private _isDataDirty: boolean;
-
-  constructor() {
-    super();
-    this._viewMap = new Map();
-  }
-
-  createNativeView() {
-    switch (this.orientation) {
-      case 'vertical':
-        this._orientation = UIPageViewControllerNavigationOrientation.Vertical;
-        break;
-      default:
-        this._orientation =
-          UIPageViewControllerNavigationOrientation.Horizontal;
-        break;
+    public itemTemplateUpdated(oldData: any, newData: any): void {
     }
 
-    switch (this._transition) {
-      case 'curl':
-        this._transformer = UIPageViewControllerTransitionStyle.PageCurl;
-        break;
-      default:
-        this._transformer = UIPageViewControllerTransitionStyle.Scroll;
-        break;
-    }
-    const nsVal = <any>[0.0];
-    const nsKey = <any>[UIPageViewControllerOptionInterPageSpacingKey];
-    this._options = NSDictionary.dictionaryWithObjectsForKeys(nsKey, nsVal);
-    this._ios = UIPageViewController.alloc().initWithTransitionStyleNavigationOrientationOptions(
-      this._transformer,
-      this._orientation,
-      this._options
-    );
-    return this._ios.view;
-  }
+    private _orientation: UIPageViewControllerNavigationOrientation;
+    private _options: NSDictionary<any, any>;
+    private _transformer;
+    _ios: UIPageViewController;
+    private widthMeasureSpec: number;
+    private heightMeasureSpec: number;
+    private layoutWidth = 0;
+    private layoutHeight = 0;
+    private _viewMap: Map<string, View>;
+    private cachedViewControllers: WeakRef<PagerView>[] = [];
+    private delegate: PagerViewControllerDelegate;
+    private dataSource: PagerDataSource;
+    borderRadius: number;
+    borderWidth: number;
+    borderColor: string;
+    backgroundColor: any;
+    private _transition: 'scroll' | 'curl' = 'scroll';
+    private _isDataDirty: boolean;
 
-  initNativeView() {
-    super.initNativeView();
-    const that = new WeakRef(this);
-    this.delegate = PagerViewControllerDelegate.initWithOwner(that);
-    this.dataSource = PagerDataSource.initWithOwner(that);
-  }
-  [orientationProperty.getDefault](): Orientation {
-    return 'horizontal';
-  }
-
-  set transition(style: 'scroll' | 'curl') {
-    this._transition = style;
-  }
-
-  get transition() {
-    return this._transition;
-  }
-
-  eachChildView(callback: (child: View) => boolean): void {
-    if (this._viewMap.size > 0) {
-      this._viewMap.forEach((view, key) => {
-        callback(view);
-      });
-    }
-  }
-
-  updateNativeIndex(oldIndex: number, newIndex: number) {
-    this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
-  }
-
-  updateNativeItems(oldItems: View[], newItems: View[]) {}
-
-  refresh(hardReset = false) {
-    if (!types.isBoolean(hardReset)) {
-      hardReset = false;
-    }
-    this._viewMap.forEach((view, index, array) => {
-      if (!(view.bindingContext instanceof Observable)) {
-      //  view.bindingContext = null;
-      }
-    });
-    if (this.isLoaded) {
-      if (hardReset) {
-        this._initNativeViewPager();
-      } else {
-        this._softReset();
-      }
-      this.requestLayout();
-      this._isDataDirty = false;
-    } else {
-      this._isDataDirty = true;
-    }
-  }
-
-  [itemTemplatesProperty.getDefault](): KeyedTemplate[] {
-    return null;
-  }
-
-  [itemTemplatesProperty.setNative](value: KeyedTemplate[]) {
-    this._itemTemplatesInternal = new Array<KeyedTemplate>(
-      this._defaultTemplate
-    );
-    if (value) {
-      this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
-    }
-    if (this.isLoaded) {
-      this.refresh(true);
-    }
-  }
-
-  public getViewController(
-    selectedIndex: number,
-    refresh = false
-  ): UIViewController {
-    let vc: PagerView;
-    const cachedCtrl = this.cachedViewControllers[selectedIndex];
-    if (cachedCtrl && refresh) {
-      cachedCtrl.clear();
-      this.cachedViewControllers[selectedIndex] = null;
-    } else if (cachedCtrl) {
-      vc = cachedCtrl.get();
+    constructor() {
+        super();
+        this._viewMap = new Map();
     }
 
-    if (!vc) {
-      vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
-      let view: View;
-      let template;
-      if (this.items && this.items.length) {
-        template = this._getItemTemplate(selectedIndex);
-        view = template.createView();
+    createNativeView() {
+        switch (this.orientation) {
+            case 'vertical':
+                this._orientation = UIPageViewControllerNavigationOrientation.Vertical;
+                break;
+            default:
+                this._orientation =
+                    UIPageViewControllerNavigationOrientation.Horizontal;
+                break;
+        }
 
-        let _args: any = notifyForItemAtIndex(
-          this,
-          view ? view.nativeView : null,
-          view,
-          ITEMLOADING,
-          selectedIndex
+        switch (this._transition) {
+            case 'curl':
+                this._transformer = UIPageViewControllerTransitionStyle.PageCurl;
+                break;
+            default:
+                this._transformer = UIPageViewControllerTransitionStyle.Scroll;
+                break;
+        }
+        const nsVal = <any>[0.0];
+        const nsKey = <any>[UIPageViewControllerOptionInterPageSpacingKey];
+        this._options = NSDictionary.dictionaryWithObjectsForKeys(nsKey, nsVal);
+        this._ios = UIPageViewController.alloc().initWithTransitionStyleNavigationOrientationOptions(
+            this._transformer,
+            this._orientation,
+            this._options
+        );
+        return this._ios.view;
+    }
+
+    initNativeView() {
+        super.initNativeView();
+        const that = new WeakRef(this);
+        this.delegate = PagerViewControllerDelegate.initWithOwner(that);
+        this.dataSource = PagerDataSource.initWithOwner(that);
+    }
+
+    [orientationProperty.getDefault](): Orientation {
+        return 'horizontal';
+    }
+
+    set transition(style: 'scroll' | 'curl') {
+        this._transition = style;
+    }
+
+    get transition() {
+        return this._transition;
+    }
+
+    eachChildView(callback: (child: View) => boolean): void {
+        if (this._viewMap.size > 0) {
+            this._viewMap.forEach((view, key) => {
+                callback(view);
+            });
+        }
+    }
+
+    updateNativeIndex(oldIndex: number, newIndex: number) {
+        this._navigateNativeViewPagerToIndex(oldIndex, newIndex);
+    }
+
+    updateNativeItems(oldItems: View[], newItems: View[]) {
+    }
+
+    refresh(hardReset = false) {
+        if (!types.isBoolean(hardReset)) {
+            hardReset = false;
+        }
+        this._viewMap.forEach((view, index, array) => {
+            if (!(view.bindingContext instanceof Observable)) {
+                //  view.bindingContext = null;
+            }
+        });
+        if (this.isLoaded) {
+            if (hardReset) {
+                this._initNativeViewPager();
+            } else {
+                this._softReset();
+            }
+            this.requestLayout();
+            this._isDataDirty = false;
+        } else {
+            this._isDataDirty = true;
+        }
+    }
+
+    [itemTemplatesProperty.getDefault](): KeyedTemplate[] {
+        return null;
+    }
+
+    [itemTemplatesProperty.setNative](value: KeyedTemplate[]) {
+        this._itemTemplatesInternal = new Array<KeyedTemplate>(
+            this._defaultTemplate
+        );
+        if (value) {
+            this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
+        }
+        if (this.isLoaded) {
+            this.refresh(true);
+        }
+    }
+
+    public getViewController(
+        selectedIndex: number,
+        refresh = false
+    ): UIViewController {
+        let vc: PagerView;
+        const cachedCtrl = this.cachedViewControllers[selectedIndex];
+        if (cachedCtrl && refresh) {
+            cachedCtrl.clear();
+            this.cachedViewControllers[selectedIndex] = null;
+        } else if (cachedCtrl) {
+            vc = cachedCtrl.get();
+        }
+
+        if (!vc) {
+            vc = PagerView.initWithOwnerTag(new WeakRef(this), selectedIndex);
+            let view: View;
+            let template;
+            if (this.items && this.items.length) {
+                template = this._getItemTemplate(selectedIndex);
+                view = template.createView();
+
+                let _args: any = notifyForItemAtIndex(
+                    this,
+                    view ? view.nativeView : null,
+                    view,
+                    ITEMLOADING,
+                    selectedIndex
+                );
+
+                view = _args.view || this._getDefaultItemContent(selectedIndex);
+
+                // Proxy containers should not get treated as layouts.
+                // Wrap them in a real layout as well.
+                if (view instanceof ProxyViewContainer) {
+                    let sp = new StackLayout();
+                    sp.addChild(view);
+                    view = sp;
+                }
+
+                if (view) {
+                    this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
+                    this._prepareItem(view, selectedIndex);
+                    this._viewMap.set(`${selectedIndex}-${template.key}`, view);
+                }
+            } else {
+                let lbl = new Label();
+                lbl.text = 'Pager.items not set.';
+                view = lbl;
+            }
+            if (!view.parent) {
+                this._addView(view);
+            }
+            const nativeView = view.nativeView as UIView;
+            if (nativeView && !nativeView.superview) {
+                vc.view.addSubview(nativeView);
+            }
+            this.prepareView(view);
+        }
+        return vc;
+    }
+
+    [itemsProperty.getDefault](): any {
+        return null;
+    }
+
+    [itemsProperty.setNative](value: any[]) {
+        selectedIndexProperty.coerce(this);
+        if (this.isLoaded) {
+            this.refresh();
+        }
+    }
+
+    public onLoaded() {
+        super.onLoaded();
+        if (!this.disableSwipe) {
+            this._ios.dataSource = this.dataSource;
+        }
+        this._ios.delegate = this.delegate;
+        this.refresh(true);
+    }
+
+    get disableSwipe(): boolean {
+        return this._disableSwipe;
+    }
+
+    set disableSwipe(value: boolean) {
+        this._disableSwipe = value;
+        if (this._ios && value) {
+            this._ios.dataSource = null;
+        } else {
+            this._ios.dataSource = this.dataSource;
+        }
+    }
+
+    get disableAnimation(): boolean {
+        return this._disableAnimation;
+    }
+
+    set disableAnimation(value: boolean) {
+        this._disableAnimation = value;
+    }
+
+    public onUnloaded() {
+        this._ios.delegate = null;
+        this._ios.dataSource = null;
+        super.onUnloaded();
+    }
+
+    public disposeNativeView() {
+        this._clearCachedItems();
+        super.disposeNativeView();
+    }
+
+    private prepareView(view: View): void {
+        if (
+            this.widthMeasureSpec !== undefined &&
+            this.heightMeasureSpec !== undefined
+        ) {
+            let result = View.measureChild(
+                this,
+                view,
+                this.widthMeasureSpec,
+                this.heightMeasureSpec
+            );
+
+            View.layoutChild(
+                this,
+                view,
+                0,
+                0,
+                result.measuredWidth,
+                result.measuredHeight
+            );
+        }
+    }
+
+    public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+        this.widthMeasureSpec = widthMeasureSpec;
+        this.heightMeasureSpec = heightMeasureSpec;
+
+        const width = layout.getMeasureSpecSize(widthMeasureSpec);
+        const widthMode = layout.getMeasureSpecMode(widthMeasureSpec);
+        const height = layout.getMeasureSpecSize(heightMeasureSpec);
+        const heightMode = layout.getMeasureSpecMode(heightMeasureSpec);
+        const template = this._getItemTemplate(this.selectedIndex);
+        const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
+        let {measuredWidth, measuredHeight} = View.measureChild(
+            this,
+            view,
+            widthMeasureSpec,
+            heightMeasureSpec
         );
 
-        view = _args.view || this._getDefaultItemContent(selectedIndex);
+        // Check against our minimum sizes
+        measuredWidth = Math.max(measuredWidth, this.effectiveMinWidth);
+        measuredHeight = Math.max(measuredHeight, this.effectiveMinHeight);
 
-        // Proxy containers should not get treated as layouts.
-        // Wrap them in a real layout as well.
-        if (view instanceof ProxyViewContainer) {
-          let sp = new StackLayout();
-          sp.addChild(view);
-          view = sp;
+        const widthAndState = View.resolveSizeAndState(
+            measuredWidth,
+            width,
+            widthMode,
+            0
+        );
+        const heightAndState = View.resolveSizeAndState(
+            measuredHeight,
+            height,
+            heightMode,
+            0
+        );
+        this.setMeasuredDimension(widthAndState, heightAndState);
+    }
+
+    public onLayout(
+        left: number,
+        top: number,
+        right: number,
+        bottom: number
+    ): void {
+        super.onLayout(left, top, right, bottom);
+        this.layoutWidth = right - left;
+        this.layoutHeight = bottom - top;
+        const template = this._getItemTemplate(this.selectedIndex);
+        if (
+            this._viewMap &&
+            this._viewMap.has(`${this.selectedIndex}-${template.key}`)
+        ) {
+            const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
+            View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
+        }
+    }
+
+    private _clearCachedItems() {
+        if (!this.cachedViewControllers) {
+            return;
         }
 
-        if (view) {
-          this.cachedViewControllers[selectedIndex] = new WeakRef(vc);
-          this._prepareItem(view, selectedIndex);
-          this._viewMap.set(`${selectedIndex}-${template.key}`, view);
-        }
-      } else {
-        let lbl = new Label();
-        lbl.text = 'Pager.items not set.';
-        view = lbl;
-      }
-      if (!view.parent) {
-        this._addView(view);
-      }
-      const nativeView = view.nativeView as UIView;
-      if (nativeView && !nativeView.superview) {
-        vc.view.addSubview(nativeView);
-      }
-      this.prepareView(view);
-    }
-    return vc;
-  }
+        this.cachedViewControllers.forEach(vcRef => {
+            if (vcRef && typeof vcRef.clear === 'function') {
+                vcRef.clear();
+            }
+        });
 
-  [itemsProperty.getDefault](): any {
-    return null;
-  }
-
-  [itemsProperty.setNative](value: any[]) {
-    selectedIndexProperty.coerce(this);
-    if (this.isLoaded) {
-      this.refresh();
-    }
-  }
-
-  public onLoaded() {
-    super.onLoaded();
-    if (!this.disableSwipe) {
-      this._ios.dataSource = this.dataSource;
-    }
-    this._ios.delegate = this.delegate;
-    this.refresh(true);
-  }
-
-  get disableSwipe(): boolean {
-    return this._disableSwipe;
-  }
-
-  set disableSwipe(value: boolean) {
-    this._disableSwipe = value;
-    if (this._ios && value) {
-      this._ios.dataSource = null;
-    } else {
-      this._ios.dataSource = this.dataSource;
-    }
-  }
-
-  get disableAnimation(): boolean {
-    return this._disableAnimation;
-  }
-
-  set disableAnimation(value: boolean) {
-    this._disableAnimation = value;
-  }
-
-  public onUnloaded() {
-    this._ios.delegate = null;
-    this._ios.dataSource = null;
-    super.onUnloaded();
-  }
-
-  public disposeNativeView() {
-    this._clearCachedItems();
-    super.disposeNativeView();
-  }
-
-  private prepareView(view: View): void {
-    if (
-      this.widthMeasureSpec !== undefined &&
-      this.heightMeasureSpec !== undefined
-    ) {
-      let result = View.measureChild(
-        this,
-        view,
-        this.widthMeasureSpec,
-        this.heightMeasureSpec
-      );
-
-      View.layoutChild(
-        this,
-        view,
-        0,
-        0,
-        result.measuredWidth,
-        result.measuredHeight
-      );
-    }
-  }
-
-  public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
-    this.widthMeasureSpec = widthMeasureSpec;
-    this.heightMeasureSpec = heightMeasureSpec;
-
-    const width = layout.getMeasureSpecSize(widthMeasureSpec);
-    const widthMode = layout.getMeasureSpecMode(widthMeasureSpec);
-    const height = layout.getMeasureSpecSize(heightMeasureSpec);
-    const heightMode = layout.getMeasureSpecMode(heightMeasureSpec);
-    const template = this._getItemTemplate(this.selectedIndex);
-    const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
-    let { measuredWidth, measuredHeight } = View.measureChild(
-      this,
-      view,
-      widthMeasureSpec,
-      heightMeasureSpec
-    );
-
-    // Check against our minimum sizes
-    measuredWidth = Math.max(measuredWidth, this.effectiveMinWidth);
-    measuredHeight = Math.max(measuredHeight, this.effectiveMinHeight);
-
-    const widthAndState = View.resolveSizeAndState(
-      measuredWidth,
-      width,
-      widthMode,
-      0
-    );
-    const heightAndState = View.resolveSizeAndState(
-      measuredHeight,
-      height,
-      heightMode,
-      0
-    );
-    this.setMeasuredDimension(widthAndState, heightAndState);
-  }
-
-  public onLayout(
-    left: number,
-    top: number,
-    right: number,
-    bottom: number
-  ): void {
-    super.onLayout(left, top, right, bottom);
-    this.layoutWidth = right - left;
-    this.layoutHeight = bottom - top;
-    const template = this._getItemTemplate(this.selectedIndex);
-    if (
-      this._viewMap &&
-      this._viewMap.has(`${this.selectedIndex}-${template.key}`)
-    ) {
-      const view = this._viewMap.get(`${this.selectedIndex}-${template.key}`);
-      View.layoutChild(this, view, 0, 0, this.layoutWidth, this.layoutHeight);
-    }
-  }
-
-  private _clearCachedItems() {
-    if (!this.cachedViewControllers) {
-      return;
+        this._viewMap.forEach((val, key) => {
+            if (val && val.parent === this) {
+                this._removeView(val);
+            }
+        });
+        this._viewMap.clear();
     }
 
-    this.cachedViewControllers.forEach(vcRef => {
-      if (vcRef && typeof vcRef.clear === 'function') {
-        vcRef.clear();
-      }
-    });
+    _viewControllerRemovedFromParent(controller: PagerView): void {
+        controller.tag = undefined;
+        controller.view = undefined;
+        controller.owner = undefined;
+    }
 
-    this._viewMap.forEach((val, key) => {
-      if (val && val.parent === this) {
-        this._removeView(val);
-      }
-    });
-    this._viewMap.clear();
-  }
+    private _softReset() {
+        const ref = new WeakRef(this);
+        this.delegate = null;
+        this.dataSource = null;
+        this._ios.dataSource = null;
+        this._ios.delegate = null;
+        this.delegate = PagerViewControllerDelegate.initWithOwner(ref);
+        this.dataSource = PagerDataSource.initWithOwner(ref);
+        this._ios.delegate = this.delegate;
+        this._ios.dataSource = this.dataSource;
+    }
 
-  _viewControllerRemovedFromParent(controller: PagerView): void {
-    controller.tag = undefined;
-    controller.view = undefined;
-    controller.owner = undefined;
-  }
+    private _initNativeViewPager() {
+        const ref = new WeakRef(this);
+        const template = this._getItemTemplate(this.selectedIndex);
+        let controller = this.getViewController(this.selectedIndex, true);
+        dispatch_async(main_queue, () => {
+            const owner = ref.get();
+            owner._ios.setViewControllersDirectionAnimatedCompletion(
+                NSArray.arrayWithObject(controller),
+                UIPageViewControllerNavigationDirection.Forward,
+                false,
+                null
+            );
+        });
+    }
 
-  private _softReset() {
-    const ref = new WeakRef(this);
-    this.delegate = null;
-    this.dataSource = null;
-    this._ios.dataSource = null;
-    this._ios.delegate = null;
-    this.delegate = PagerViewControllerDelegate.initWithOwner(ref);
-    this.dataSource = PagerDataSource.initWithOwner(ref);
-    this._ios.delegate = this.delegate;
-    this._ios.dataSource = this.dataSource;
-  }
-  private _initNativeViewPager() {
-    const ref = new WeakRef(this);
-    const template = this._getItemTemplate(this.selectedIndex);
-    let controller = this.getViewController(this.selectedIndex, true);
-    dispatch_async(main_queue, () => {
-      const owner = ref.get();
-      owner._ios.setViewControllersDirectionAnimatedCompletion(
-        NSArray.arrayWithObject(controller),
-        UIPageViewControllerNavigationDirection.Forward,
-        false,
-        null
-      );
-    });
-  }
+    private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
+        const vc = this.getViewController(toIndex);
+        const template = this._getItemTemplate(toIndex);
+        const view = this._viewMap.get(`${toIndex}-${template.key}`);
+        this.prepareView(view);
+        if (!vc) throw new Error('no VC');
+        const direction =
+            fromIndex < toIndex
+                ? UIPageViewControllerNavigationDirection.Forward
+                : UIPageViewControllerNavigationDirection.Reverse;
 
-  private _navigateNativeViewPagerToIndex(fromIndex: number, toIndex: number) {
-    const vc = this.getViewController(toIndex);
-    const template = this._getItemTemplate(toIndex);
-    const view = this._viewMap.get(`${toIndex}-${template.key}`);
-    this.prepareView(view);
-    if (!vc) throw new Error('no VC');
-    const direction =
-      fromIndex < toIndex
-        ? UIPageViewControllerNavigationDirection.Forward
-        : UIPageViewControllerNavigationDirection.Reverse;
-
-    const ref = new WeakRef(this);
-    dispatch_async(main_queue, () => {
-      const owner = ref.get();
-      owner._ios.setViewControllersDirectionAnimatedCompletion(
-        NSArray.arrayWithObject(vc),
-        direction,
-        this.isLoaded ? !this.disableAnimation : false,
-        null
-      );
-    });
-  }
+        const ref = new WeakRef(this);
+        dispatch_async(main_queue, () => {
+            const owner = ref.get();
+            owner._ios.setViewControllersDirectionAnimatedCompletion(
+                NSArray.arrayWithObject(vc),
+                direction,
+                this.isLoaded ? !this.disableAnimation : false,
+                null
+            );
+        });
+    }
 }
 
 class PagerViewControllerDelegate extends NSObject
-  implements UIPageViewControllerDelegate {
-  private _owner: WeakRef<Pager>;
+    implements UIPageViewControllerDelegate {
+    private _owner: WeakRef<Pager>;
 
-  public static ObjCProtocols = [UIPageViewControllerDelegate];
+    public static ObjCProtocols = [UIPageViewControllerDelegate];
 
-  get owner(): Pager {
-    return this._owner.get();
-  }
-
-  public static initWithOwner(
-    owner: WeakRef<Pager>
-  ): PagerViewControllerDelegate {
-    const pv = new PagerViewControllerDelegate();
-    pv._owner = owner;
-    return pv;
-  }
-
-  pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted(
-    pageViewController: UIPageViewController,
-    finished: boolean,
-    previousViewControllers: NSArray<any>,
-    completed: boolean
-  ) {
-    if (completed) {
-      const vc = <PagerView>pageViewController.viewControllers[0];
-      const owner = this.owner;
-      if (owner) {
-        selectedIndexProperty.nativeValueChange(owner, vc.tag);
-        // owner.selectedIndex = vc.tag;
-      }
+    get owner(): Pager {
+        return this._owner.get();
     }
-  }
+
+    public static initWithOwner(
+        owner: WeakRef<Pager>
+    ): PagerViewControllerDelegate {
+        const pv = new PagerViewControllerDelegate();
+        pv._owner = owner;
+        return pv;
+    }
+
+    pageViewControllerDidFinishAnimatingPreviousViewControllersTransitionCompleted(
+        pageViewController: UIPageViewController,
+        finished: boolean,
+        previousViewControllers: NSArray<any>,
+        completed: boolean
+    ) {
+        if (completed) {
+            const vc = <PagerView>pageViewController.viewControllers[0];
+            const owner = this.owner;
+            if (owner) {
+                selectedIndexProperty.nativeValueChange(owner, vc.tag);
+                // owner.selectedIndex = vc.tag;
+            }
+        }
+    }
 }
 
 class PagerDataSource extends NSObject
-  implements UIPageViewControllerDataSource {
-  private _owner: WeakRef<Pager>;
+    implements UIPageViewControllerDataSource {
+    private _owner: WeakRef<Pager>;
 
-  public static ObjCProtocols = [UIPageViewControllerDataSource];
+    public static ObjCProtocols = [UIPageViewControllerDataSource];
 
-  get owner(): Pager {
-    return this._owner.get();
-  }
-
-  public static initWithOwner(owner: WeakRef<Pager>): PagerDataSource {
-    let ds = new PagerDataSource();
-    ds._owner = owner;
-    return ds;
-  }
-
-  pageViewControllerViewControllerBeforeViewController(
-    pageViewController: UIPageViewController,
-    viewControllerBefore: UIViewController
-  ): UIViewController {
-    const pos = (<PagerView>viewControllerBefore).tag;
-    if (!this.owner.canGoLeft) {
-      return null;
-    } else if (pos === 0 || !this.owner || !this.owner.items) {
-      return null;
-    } else {
-      const prev = pos - 1;
-      return this.owner.getViewController(prev);
+    get owner(): Pager {
+        return this._owner.get();
     }
-  }
 
-  pageViewControllerViewControllerAfterViewController(
-    pageViewController: UIPageViewController,
-    viewControllerAfter: UIViewController
-  ): UIViewController {
-    const pos = (<PagerView>viewControllerAfter).tag;
-    if (!this.owner.canGoRight) {
-      return null;
-    } else if (!this.owner || !this.owner.items) {
-      return null;
-    } else if (this.owner.items.length - 1 === pos) {
-      this.owner.notify({
-        eventName: LOADMOREITEMS,
-        object: this.owner
-      });
-      return null;
-    } else {
-      const newPos = pos + 1;
-      return this.owner.getViewController(newPos);
+    public static initWithOwner(owner: WeakRef<Pager>): PagerDataSource {
+        let ds = new PagerDataSource();
+        ds._owner = owner;
+        return ds;
     }
-  }
 
-  presentationCountForPageViewController(
-    pageViewController: UIPageViewController
-  ): number {
-    if (
-      !this.owner ||
-      !this.owner.items ||
-      !this.owner.showNativePageIndicator
-    ) {
-      // Hide the native UIPageControl (dots)
-      return -1;
+    pageViewControllerViewControllerBeforeViewController(
+        pageViewController: UIPageViewController,
+        viewControllerBefore: UIViewController
+    ): UIViewController {
+        const pos = (<PagerView>viewControllerBefore).tag;
+        if (!this.owner.canGoLeft) {
+            return null;
+        } else if (pos === 0 || !this.owner || !this.owner.items) {
+            return null;
+        } else {
+            const prev = pos - 1;
+            return this.owner.getViewController(prev);
+        }
     }
-    return this.owner.items.length;
-  }
 
-  presentationIndexForPageViewController(
-    pageViewController: UIPageViewController
-  ): number {
-    if (!this.owner || !this.owner.items) {
-      return -1;
+    pageViewControllerViewControllerAfterViewController(
+        pageViewController: UIPageViewController,
+        viewControllerAfter: UIViewController
+    ): UIViewController {
+        const pos = (<PagerView>viewControllerAfter).tag;
+        if (!this.owner.canGoRight) {
+            return null;
+        } else if (!this.owner || !this.owner.items) {
+            return null;
+        } else if (this.owner.items.length - 1 === pos) {
+            this.owner.notify({
+                eventName: LOADMOREITEMS,
+                object: this.owner
+            });
+            return null;
+        } else {
+            const newPos = pos + 1;
+            return this.owner.getViewController(newPos);
+        }
     }
-    return this.owner.selectedIndex;
-  }
+
+    presentationCountForPageViewController(
+        pageViewController: UIPageViewController
+    ): number {
+        if (
+            !this.owner ||
+            !this.owner.items ||
+            !this.owner.showNativePageIndicator
+        ) {
+            // Hide the native UIPageControl (dots)
+            return -1;
+        }
+        return this.owner.items.length;
+    }
+
+    presentationIndexForPageViewController(
+        pageViewController: UIPageViewController
+    ): number {
+        if (!this.owner || !this.owner.items) {
+            return -1;
+        }
+        return this.owner.selectedIndex;
+    }
 }
 
 export class PagerView extends UIViewController {
-  owner: WeakRef<Pager>;
-  tag: number;
+    owner: WeakRef<Pager>;
+    tag: number;
 
-  public static initWithOwnerTag(
-    owner: WeakRef<Pager>,
-    tag: number
-  ): PagerView {
-    let pv = new PagerView(null);
-    pv.owner = owner;
-    pv.tag = tag;
-    return pv;
-  }
-
-  didMoveToParentViewController(parent: UIViewController): void {
-    // console.log(`PagerView.didMoveToParentViewController`);
-    let owner = this.owner ? this.owner.get() : null;
-    if (!parent && owner) {
-      // removed from parent
-       //owner._viewControllerRemovedFromParent(this);
+    public static initWithOwnerTag(
+        owner: WeakRef<Pager>,
+        tag: number
+    ): PagerView {
+        let pv = new PagerView(null);
+        pv.owner = owner;
+        pv.tag = tag;
+        return pv;
     }
-  }
+
+    didMoveToParentViewController(parent: UIViewController): void {
+        // console.log(`PagerView.didMoveToParentViewController`);
+        let owner = this.owner ? this.owner.get() : null;
+        if (!parent && owner) {
+            // removed from parent
+            // owner._viewControllerRemovedFromParent(this);
+        }
+    }
 }
