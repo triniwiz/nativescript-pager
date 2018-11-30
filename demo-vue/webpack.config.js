@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const TerserPlugin = require('terser-webpack-plugin');
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
@@ -130,10 +130,10 @@ module.exports = env => {
             },
             minimize: Boolean(production),
             minimizer: [
-                new TerserPlugin({
+                new UglifyJsPlugin({
                     parallel: true,
                     cache: true,
-                    terserOptions: {
+                    uglifyOptions: {
                         output: {
                             comments: false,
                         },
@@ -143,8 +143,6 @@ module.exports = env => {
                             'collapse_vars': platform !== "android",
                             sequences: platform !== "android",
                         },
-                        safari10: platform === "ios",
-                        keep_fnames: true,
                     },
                 }),
             ],
@@ -217,9 +215,9 @@ module.exports = env => {
             }]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                { from: "fonts/**" },
-                { from: "**/*.+(jpg|png)" },
-                { from: "assets/**/*" },
+                { from: { glob: "fonts/**" } },
+                { from: { glob: "**/*.+(jpg|png)" } },
+                { from: { glob: "assets/**/*" } },
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
