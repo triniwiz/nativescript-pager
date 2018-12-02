@@ -4,7 +4,7 @@
           <ActionBar title="Master" />
       <StackLayout>
         <Button text="To Details directly" @tap="$navigateTo(detailPage)" />
-        <Pager for="item in items">
+        <Pager height="100%" for="item in items">
           <v-template>
               <GridLayout class="pager-item" rows="auto, *" columns="*">
                   <Label :text="item.title"></Label>
