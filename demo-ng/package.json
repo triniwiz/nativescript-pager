@@ -42,7 +42,7 @@
     "typescript": "^3.1.6"
   },
   "scripts": {
-    "build.plugin": "cd ../src && npm run ngc",
+    "build.plugin": "cd ../src && npm run build",
     "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
   }
 }
