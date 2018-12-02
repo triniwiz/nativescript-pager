@@ -29,7 +29,7 @@ pack() {
     echo 'Building /src...'
     cd "$TO_SOURCE_DIR"
     find ./ angular/ -name '*.metadata.json' -delete
-    node --max-old-space-size=8192 node_modules/.bin/ngc -p tsconfig.aot.json
+    node --max-old-space-size=8192 node_modules/.bin/ngc -p tsconfig.json
     cd ..
 
     echo 'Creating package...'

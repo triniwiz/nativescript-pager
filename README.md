@@ -6,10 +6,13 @@
 
 ## Install
 
+#### NativeScript 5x
+
+* `tns plugin add nativescript-pager`
 
 #### NativeScript 4x
 
-* `tns plugin add nativescript-pager`
+* `tns plugin add nativescript-pager@8.0.2`
 
 #### NativeScript 3x
 
@@ -24,7 +27,7 @@
 IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page element any element can be used in the pager
 
 ```xml
-<pager:Pager items="{{items}}" row="2" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+<pager:Pager items="{{items}}" row="2" id="pager" spacing="2%" peaking="10%" transformer="scale" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
             <pager:Pager.itemTemplate>
                 <GridLayout rows="auto, *" columns="*" backgroundColor="red">
                     <Label text="{{title}}"/>
