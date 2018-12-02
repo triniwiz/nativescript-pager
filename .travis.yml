@@ -35,12 +35,9 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-28.0.3
+    - build-tools-28.0.2
     - android-28
-    - android-26
-    - android-23
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-21
 
 install:
   - echo no | npm install -g nativescript
