@@ -8,6 +8,7 @@
 *.log
 *.metadata.json
 src/*.d.ts
+!src/pager.d.ts
 !src/index.d.ts
 !src/references.d.ts
 !src/scripts/*.js
