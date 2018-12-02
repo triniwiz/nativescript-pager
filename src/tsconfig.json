@@ -22,6 +22,15 @@
     "exclude": [
         "node_modules"
     ],
+    "files": [
+        "angular/index.ts",
+        "index.d.ts",
+        "pager.d.ts",
+        "references.d.ts",
+        "pager.android.ts",
+        "pager.ios.ts",
+        "pager.common.ts"
+    ],
     "compileOnSave": false,
     "angularCompilerOptions": {
         "skipTemplateCodegen": true
