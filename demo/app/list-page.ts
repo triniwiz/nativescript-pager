@@ -18,10 +18,6 @@ export function navigatingTo(args: NavigatedData) {
   if (!args.isBackNavigation) {
     page.bindingContext = vm;
   }
-  setTimeout(() => {
-    const pager: Pager = <Pager>page.getViewById('pager');
-    pager.refresh(false);
-  }, 5000);
 }
 export function pageLoaded() {}
 

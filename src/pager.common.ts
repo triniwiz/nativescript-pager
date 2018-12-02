@@ -1,7 +1,13 @@
 import {
     booleanConverter,
     CoercibleProperty,
+    ContainerView,
+    CSSType,
     KeyedTemplate,
+    Length,
+    makeParser,
+    makeValidator,
+    PercentLength,
     Property,
     Template,
     View
@@ -11,8 +17,12 @@ import * as types from 'tns-core-modules/utils/types';
 import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
 import { Label } from 'tns-core-modules/ui/label';
 import { messageType, write } from 'tns-core-modules/trace';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { Observable } from 'tns-core-modules/data/observable';
 import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
+import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
+
+export type Orientation = 'horizontal' | 'vertical';
 
 export const ITEMLOADING = 'itemLoading';
 export const LOADMOREITEMS = 'loadMoreItems';
@@ -38,26 +48,59 @@ export function PagerError(message: string): void {
     write(message, pagerTraceCategory, messageType.error);
 }
 
-export abstract class PagerBase extends View {
-    public disableCache: boolean;
-    public items: any;
+export * from 'tns-core-modules/ui/core/view';
+
+export interface ItemEventData {
+    eventName: string;
+    object: any;
+    index: number;
+    view: View;
+    android: any;
+    ios: any;
+}
+
+export interface ItemsSource {
+    length: number;
+
+    getItem(index: number): any;
+}
+
+const autoEffectiveItemHeight = 100;
+const autoEffectiveItemWidth = 100;
+
+export enum Transformer {
+    SCALE = 'scale'
+}
+
+@CSSType('Pager')
+export abstract class PagerBase extends ContainerView {
+    public items: any[] | ItemsSource;
     public selectedIndex: number;
     public showNativePageIndicator: boolean;
     public itemTemplate: string | Template;
     public itemTemplates: string | Array<KeyedTemplate>;
     public canGoRight = true;
     public canGoLeft = true;
-    private _pageSpacing: number = 0;
+    public spacing: PercentLength;
+    public peaking: PercentLength;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
-
+    public orientation: Orientation;
+    public _innerWidth: number = 0;
+    public _innerHeight: number = 0;
+    public _effectiveItemHeight: number;
+    public _effectiveItemWidth: number;
+    public transformer: Transformer;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
-    abstract refresh(hardReset): void;
 
-    private _itemTemplateSelector: (item: any,
-                                    index: number,
-                                    items: any) => string;
+    abstract refresh(): void;
+
+    private _itemTemplateSelector: (
+        item: any,
+        index: number,
+        items: any
+    ) => string;
     private _itemTemplateSelectorBindable = new Label();
     public _defaultTemplate: KeyedTemplate = {
         key: 'default',
@@ -73,12 +116,15 @@ export abstract class PagerBase extends View {
         this._defaultTemplate
     );
 
-    get itemTemplateSelector(): | string
+    get itemTemplateSelector():
+        | string
         | ((item: any, index: number, items: any) => string) {
         return this._itemTemplateSelector;
     }
 
-    set itemTemplateSelector(value: string | ((item: any, index: number, items: any) => string)) {
+    set itemTemplateSelector(
+        value: string | ((item: any, index: number, items: any) => string)
+    ) {
         if (typeof value === 'string') {
             this._itemTemplateSelectorBindable.bind({
                 sourceProperty: null,
@@ -124,7 +170,9 @@ export abstract class PagerBase extends View {
 
     private _getDataItem(index: number): any {
         let thisItems = this.items;
-        return thisItems.getItem ? thisItems.getItem(index) : thisItems[index];
+        return thisItems && (<ItemsSource>thisItems).getItem
+            ? (<ItemsSource>thisItems).getItem(index)
+            : thisItems[index];
     }
 
     public _getDefaultItemContent(index: number): View {
@@ -142,23 +190,75 @@ export abstract class PagerBase extends View {
     abstract get disableAnimation(): boolean;
     abstract set disableAnimation(value: boolean);
 
-    get pageSpacing() {
-        return this._pageSpacing;
-    }
-
-    set pageSpacing(value: number) {
-        this._pageSpacing = value;
-    }
-
-    public abstract updateNativeItems(oldItems: Array<View>, newItems: Array<View>): void;
+    public abstract updateNativeItems(
+        oldItems: Array<View>,
+        newItems: Array<View>
+    ): void;
 
     public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
 
     public abstract itemTemplateUpdated(oldData, newData): void;
+
+    public onLayout(left: number, top: number, right: number, bottom: number) {
+        super.onLayout(left, top, right, bottom);
+
+        this._innerWidth =
+            right - left - this.effectivePaddingLeft - this.effectivePaddingRight;
+
+        this._innerHeight =
+            bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
+
+        this._effectiveItemWidth = PercentLength.toDevicePixels(
+            PercentLength.parse('100%'),
+            autoEffectiveItemWidth,
+            this._innerWidth
+        );
+
+        this._effectiveItemHeight = PercentLength.toDevicePixels(
+            PercentLength.parse('100%'),
+            autoEffectiveItemHeight,
+            this._innerHeight
+        );
+
+    }
+
+    public convertToSize(length): number {
+        let size = 0;
+        if (this.orientation === 'horizontal') {
+            size = this.getMeasuredWidth();
+        } else {
+            size = this.getMeasuredHeight();
+        }
+        let converted = 0;
+        if (length.unit === 'px') {
+            converted = length.value;
+        } else if (length.unit === 'dip') {
+            converted = Length.toDevicePixels(length.unit, size);
+        } else if (length.unit === '%') {
+            converted = size * length.value;
+        } else if (typeof length === 'string') {
+            if (length.indexOf('px') > -1) {
+                converted = parseInt(length.replace('px', ''));
+            } else if (length.indexOf('dip') > -1) {
+                converted = Length.toDevicePixels(parseInt(length.replace('dip', '')), size);
+            } else if (length.indexOf('%') > -1) {
+                converted = size * (parseInt(length.replace('%', '')) / 100);
+            } else {
+                converted = Length.toDevicePixels(parseInt(length), size);
+            }
+        } else if (typeof length === 'number') {
+            converted = Length.toDevicePixels(length, size);
+        }
+
+        if (isNaN(converted)) {
+            return 0;
+        }
+        return converted;
+    }
 }
 
 function onItemsChanged(pager: PagerBase, oldValue, newValue) {
-    if (oldValue instanceof ObservableArray) {
+    if (oldValue instanceof Observable) {
         removeWeakEventListener(
             oldValue,
             ObservableArray.changeEvent,
@@ -167,7 +267,7 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
         );
     }
 
-    if (newValue instanceof ObservableArray) {
+    if (newValue instanceof Observable) {
         addWeakEventListener(
             newValue,
             ObservableArray.changeEvent,
@@ -175,11 +275,7 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
             pager
         );
     }
-
-    pager.refresh(false);
-    if (newValue) {
-        pager.updateNativeItems(oldValue, newValue);
-    }
+    pager.refresh();
 }
 
 function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
@@ -217,6 +313,23 @@ export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
 });
 selectedIndexProperty.register(PagerBase);
 
+
+export const spacingProperty = new Property<PagerBase, Length>({
+    name: 'spacing',
+    defaultValue: {value: 0, unit: 'dip'},
+    affectsLayout: true
+});
+
+spacingProperty.register(PagerBase);
+
+export const peakingProperty = new Property<PagerBase, Length>({
+    name: 'peaking',
+    defaultValue: {value: 0, unit: 'dip'},
+    affectsLayout: true
+});
+
+peakingProperty.register(PagerBase);
+
 export const itemsProperty = new Property<PagerBase, any>({
     name: 'items',
     affectsLayout: true,
@@ -237,7 +350,7 @@ export const itemTemplateProperty = new Property<PagerBase, string | Template>({
     name: 'itemTemplate',
     affectsLayout: true,
     valueChanged: target => {
-        target.refresh(true);
+        target.refresh();
     }
 });
 itemTemplateProperty.register(PagerBase);
@@ -250,26 +363,41 @@ export const itemTemplatesProperty = new Property<PagerBase,
         if (typeof value === 'string') {
             return parseMultipleTemplates(value);
         }
-
         return value;
     }
 });
 itemTemplatesProperty.register(PagerBase);
 
-export const canGoRightProperty = new Property<PagerBase, boolean>(
-    {
-        name: 'canGoRight',
-        defaultValue: false,
-        valueConverter: booleanConverter
-    }
-);
+export const canGoRightProperty = new Property<PagerBase, boolean>({
+    name: 'canGoRight',
+    defaultValue: false,
+    valueConverter: booleanConverter
+});
 canGoRightProperty.register(PagerBase);
 
-export const canGoLeftProperty = new Property<PagerBase, boolean>(
-    {
-        name: 'canGoLeft',
-        defaultValue: false,
-        valueConverter: booleanConverter
-    }
-);
+export const canGoLeftProperty = new Property<PagerBase, boolean>({
+    name: 'canGoLeft',
+    defaultValue: false,
+    valueConverter: booleanConverter
+});
 canGoLeftProperty.register(PagerBase);
+
+const converter = makeParser<Orientation>(
+    makeValidator('horizontal', 'vertical')
+);
+
+export const orientationProperty = new Property<PagerBase, Orientation>({
+    name: 'orientation',
+    defaultValue: 'horizontal',
+    affectsLayout: true,
+    valueChanged: (
+        target: PagerBase,
+        oldValue: Orientation,
+        newValue: Orientation
+    ) => {
+        target.refresh();
+    },
+    valueConverter: converter
+});
+
+orientationProperty.register(PagerBase);
