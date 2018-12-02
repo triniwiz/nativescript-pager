@@ -2,7 +2,7 @@ import { AfterContentInit, DoCheck, ElementRef, EmbeddedViewRef, EventEmitter, I
 import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
 import { View, KeyedTemplate } from 'tns-core-modules/ui/core/view';
 import { Template, EventData } from 'tns-core-modules/ui/layouts/layout-base';
-import { Pager } from '..';
+import { Pager } from '../';
 export interface PagerTemplatedItemsView {
     items: any[] | ItemsSource;
     itemTemplate: string | Template;
