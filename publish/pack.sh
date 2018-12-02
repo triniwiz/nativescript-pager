@@ -28,8 +28,7 @@ pack() {
     # compile package and copy files required by npm
     echo 'Building /src...'
     cd "$TO_SOURCE_DIR"
-    find ./ angular/ -name '*.metadata.json' -delete
-    node --max-old-space-size=8192 node_modules/.bin/ngc -p tsconfig.json
+    npm run build
     cd ..
 
     echo 'Creating package...'
