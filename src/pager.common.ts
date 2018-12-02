@@ -2,6 +2,7 @@ import {
     booleanConverter,
     CoercibleProperty,
     ContainerView,
+    CSSType,
     KeyedTemplate,
     Length,
     makeParser,
@@ -47,8 +48,32 @@ export function PagerError(message: string): void {
     write(message, pagerTraceCategory, messageType.error);
 }
 
+export * from 'tns-core-modules/ui/core/view';
+
+export interface ItemEventData {
+    eventName: string;
+    object: any;
+    index: number;
+    view: View;
+    android: any;
+    ios: any;
+}
+
+export interface ItemsSource {
+    length: number;
+
+    getItem(index: number): any;
+}
+
+const autoEffectiveItemHeight = 100;
+const autoEffectiveItemWidth = 100;
+
+export enum Transformer {
+    SCALE = 'scale'
+}
+
+@CSSType('Pager')
 export abstract class PagerBase extends ContainerView {
-    public disableCache: boolean;
     public items: any[] | ItemsSource;
     public selectedIndex: number;
     public showNativePageIndicator: boolean;
@@ -56,14 +81,20 @@ export abstract class PagerBase extends ContainerView {
     public itemTemplates: string | Array<KeyedTemplate>;
     public canGoRight = true;
     public canGoLeft = true;
-    private _pageSpacing: number = 0;
     public spacing: PercentLength;
+    public peaking: PercentLength;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
     public orientation: Orientation;
+    public _innerWidth: number = 0;
+    public _innerHeight: number = 0;
+    public _effectiveItemHeight: number;
+    public _effectiveItemWidth: number;
+    public transformer: Transformer;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
-    abstract refresh(hardReset): void;
+
+    abstract refresh(): void;
 
     private _itemTemplateSelector: (
         item: any,
@@ -159,14 +190,6 @@ export abstract class PagerBase extends ContainerView {
     abstract get disableAnimation(): boolean;
     abstract set disableAnimation(value: boolean);
 
-    get pageSpacing() {
-        return this._pageSpacing;
-    }
-
-    set pageSpacing(value: number) {
-        this._pageSpacing = value;
-    }
-
     public abstract updateNativeItems(
         oldItems: Array<View>,
         newItems: Array<View>
@@ -175,6 +198,63 @@ export abstract class PagerBase extends ContainerView {
     public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
 
     public abstract itemTemplateUpdated(oldData, newData): void;
+
+    public onLayout(left: number, top: number, right: number, bottom: number) {
+        super.onLayout(left, top, right, bottom);
+
+        this._innerWidth =
+            right - left - this.effectivePaddingLeft - this.effectivePaddingRight;
+
+        this._innerHeight =
+            bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
+
+        this._effectiveItemWidth = PercentLength.toDevicePixels(
+            PercentLength.parse('100%'),
+            autoEffectiveItemWidth,
+            this._innerWidth
+        );
+
+        this._effectiveItemHeight = PercentLength.toDevicePixels(
+            PercentLength.parse('100%'),
+            autoEffectiveItemHeight,
+            this._innerHeight
+        );
+
+    }
+
+    public convertToSize(length): number {
+        let size = 0;
+        if (this.orientation === 'horizontal') {
+            size = this.getMeasuredWidth();
+        } else {
+            size = this.getMeasuredHeight();
+        }
+        let converted = 0;
+        if (length.unit === 'px') {
+            converted = length.value;
+        } else if (length.unit === 'dip') {
+            converted = Length.toDevicePixels(length.unit, size);
+        } else if (length.unit === '%') {
+            converted = size * length.value;
+        } else if (typeof length === 'string') {
+            if (length.indexOf('px') > -1) {
+                converted = parseInt(length.replace('px', ''));
+            } else if (length.indexOf('dip') > -1) {
+                converted = Length.toDevicePixels(parseInt(length.replace('dip', '')), size);
+            } else if (length.indexOf('%') > -1) {
+                converted = size * (parseInt(length.replace('%', '')) / 100);
+            } else {
+                converted = Length.toDevicePixels(parseInt(length), size);
+            }
+        } else if (typeof length === 'number') {
+            converted = Length.toDevicePixels(length, size);
+        }
+
+        if (isNaN(converted)) {
+            return 0;
+        }
+        return converted;
+    }
 }
 
 function onItemsChanged(pager: PagerBase, oldValue, newValue) {
@@ -195,7 +275,7 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
             pager
         );
     }
-    pager.refresh(false);
+    pager.refresh();
 }
 
 function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
@@ -242,6 +322,14 @@ export const spacingProperty = new Property<PagerBase, Length>({
 
 spacingProperty.register(PagerBase);
 
+export const peakingProperty = new Property<PagerBase, Length>({
+    name: 'peaking',
+    defaultValue: {value: 0, unit: 'dip'},
+    affectsLayout: true
+});
+
+peakingProperty.register(PagerBase);
+
 export const itemsProperty = new Property<PagerBase, any>({
     name: 'items',
     affectsLayout: true,
@@ -262,7 +350,7 @@ export const itemTemplateProperty = new Property<PagerBase, string | Template>({
     name: 'itemTemplate',
     affectsLayout: true,
     valueChanged: target => {
-        target.refresh(true);
+        target.refresh();
     }
 });
 itemTemplateProperty.register(PagerBase);
@@ -307,7 +395,7 @@ export const orientationProperty = new Property<PagerBase, Orientation>({
         oldValue: Orientation,
         newValue: Orientation
     ) => {
-        target.refresh(false);
+        target.refresh();
     },
     valueConverter: converter
 });

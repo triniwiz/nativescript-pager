@@ -283,7 +283,7 @@ export abstract class TemplatedItemsComponent
           PagerLog('ngDoCheck() - refresh');
         }
 
-        this.templatedItemsView.refresh(true);
+        this.templatedItemsView.refresh();
       }
     }
   }

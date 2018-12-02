@@ -1,4 +1,4 @@
-import { KeyedTemplate, Length, Property, View } from 'tns-core-modules/ui/core/view';
+import { KeyedTemplate, Property, View } from 'tns-core-modules/ui/core/view';
 import * as common from './pager.common';
 import {
     ITEMLOADING,
@@ -6,6 +6,7 @@ import {
     itemTemplatesProperty,
     LOADMOREITEMS,
     PagerBase,
+    peakingProperty,
     selectedIndexProperty,
     spacingProperty
 } from './pager.common';
@@ -31,9 +32,7 @@ function notifyForItemAtIndex(
     return args;
 }
 
-declare namespace com.eftimoff {
-    export const viewpagertransformers: any;
-}
+export { Transformer } from './pager.common';
 
 export class Pager extends PagerBase {
     _androidViewId: number;
@@ -49,7 +48,6 @@ export class Pager extends PagerBase {
     _android: TNSViewPager;
     _pagerAdapter: PagerStateAdapter | PagerAdapter;
     private _views: Array<any>;
-    private _transformer;
     private _pageListener: any;
     _viewMap: Map<string, View>;
     public _realizedItems = new Map<android.view.View, View>();
@@ -81,11 +79,12 @@ export class Pager extends PagerBase {
 
     public createNativeView(): android.support.v4.view.ViewPager {
         this.on(View.layoutChangedEvent, (args: any) => {
-            const size = this.convertToSize(args.object.spacing);
-            if (size > 0) {
+            const spacing = this.convertToSize(args.object.spacing);
+            const peaking = this.convertToSize(args.object.peaking);
+            if (spacing > 0 && peaking > 0) {
                 this._android.setClipToPadding(false);
-                this._android.setPadding(size, 0, size, 0);
-                this._android.setPageMargin(size / 2);
+                this._android.setPadding(peaking, 0, peaking, 0);
+                this._android.setPageMargin(spacing / 2);
             }
         });
         const that = new WeakRef(this);
@@ -121,11 +120,6 @@ export class Pager extends PagerBase {
         } else {
             this._android.setOffscreenPageLimit(3);
         }
-
-        this._android.setClipToPadding(false);
-        if (this.pageSpacing) {
-            this._android.setPageMargin(this.pageSpacing);
-        }
         return this._android;
     }
 
@@ -133,10 +127,18 @@ export class Pager extends PagerBase {
         const size = this.convertToSize(value);
         if (size > 0) {
             this._android.setClipToPadding(false);
-            this._android.setPadding(size, 0, size, 0);
             this._android.setPageMargin(size / 2);
         }
     }
+
+    [peakingProperty.setNative](value: any) {
+        const size = this.convertToSize(value);
+        if (size > 0) {
+            this._android.setClipToPadding(false);
+            this._android.setPadding(size, 0, size, 0);
+        }
+    }
+
 
     public initNativeView() {
         super.initNativeView();
@@ -152,36 +154,6 @@ export class Pager extends PagerBase {
         this._viewMap.clear();
         this.off(View.layoutChangedEvent);
         super.disposeNativeView();
-    }
-
-    private convertToSize(length): number {
-        let size = 0;
-        if (this.orientation === 'horizontal') {
-            size = this.getMeasuredWidth();
-        } else {
-            size = this.getMeasuredHeight();
-        }
-        if (length.unit === 'px') {
-            return length.value;
-        } else if (length.unit === 'dip') {
-            return Length.toDevicePixels(length.unit, size);
-        } else if (length.unit === '%') {
-            return size * length.value;
-        } else if (typeof length === 'string') {
-            if (length.indexOf('px') > -1) {
-                return parseInt(length.replace('px', ''));
-            } else if (length.indexOf('dip') > -1) {
-                return Length.toDevicePixels(parseInt(length.replace('dip', '')), size);
-            } else if (length.indexOf('%') > -1) {
-                return size * (parseInt(length.replace('%', '')) / 100);
-            } else {
-                return Length.toDevicePixels(parseInt(length), size);
-            }
-        } else if (typeof length === 'number') {
-            return Length.toDevicePixels(length, size);
-        }
-
-        return 0;
     }
 
     get disableAnimation(): boolean {
@@ -219,7 +191,7 @@ export class Pager extends PagerBase {
 
     refresh(hardReset = false) {
         if (this._android && this._pagerAdapter) {
-            this._pagerAdapter.notifyDataSetChanged();
+            this._android.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -357,11 +329,12 @@ export class PagerFragment extends android.support.v4.app.Fragment {
 
 export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     owner: WeakRef<Pager>;
-    mFragmentManager: any;
-    mCurTransaction: any;
+    mFragmentManager: android.support.v4.app.FragmentManager;
+    mCurTransaction: android.support.v4.app.FragmentTransaction;
     mCurrentPrimaryItem: any;
-    mFragments;
-    mSavedStates;
+    mFragments: android.support.v4.util.LongSparseArray<number>;
+    mSavedStates: android.support.v4.util.LongSparseArray<any>;
+    private updating: boolean;
 
     constructor() {
         super();
@@ -377,6 +350,14 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         }
     }
 
+    registerDataSetObserver(param0: android.database.DataSetObserver): void {
+        super.registerDataSetObserver(param0);
+    }
+
+    unregisterDataSetObserver(param0: android.database.DataSetObserver): void {
+        super.unregisterDataSetObserver(param0);
+    }
+
     instantiateItem(container: android.view.ViewGroup, position: number): any {
         const tag = this.getItemId(position);
         let fragment = this.mFragments.get(tag);
@@ -388,8 +369,16 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
             return fragment;
         }
 
+        const owner = this.owner ? this.owner.get() : null;
+        if (owner) {
+            if (position === owner.items.length - 1) {
+                owner.notify({eventName: LOADMOREITEMS, object: owner});
+            }
+        }
+
         if (this.mCurTransaction == null) {
             this.mCurTransaction = this.mFragmentManager.beginTransaction();
+            this.mCurTransaction.setReorderingAllowed(true);
         }
 
         fragment = this.getItem(position);
@@ -404,6 +393,10 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         this.mCurTransaction.add(container.getId(), fragment, 'f' + tag);
 
         const cachedView = this.getViewByPosition(position);
+
+        if (owner && cachedView) {
+            owner._prepareItem(cachedView, position);
+        }
         if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
             container.addView(cachedView.nativeView);
         }
@@ -453,6 +446,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
             }
             this.mCurrentPrimaryItem = fragment;
             const cachedView = this.getViewByPosition(position);
+            const owner = this.owner ? this.owner.get() : null;
             if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
                 container.addView(cachedView.nativeView);
             }
@@ -556,9 +550,18 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return (<android.support.v4.app.Fragment>object).getView() === view;
     }
 
-    getItemPosition(obj) {
-        const items = this.owner ? this.owner.get() : null;
-        return items ? POSITION_UNCHANGED : POSITION_NONE;
+    getItemPosition(object) {
+        const count = this.mFragments.size();
+        const fragment = <android.support.v4.app.Fragment>object;
+        let position = POSITION_NONE;
+        for (let i = 0; i < count; i++) {
+            const item = this.getItem(i);
+            if (item.equals(fragment)) {
+                position = i;
+                break;
+            }
+        }
+        return position;
     }
 }
 
