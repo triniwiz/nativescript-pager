@@ -2,7 +2,18 @@
 
 ## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
 
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.0...HEAD)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.1...HEAD)
+
+**Implemented enhancements:**
+
+- Question: Is it possible to show multiple slide ? [\#34](https://github.com/triniwiz/nativescript-pager/issues/34)
+
+**Closed issues:**
+
+- pager weight give dynamically [\#27](https://github.com/triniwiz/nativescript-pager/issues/27)
+
+## [v9.0.1](https://github.com/triniwiz/nativescript-pager/tree/v9.0.1) (2018-12-02)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.0...v9.0.1)
 
 **Implemented enhancements:**
 
@@ -18,6 +29,10 @@
 - Release latest plugin source on npm [\#78](https://github.com/triniwiz/nativescript-pager/issues/78)
 - NativeScript-vue support is broken in the NS-vue 2.0.0-alpha version [\#74](https://github.com/triniwiz/nativescript-pager/issues/74)
 - Cannot use in nativescript-vue [\#51](https://github.com/triniwiz/nativescript-pager/issues/51)
+
+**Merged pull requests:**
+
+- V9.0.1 [\#83](https://github.com/triniwiz/nativescript-pager/pull/83) ([triniwiz](https://github.com/triniwiz))
 
 ## [v9.0.0](https://github.com/triniwiz/nativescript-pager/tree/v9.0.0) (2018-12-02)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/V8.0.2...v9.0.0)
