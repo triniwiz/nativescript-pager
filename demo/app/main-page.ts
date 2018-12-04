@@ -1,4 +1,4 @@
-import { NavigatedData, Page } from 'tns-core-modules/ui/page';
+import { Page } from 'tns-core-modules/ui/page';
 import { HelloWorldModel } from './main-view-model';
 import { Pager } from 'nativescript-pager';
 import { Image } from 'tns-core-modules/ui/image';
@@ -7,18 +7,14 @@ import { topmost } from 'tns-core-modules/ui/frame';
 let page: Page;
 let vm = new HelloWorldModel();
 
-// Event handler for Page "navigatingTo" event attached in main-page.xml
-export function navigatingTo(args: NavigatedData) {
-    // Get the event sender
+
+export function pageLoaded(args) {
     page = <Page>args.object;
+    const pager: Pager = <Pager>page.getViewById('pager');
+    pager.on('loadMoreItems', loadMoreItems.bind(this));
     if (!args.isBackNavigation) {
         page.bindingContext = vm;
     }
-}
-
-export function pageLoaded() {
-    const pager: Pager = <Pager>page.getViewById('pager');
-    pager.on('loadMoreItems', loadMoreItems.bind(this));
 }
 
 export function toggleSwipe() {

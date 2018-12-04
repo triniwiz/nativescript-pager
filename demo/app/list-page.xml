@@ -1,9 +1,10 @@
 <Page
-    xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo" loaded="pageLoaded"
-    xmlns:c="nativescript-pager">
+        xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+        xmlns:c="nativescript-pager">
     <GridLayout rows="auto,auto ,auto,auto, *, auto" columns="*" id="sl">
         <Label text="Pager With List"/>
-        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager"
+                 showNativePageIndicator="false" backgroundColor="lightsteelblue">
             <c:Pager.itemTemplate>
                 <GridLayout rows="auto,*">
                     <GridLayout height="40%" rows="auto,auto,*" columns="*">
