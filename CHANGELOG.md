@@ -1,5 +1,19 @@
 # Change Log
 
+## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
+
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.3...HEAD)
+
+**Fixed bugs:**
+
+- Nativescript-pager-v9.0.2 \(Attempt to invoke virtual method 'int \) [\#88](https://github.com/triniwiz/nativescript-pager/issues/88)
+- AOT Breaks 9.x [\#85](https://github.com/triniwiz/nativescript-pager/issues/85)
+- Multi template not working in 9.x? [\#84](https://github.com/triniwiz/nativescript-pager/issues/84)
+
+**Merged pull requests:**
+
+- Fix Vue demo and tsconfig [\#86](https://github.com/triniwiz/nativescript-pager/pull/86) ([EddyVerbruggen](https://github.com/EddyVerbruggen))
+
 ## [v9.0.3](https://github.com/triniwiz/nativescript-pager/tree/v9.0.3) (2018-12-02)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.2...v9.0.3)
 
