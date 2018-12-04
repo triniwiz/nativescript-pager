@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
-
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.3...HEAD)
+## [v9.1.0](https://github.com/triniwiz/nativescript-pager/tree/v9.1.0) (2018-12-04)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.3...v9.1.0)
 
 **Fixed bugs:**
 
