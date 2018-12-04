@@ -290,7 +290,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             return null;
         }
         const owner = this.owner.get();
-        if (this.position === owner.items.length - 1) {
+        if (this.position === owner.items.length - owner.loadMoreCount) {
             owner.notify({eventName: LOADMOREITEMS, object: owner});
         }
         const template = owner._getItemTemplate(this.position);
@@ -334,8 +334,6 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     mCurrentPrimaryItem: any;
     mFragments: android.support.v4.util.LongSparseArray<number>;
     mSavedStates: android.support.v4.util.LongSparseArray<any>;
-    private updating: boolean;
-
     constructor() {
         super();
         this.mFragments = new android.support.v4.util.LongSparseArray();
@@ -472,6 +470,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
     getCount(): number {
         const owner = this.owner ? this.owner.get() : null;
+        if (!owner) return 0;
         return owner.items ? owner.items.length : 0;
     }
 
