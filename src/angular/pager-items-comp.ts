@@ -20,22 +20,16 @@ import {
     ɵisListLikeIterable as isListLikeIterable
 } from '@angular/core';
 import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
-import { View, KeyedTemplate } from 'tns-core-modules/ui/core/view';
-import {
-    LayoutBase,
-    Template,
-    EventData
-} from 'tns-core-modules/ui/layouts/layout-base';
+import { KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
+import { EventData, LayoutBase, Template } from 'tns-core-modules/ui/layouts/layout-base';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 import { profile } from 'tns-core-modules/profiling';
 
-import {
-    getSingleViewRecursive,
-    registerElement
-} from 'nativescript-angular/element-registry';
+import { getSingleViewRecursive, registerElement } from 'nativescript-angular/element-registry';
 import { isEnabled as isLogEnabled } from 'tns-core-modules/trace';
-import { PagerLog, PagerError } from '../pager.common';
+import { PagerError, PagerLog } from '../pager.common';
 import { Pager } from '../';
+import { isBlank } from 'nativescript-angular/lang-facade';
 
 registerElement('Pager', () => Pager);
 
@@ -78,12 +72,12 @@ export interface SetupItemViewArgs {
 export abstract class TemplatedItemsComponent
     implements DoCheck, OnDestroy, AfterContentInit {
     public abstract get nativeElement(): Pager;
-
+    private viewInitialized: true;
     protected templatedItemsView: Pager;
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
     protected _templateMap: Map<string, KeyedTemplate>;
-
+    private _selectedIndex: number;
     @ViewChild('loader', {read: ViewContainerRef})
     loader: ViewContainerRef;
 
@@ -115,6 +109,26 @@ export abstract class TemplatedItemsComponent
         }
 
         this.templatedItemsView.items = this._items;
+    }
+
+
+    @Input()
+    get selectedIndex(): number {
+        return this._selectedIndex;
+    }
+
+    set selectedIndex(value) {
+        this._selectedIndex = value;
+        if (this.viewInitialized) {
+            this.templatedItemsView.selectedIndex = this._selectedIndex;
+        }
+    }
+
+    ngAfterViewInit() {
+        this.viewInitialized = true;
+        if (!isBlank(this._selectedIndex)) {
+            this.templatedItemsView.selectedIndex = this._selectedIndex;
+        }
     }
 
     constructor(
@@ -306,8 +320,7 @@ export function getItemViewRoot(
     viewRef: ComponentView,
     rootLocator: RootLocator = getSingleViewRecursive
 ): View {
-    const rootView = rootLocator(viewRef.rootNodes, 0);
-    return rootView;
+    return rootLocator(viewRef.rootNodes, 0);
 }
 
 export const TEMPLATED_ITEMS_COMPONENT = new InjectionToken<TemplatedItemsComponent>('TemplatedItemsComponent');
@@ -323,7 +336,7 @@ export class TemplateKeyDirective {
     }
 
     @Input()
-    set nsTemplateKey(value: any) {
+    set pagerTemplateKey(value: any) {
         if (this.comp && this.templateRef) {
             this.comp.registerTemplate(value, this.templateRef);
         }
