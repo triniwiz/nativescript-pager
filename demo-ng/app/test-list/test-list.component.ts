@@ -48,7 +48,7 @@ export class TestListComponent implements OnInit {
     },
     {
       title: 'Slide 8',
-      image: 'http://cartoonbros.com/wp-content/uploads/2016/05/Batman-4.jpg'
+      image: 'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80'
     },
     {
       title: 'Slide 9',
@@ -111,7 +111,7 @@ export class TestListComponent implements OnInit {
       },
       {
         title: 'Slide 8',
-        image: 'http://cartoonbros.com/wp-content/uploads/2016/05/Batman-4.jpg',
+        image: 'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80',
         items: this._items
       },
       {
@@ -160,7 +160,7 @@ export class TestListComponent implements OnInit {
 
   onIndexChanged($event) {
     debugObj($event);
-    this.latestReceivedIndex = $event.newIndex;
+    this.latestReceivedIndex = $event.value;
   }
 
   pageChanged(index: number) {

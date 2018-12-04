@@ -10,14 +10,14 @@
                 <GridLayout class="pager-item" rows="auto,auto,*" columns="*">
                     <Label text="Even"></Label>
                     <Label row="1" [text]="item.title"></Label>
-                    <Image loaded="loadedImage" row="2" [src]="item.image"></Image>
+                    <Image height="100" loaded="loadedImage" row="2" [src]="item.image"></Image>
                 </GridLayout>
                     <ListView row="1" [items]="item.items">
                         <ng-template let-o="index" let-child="item">
                             <GridLayout class="pager-item" rows="auto,auto,*" columns="*">
                                 <Label text="Even"></Label>
                                 <Label row="1" [text]="child.title"></Label>
-                                <Image loaded="loadedImage" row="2" [src]="child.image"></Image>
+                                <Image height="200" loaded="loadedImage" row="2" [src]="child.image"></Image>
                             </GridLayout>
                         </ng-template>
                     </ListView>
