@@ -91,6 +91,7 @@ export abstract class PagerBase extends ContainerView {
     public _effectiveItemHeight: number;
     public _effectiveItemWidth: number;
     public transformer: Transformer;
+    public loadMoreCount: number = 1;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
 
