@@ -26,15 +26,15 @@ export type Orientation = 'horizontal' | 'vertical';
 
 export const ITEMLOADING = 'itemLoading';
 export const LOADMOREITEMS = 'loadMoreItems';
-export module knownTemplates {
+export namespace knownTemplates {
     export const itemTemplate = 'itemTemplate';
 }
 
-export module knownMultiTemplates {
+export namespace knownMultiTemplates {
     export const itemTemplates = 'itemTemplates';
 }
 
-export module knownCollections {
+export namespace knownCollections {
     export const items = 'items';
 }
 
