@@ -1,6 +1,6 @@
 {
 	"name": "nativescript-pager",
-	"version": "9.2.2",
+	"version": "9.2.3",
 	"description": "A Carousel/Pager plugin for NativeScript",
 	"main": "pager",
 	"typings": "index.d.ts",
