@@ -33,7 +33,7 @@ function notifyForItemAtIndex(
 }
 
 export { Transformer } from './pager.common';
-
+declare var android;
 export class Pager extends PagerBase {
     _androidViewId: number;
     disableSwipe: boolean;
@@ -46,12 +46,12 @@ export class Pager extends PagerBase {
     }
 
     _android: TNSViewPager;
-    _pagerAdapter: PagerStateAdapter | PagerAdapter;
+    _pagerAdapter: PagerStateAdapter;
     private _views: Array<any>;
     private _pageListener: any;
     _viewMap: Map<string, View>;
-    public _realizedItems = new Map<android.view.View, View>();
-    public _realizedTemplates = new Map<string, Map<android.view.View, View>>();
+    public _realizedItems = new Map<any /*android.view.View*/, View>();
+    public _realizedTemplates = new Map<string, Map<any /*android.view.View*/, View>>();
 
     constructor() {
         super();
@@ -77,7 +77,7 @@ export class Pager extends PagerBase {
     //     this._setValue(Pager.pagesCountProperty, value);
     // }
 
-    public createNativeView(): android.support.v4.view.ViewPager {
+    public createNativeView() {
         this.on(View.layoutChangedEvent, (args: any) => {
             const spacing = this.convertToSize(args.object.spacing);
             const peaking = this.convertToSize(args.object.peaking);
@@ -285,7 +285,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
         return fragment;
     }
 
-    onCreateView(inflater: android.view.LayoutInflater, collection: android.view.ViewGroup, bundle: android.os.Bundle): android.view.View {
+    onCreateView(inflater: any /*android.view.LayoutInflater*/, collection: any /*android.view.ViewGroup*/, bundle: any /* android.os.Bundle */): any /* android.view.View */ {
         if (!this.owner) {
             return null;
         }
@@ -329,11 +329,11 @@ export class PagerFragment extends android.support.v4.app.Fragment {
 
 export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     owner: WeakRef<Pager>;
-    mFragmentManager: android.support.v4.app.FragmentManager;
-    mCurTransaction: android.support.v4.app.FragmentTransaction;
+    mFragmentManager: any /*android.support.v4.app.FragmentManager*/;
+    mCurTransaction: any /*android.support.v4.app.FragmentTransaction*/;
     mCurrentPrimaryItem: any;
-    mFragments: android.support.v4.util.LongSparseArray<number>;
-    mSavedStates: android.support.v4.util.LongSparseArray<any>;
+    mFragments: any /*android.support.v4.util.LongSparseArray<number>*/;
+    mSavedStates: any /*android.support.v4.util.LongSparseArray<any>*/;
     constructor() {
         super();
         this.mFragments = new android.support.v4.util.LongSparseArray();
@@ -341,22 +341,22 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return global.__native(this);
     }
 
-    startUpdate(container: android.view.ViewGroup): void {
+    startUpdate(container: any /*android.view.ViewGroup*/): void {
         if (container.getId() === android.view.View.NO_ID) {
             throw new Error('ViewPager with adapter ' + this
                 + ' requires a view id');
         }
     }
 
-    registerDataSetObserver(param0: android.database.DataSetObserver): void {
+    registerDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
         super.registerDataSetObserver(param0);
     }
 
-    unregisterDataSetObserver(param0: android.database.DataSetObserver): void {
+    unregisterDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
         super.unregisterDataSetObserver(param0);
     }
 
-    instantiateItem(container: android.view.ViewGroup, position: number): any {
+    instantiateItem(container: any /*android.view.ViewGroup*/, position: number): any {
         const tag = this.getItemId(position);
         let fragment = this.mFragments.get(tag);
         // If we already have this item instantiated, there is nothing
@@ -401,8 +401,8 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return fragment;
     }
 
-    destroyItem(container: android.view.ViewGroup, position: number, object: any): void {
-        let fragment = <android.support.v4.app.Fragment>object;
+    destroyItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
+        let fragment = /*<android.support.v4.app.Fragment>*/object;
         const currentPosition = this.getItemPosition(fragment);
 
         const index = this.mFragments.indexOfValue(fragment);
@@ -431,7 +431,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         this.mCurTransaction.remove(fragment);
     }
 
-    setPrimaryItem(container: android.view.ViewGroup, position: number, object: any): void {
+    setPrimaryItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
         const fragment = <android.support.v4.app.Fragment>object;
         if (fragment !== this.mCurrentPrimaryItem) {
             if (this.mCurrentPrimaryItem != null) {
@@ -444,7 +444,6 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
             }
             this.mCurrentPrimaryItem = fragment;
             const cachedView = this.getViewByPosition(position);
-            const owner = this.owner ? this.owner.get() : null;
             if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
                 container.addView(cachedView.nativeView);
             }
@@ -461,7 +460,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return cachedView;
     }
 
-    finishUpdate(container: android.view.ViewGroup): void {
+    finishUpdate(container: any /*android.view.ViewGroup*/): void {
         if (this.mCurTransaction != null) {
             this.mCurTransaction.commitNowAllowingStateLoss();
             this.mCurTransaction = null;
@@ -474,7 +473,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return owner.items ? owner.items.length : 0;
     }
 
-    getItem(position: number): android.support.v4.app.Fragment {
+    getItem(position: number): PagerFragment {
         if (!this.owner) {
             return null;
         }
@@ -482,7 +481,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return PagerFragment.newInstance(owner._domId, position);
     }
 
-    saveState(): android.os.Parcelable {
+    saveState(): any /*android.os.Parcelable*/ {
         let state = null;
         if (this.mSavedStates.size() > 0) {
             // save Fragment states
@@ -509,7 +508,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
     }
 
-    restoreState(state: android.os.Parcelable, loader: java.lang.ClassLoader): void {
+    restoreState(state: any /*android.os.Parcelable*/, loader: any /*java.lang.ClassLoader*/): void {
         if (state != null) {
             const bundle = <android.os.Bundle>state;
             bundle.setClassLoader(loader);
@@ -545,13 +544,13 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         return position;
     }
 
-    isViewFromObject(view: android.view.View, object: java.lang.Object): boolean {
+    isViewFromObject(view: any /*android.view.View*/, object: any /*java.lang.Object*/): boolean {
         return (<android.support.v4.app.Fragment>object).getView() === view;
     }
 
-    getItemPosition(object) {
+    getItemPosition(object: any) {
         const count = this.mFragments.size();
-        const fragment = <android.support.v4.app.Fragment>object;
+        const fragment = /*<android.support.v4.app.Fragment>*/object;
         let position = POSITION_NONE;
         for (let i = 0; i < count; i++) {
             const item = this.getItem(i);
@@ -561,81 +560,6 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
             }
         }
         return position;
-    }
-}
-
-export class PagerAdapter extends android.support.v4.view.PagerAdapter {
-    owner: Pager;
-
-    constructor(owner) {
-        super();
-        this.owner = owner;
-        return global.__native(this);
-    }
-
-    getItemPosition(obj) {
-        return android.support.v4.view.PagerAdapter.POSITION_NONE;
-    }
-
-    instantiateItem(collection: android.view.ViewGroup, position: number) {
-        if (!this.owner) {
-            return null;
-        }
-        if (position === this.owner.items.length - 1) {
-            this.owner.notify({eventName: LOADMOREITEMS, object: this.owner});
-        }
-        const template = this.owner._getItemTemplate(position);
-        if (this.owner._viewMap.has(`${position}-${template.key}`)) {
-            const cachedView = this.owner._viewMap.get(`${position}-${template.key}`);
-            let convertView = cachedView ? cachedView.nativeView : null;
-            if (convertView) {
-                // collection.addView(convertView);
-                return convertView;
-            }
-        }
-        let view: any = template.createView();
-        let _args: any = notifyForItemAtIndex(
-            this.owner,
-            view ? view.nativeView : null,
-            view,
-            ITEMLOADING,
-            position
-        );
-        view = _args.view || this.owner._getDefaultItemContent(position);
-        if (view) {
-            this.owner._prepareItem(view, position);
-            if (!view.parent) {
-                this.owner._addView(view);
-            }
-            this.owner._viewMap.set(`${position}-${template.key}`, view);
-        }
-
-        collection.addView(view.nativeView);
-        return view.nativeView;
-    }
-
-    destroyItem(collection: android.view.ViewGroup, position: number, object) {
-        /*const template = this.owner._getItemTemplate(position);
-        if (this.owner._viewMap.has(`${position}-${template.key}`)) {
-          let convertView: any = this.owner._viewMap.get(
-            `${position}-${template.key}`
-          )
-            ? this.owner._viewMap.get(`${position}-${template.key}`)
-            : null;
-          if (convertView && convertView.nativeView) {
-            collection.removeView(convertView.nativeView);
-            this.owner._viewMap.delete(`${position}-${template.key}`);
-          }
-        }
-        */
-    }
-
-    getCount() {
-        return this.owner.items ? this.owner.items.length : 0;
-    }
-
-    isViewFromObject(view: android.view.View, object) {
-        return view === object;
     }
 }
 
