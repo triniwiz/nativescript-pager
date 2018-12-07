@@ -1,6 +1,6 @@
 {
 	"name": "nativescript-pager",
-	"version": "9.2.0",
+	"version": "9.2.1",
 	"description": "A Carousel/Pager plugin for NativeScript",
 	"main": "pager",
 	"typings": "index.d.ts",
@@ -26,7 +26,7 @@
 		"demo.ng.ios": "npm i && npm run tsc && cd ../demo-ng && tns run ios --bundle --syncAllFiles",
 		"demo.ng.ios.aot": "npm i && npm run tsc && cd ../demo-ng && tns run ios --bundle --syncAllFiles --env.aot",
 		"demo.ng.android": "npm i && npm run tsc && cd ../demo-ng && tns run android --syncAllFiles",
-		"demo.ng.android.aot": "npm i && npm run tsc && cd ../demo-ng && tns run android --syncAllFiles --env.aot",
+		"demo.ng.android.aot": "npm i && npm run tsc && cd ../demo-ng && tns run android --bundle --syncAllFiles --env.aot",
 		"demo.vue.ios": "npm i && npm run tsc && cd ../demo-vue && tns run ios --bundle --syncAllFiles",
 		"demo.vue.android": "npm i && npm run tsc && cd ../demo-vue && tns run android --bundle --syncAllFiles",
 		"demo.reset": "cd ../demo && rimraf platforms && cd ../demo-ng && rimraf platforms && cd ../demo-vue && npm run clean",
