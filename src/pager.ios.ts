@@ -48,15 +48,15 @@ global.moduleMerge(common, exports);
 export class Pager extends PagerBase {
     private _disableSwipe: boolean = false;
     private _disableAnimation: boolean = false;
-    _layout: UICollectionViewFlowLinearLayoutImpl;
+    _layout: any;  /*UICollectionViewFlowLinearLayoutImpl*/
     private _initialLoad: boolean = false;
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
 
     _preparingCell: boolean = false;
-    _ios: UICollectionView;
-    _delegate: UICollectionDelegateImpl;
+    _ios: any; /*UICollectionView*/
+    _delegate: any; /*UICollectionDelegateImpl*/
     private _dataSource;
     public _measuredMap: Map<number, CGSize>;
     _map: Map<PagerCell, View>;
@@ -119,7 +119,7 @@ export class Pager extends PagerBase {
         this._setNativeClipToBounds();
     }
 
-    get ios(): UICollectionView {
+    get ios(): any /*UICollectionView*/ {
         return this._ios;
     }
 
@@ -149,8 +149,7 @@ export class Pager extends PagerBase {
 
     }
 
-    updateNativeItems(oldItems: View[], newItems: View[]) {
-    }
+    updateNativeItems(oldItems: View[], newItems: View[]) {}
 
     public [paddingTopProperty.getDefault](): number {
         return this._layout.sectionInset.top;
@@ -554,7 +553,6 @@ class UICollectionDelegateImpl extends NSObject
     startingScrollingOffset;
 
     currentPage = 0;
-
 
     indexOfMajorCell(): number {
         let owner = this._owner ? this._owner.get() : null;
