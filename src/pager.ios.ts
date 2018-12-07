@@ -50,7 +50,6 @@ export class Pager extends PagerBase {
     private _disableAnimation: boolean = false;
     _layout: any;  /*UICollectionViewFlowLinearLayoutImpl*/
     private _initialLoad: boolean = false;
-    public cache: boolean = true;
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
@@ -659,7 +658,7 @@ class UICollectionViewDataSourceImpl extends NSObject
         const owner = this._owner ? this._owner.get() : null;
         const template = owner && owner._getItemTemplate(indexPath.row);
         let cell;
-        if (!owner.cache) {
+        if (!(String(owner.cache) === 'true')) {
             collectionView.registerClassForCellWithReuseIdentifier(PagerCell.class(), `${template.key}-${indexPath.row}`);
             cell =
                 collectionView.dequeueReusableCellWithReuseIdentifierForIndexPath(

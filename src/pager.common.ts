@@ -81,6 +81,7 @@ export abstract class PagerBase extends ContainerView {
     public itemTemplates: string | Array<KeyedTemplate>;
     public canGoRight = true;
     public canGoLeft = true;
+    public cache = true;
     public spacing: PercentLength;
     public peaking: PercentLength;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
@@ -371,6 +372,13 @@ export const itemTemplatesProperty = new Property<PagerBase,
     }
 });
 itemTemplatesProperty.register(PagerBase);
+
+export const cacheProperty = new Property<PagerBase, boolean>({
+    name: 'cache',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+cacheProperty.register(PagerBase);
 
 export const canGoRightProperty = new Property<PagerBase, boolean>({
     name: 'canGoRight',
