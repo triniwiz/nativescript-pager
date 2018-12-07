@@ -171,7 +171,7 @@ _Angular v4+_
 ## Config
 
 ```xml
-<Pager disableSwipe="true" disableAnimation="true" selectedIndex="5">
+<Pager cache="false" disableSwipe="true" disableAnimation="true" selectedIndex="5">
 ```
 
 | IOS                                    | Android                                    |
