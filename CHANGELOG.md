@@ -1,5 +1,16 @@
 # Change Log
 
+## [v9.2.0](https://github.com/triniwiz/nativescript-pager/tree/v9.2.0) (2018-12-07)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.1.1...v9.2.0)
+
+**Implemented enhancements:**
+
+- feat: Allow cache toggle [\#89](https://github.com/triniwiz/nativescript-pager/issues/89)
+
+**Closed issues:**
+
+- demo-ng not work [\#87](https://github.com/triniwiz/nativescript-pager/issues/87)
+
 ## [v9.1.1](https://github.com/triniwiz/nativescript-pager/tree/v9.1.1) (2018-12-07)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.1.0...v9.1.1)
 
