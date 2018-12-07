@@ -8,7 +8,6 @@
         <ng-template let-i="index" let-item="item">
             <Gridlayout rows="auto,*">
                 <GridLayout class="pager-item" rows="auto,auto,*" columns="*">
-                    <Label text="Even"></Label>
                     <Label row="1" [text]="item.title"></Label>
                     <Image height="100" loaded="loadedImage" row="2" [src]="item.image"></Image>
                 </GridLayout>
