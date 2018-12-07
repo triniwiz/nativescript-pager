@@ -17,12 +17,12 @@
                </StackLayout>
            </ScrollView>
            <c:Pager selectedIndex="2" peaking="15%" spacing="5%" transformer="scale" selectedIndexChange="selectedIndexChange" items="{{items}}" row="5" id="pager" showNativePageIndicator="false" backgroundColor="lightsteelblue">
-               <Pager.itemTemplate>
+               <c:Pager.itemTemplate>
                    <GridLayout backgroundColor="red" rows="auto,*" columns="*">
                        <Label row="0" text="{{title}}"/>
                        <i:ImageCacheIt resize="300,300"  loaded="loadedImage" row="2" imageUri="{{image}}"/>
                    </GridLayout>
-               </Pager.itemTemplate>
+               </c:Pager.itemTemplate>
            </c:Pager>
            <Button text="Nav" row="6" tap="navigate"/>
        </GridLayout>

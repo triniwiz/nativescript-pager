@@ -1,48 +1,48 @@
 {
-	"description": "NativeScript Application",
-	"license": "SEE LICENSE IN <your-license-filename>",
-	"readme": "NativeScript Application",
-	"repository": "<fill-your-repository-here>",
-	"nativescript": {
-		"id": "org.nativescript.demong",
-		"tns-android": {
-			"version": "5.0.0"
-		},
-		"tns-ios": {
-			"version": "5.0.0"
-		}
-	},
-	"dependencies": {
-		"@angular/common": "~7.0.0",
-		"@angular/compiler": "~7.0.0",
-		"@angular/core": "~7.0.0",
-		"@angular/forms": "~7.0.0",
-		"@angular/http": "~7.0.0",
-		"@angular/platform-browser": "~7.0.0",
-		"@angular/platform-browser-dynamic": "~7.0.0",
-		"@angular/router": "~7.0.0",
-		"nativescript-angular": "^7.0.0",
-		"nativescript-image-cache-it": "^4.0.9",
-		"nativescript-pager": "../src",
-		"nativescript-theme-core": "^1.0.4",
-		"reflect-metadata": "~0.1.8",
-		"rxjs": "^6.3.3",
-		"tns-core-modules": "^5.0.2",
-		"zone.js": "^0.8.26"
-	},
-	"devDependencies": {
-		"@angular/compiler-cli": "~7.0.0",
-		"@ngtools/webpack": "~7.0.0",
-		"babel-traverse": "6.23.1",
-		"babel-types": "6.23.0",
-		"babylon": "6.15.0",
-		"lazy": "1.0.11",
-		"nativescript-css-loader": "~0.26.0",
-		"nativescript-dev-typescript": "^0.7.8",
-		"nativescript-dev-webpack": "^0.18.0"
-	},
-	"scripts": {
-		"build.plugin": "cd ../src && npm run build",
-		"ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
-	}
+  "description": "NativeScript Application",
+  "license": "SEE LICENSE IN <your-license-filename>",
+  "readme": "NativeScript Application",
+  "repository": "<fill-your-repository-here>",
+  "nativescript": {
+    "id": "org.nativescript.demong",
+    "tns-android": {
+      "version": "5.0.0"
+    },
+    "tns-ios": {
+      "version": "5.0.0"
+    }
+  },
+  "dependencies": {
+    "@angular/common": "~7.0.0",
+    "@angular/compiler": "~7.0.0",
+    "@angular/core": "~7.0.0",
+    "@angular/forms": "~7.0.0",
+    "@angular/http": "~7.0.0",
+    "@angular/platform-browser": "~7.0.0",
+    "@angular/platform-browser-dynamic": "~7.0.0",
+    "@angular/router": "~7.0.0",
+    "nativescript-angular": "^7.0.0",
+    "nativescript-image-cache-it": "^4.0.9",
+    "nativescript-pager": "../src",
+    "nativescript-theme-core": "^1.0.4",
+    "reflect-metadata": "~0.1.8",
+    "rxjs": "^6.3.3",
+    "tns-core-modules": "^5.0.2",
+    "zone.js": "^0.8.26"
+  },
+  "devDependencies": {
+    "@angular/compiler-cli": "~7.0.0",
+    "@ngtools/webpack": "~7.0.0",
+    "babel-traverse": "6.23.1",
+    "babel-types": "6.23.0",
+    "babylon": "6.15.0",
+    "lazy": "1.0.11",
+    "nativescript-css-loader": "~0.26.0",
+    "nativescript-dev-typescript": "^0.7.8",
+    "nativescript-dev-webpack": "^0.18.0"
+  },
+  "scripts": {
+    "build.plugin": "cd ../src && npm run build",
+    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
+  }
 }
