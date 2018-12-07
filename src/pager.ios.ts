@@ -50,6 +50,7 @@ export class Pager extends PagerBase {
     private _disableAnimation: boolean = false;
     _layout: any;  /*UICollectionViewFlowLinearLayoutImpl*/
     private _initialLoad: boolean = false;
+    public cache: boolean = true;
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
@@ -149,7 +150,8 @@ export class Pager extends PagerBase {
 
     }
 
-    updateNativeItems(oldItems: View[], newItems: View[]) {}
+    updateNativeItems(oldItems: View[], newItems: View[]) {
+    }
 
     public [paddingTopProperty.getDefault](): number {
         return this._layout.sectionInset.top;
@@ -656,11 +658,22 @@ class UICollectionViewDataSourceImpl extends NSObject
                                                 indexPath: NSIndexPath): UICollectionViewCell {
         const owner = this._owner ? this._owner.get() : null;
         const template = owner && owner._getItemTemplate(indexPath.row);
-        let cell =
-            collectionView.dequeueReusableCellWithReuseIdentifierForIndexPath(
-                template.key,
-                indexPath
-            ) || PagerCell.initWithEmptyBackground();
+        let cell;
+        if (!owner.cache) {
+            collectionView.registerClassForCellWithReuseIdentifier(PagerCell.class(), `${template.key}-${indexPath.row}`);
+            cell =
+                collectionView.dequeueReusableCellWithReuseIdentifierForIndexPath(
+                    `${template.key}-${indexPath.row}`,
+                    indexPath
+                ) || PagerCell.initWithEmptyBackground();
+        } else {
+            cell =
+                collectionView.dequeueReusableCellWithReuseIdentifierForIndexPath(
+                    template.key,
+                    indexPath
+                ) || PagerCell.initWithEmptyBackground();
+        }
+
         if (owner) {
             owner._prepareCell(<PagerCell>cell, indexPath);
             const cellView: any = (cell as PagerCell).view;
