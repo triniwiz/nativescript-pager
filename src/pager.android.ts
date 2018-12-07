@@ -32,8 +32,9 @@ function notifyForItemAtIndex(
     return args;
 }
 
+declare var java, android;
 export { Transformer } from './pager.common';
-declare var android;
+
 export class Pager extends PagerBase {
     _androidViewId: number;
     disableSwipe: boolean;
@@ -268,7 +269,7 @@ const POSITION_NONE = -2;
 
 export class PagerFragment extends android.support.v4.app.Fragment {
     owner: WeakRef<Pager>;
-    position: number;
+    position: number = -1;
     view: View;
 
     constructor() {
@@ -281,12 +282,14 @@ export class PagerFragment extends android.support.v4.app.Fragment {
         fragment.position = position;
         fragment.owner = getPagerById(pagerId);
         const args = new android.os.Bundle();
+        args.putInt('position', position);
+        args.putInt('pagerId', pagerId);
         fragment.setArguments(args);
         return fragment;
     }
 
     onCreateView(inflater: any /*android.view.LayoutInflater*/, collection: any /*android.view.ViewGroup*/, bundle: any /* android.os.Bundle */): any /* android.view.View */ {
-        if (!this.owner) {
+        if (!this.owner || this.position === -1) {
             return null;
         }
         const owner = this.owner.get();
@@ -334,6 +337,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     mCurrentPrimaryItem: any;
     mFragments: any /*android.support.v4.util.LongSparseArray<number>*/;
     mSavedStates: any /*android.support.v4.util.LongSparseArray<any>*/;
+
     constructor() {
         super();
         this.mFragments = new android.support.v4.util.LongSparseArray();
@@ -554,7 +558,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         let position = POSITION_NONE;
         for (let i = 0; i < count; i++) {
             const item = this.getItem(i);
-            if (item.equals(fragment)) {
+            if (item && item.equals(fragment)) {
                 position = i;
                 break;
             }
@@ -631,8 +635,10 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     }
 }
 
+// @ts-ignore
 export class VerticalPageTransformer extends java.lang.Object
     implements android.support.v4.view.ViewPager.PageTransformer {
+
     constructor() {
         super();
         return global.__native(this);
