@@ -1,5 +1,8 @@
 # Change Log
 
+## [v9.1.1](https://github.com/triniwiz/nativescript-pager/tree/v9.1.1) (2018-12-07)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.1.0...v9.1.1)
+
 ## [v9.1.0](https://github.com/triniwiz/nativescript-pager/tree/v9.1.0) (2018-12-04)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.0.3...v9.1.0)
 
@@ -50,7 +53,7 @@
 - V9.0.1 [\#83](https://github.com/triniwiz/nativescript-pager/pull/83) ([triniwiz](https://github.com/triniwiz))
 
 ## [v9.0.0](https://github.com/triniwiz/nativescript-pager/tree/v9.0.0) (2018-12-02)
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/V8.0.2...v9.0.0)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v6.0.0...v9.0.0)
 
 **Implemented enhancements:**
 
@@ -67,11 +70,11 @@
 
 - V9 [\#81](https://github.com/triniwiz/nativescript-pager/pull/81) ([triniwiz](https://github.com/triniwiz))
 
-## [V8.0.2](https://github.com/triniwiz/nativescript-pager/tree/V8.0.2) (2018-06-13)
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v6.0.0...V8.0.2)
-
 ## [v6.0.0](https://github.com/triniwiz/nativescript-pager/tree/v6.0.0) (2018-06-13)
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v6.0...v6.0.0)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/V8.0.2...v6.0.0)
+
+## [V8.0.2](https://github.com/triniwiz/nativescript-pager/tree/V8.0.2) (2018-06-13)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v6.0...V8.0.2)
 
 **Implemented enhancements:**
 
