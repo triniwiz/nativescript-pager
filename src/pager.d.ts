@@ -23,4 +23,6 @@ export declare class Pager extends PagerBase {
     disableAnimation: boolean;
 
     requestLayout(): void;
+
+    _addChildFromBuilder(name: string, value: Array<any>): void;
 }

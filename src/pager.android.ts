@@ -57,6 +57,7 @@ export class Pager extends PagerBase {
     constructor() {
         super();
         pagers.set(this._domId, new WeakRef<Pager>(this));
+        this._childrenViews = new Map<number, View>();
     }
 
     get views() {
@@ -170,7 +171,7 @@ export class Pager extends PagerBase {
     }
 
     get _childrenCount(): number {
-        return this.items ? this.items.length : 0;
+        return this.items ? this.items.length : this._childrenViews ? this._childrenViews.size : 0;
     }
 
     [itemsProperty.getDefault](): any {
@@ -181,6 +182,16 @@ export class Pager extends PagerBase {
         if (value) {
             selectedIndexProperty.coerce(this);
             this.refresh();
+        }
+    }
+
+    onLoaded(): void {
+        super.onLoaded();
+        if (!this.items && this._childrenCount > 0) {
+            selectedIndexProperty.coerce(this);
+            setTimeout(() => {
+                this._android.setCurrentItem(this.selectedIndex, false);
+            }, 0);
         }
     }
 
@@ -248,6 +259,12 @@ export class Pager extends PagerBase {
         this.nativeViewProtected.setAdapter(this._pagerAdapter);
         this.refresh();
     }
+
+    _addChildFromBuilder(name: string, value: any): void {
+        if (name === 'PagerItem') {
+            this._childrenViews.set(this._childrenCount, value);
+        }
+    }
 }
 
 export const pagesCountProperty = new Property<Pager, number>({
@@ -293,6 +310,20 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             return null;
         }
         const owner = this.owner.get();
+        if (owner && owner._childrenCount > 0 && !owner.items) {
+            const view = owner._childrenViews.get(this.position);
+            if (view) {
+                if (!view.parent) {
+                    owner._addView(view);
+                }
+            }
+            this.view = view;
+            if (view.nativeView && !view.nativeView.getParent()) {
+                owner._android.addView(view.nativeView);
+            }
+            return view.nativeView;
+        }
+
         if (this.position === owner.items.length - owner.loadMoreCount) {
             owner.notify({eventName: LOADMOREITEMS, object: owner});
         }
@@ -373,7 +404,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
         const owner = this.owner ? this.owner.get() : null;
         if (owner) {
-            if (position === owner.items.length - 1) {
+            if (owner.items && position === owner.items.length - 1) {
                 owner.notify({eventName: LOADMOREITEMS, object: owner});
             }
         }
@@ -457,6 +488,12 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     private getViewByPosition(position: number): View {
         let cachedView = null;
         const owner = this.owner.get();
+
+
+        if (owner && owner._childrenCount > 0 && !owner.items) {
+            return owner._childrenViews.get(this.position);
+        }
+
         const template = owner._getItemTemplate(position);
         if (owner._viewMap.has(`${position}-${template.key}`)) {
             cachedView = <View>owner._viewMap.get(`${position}-${template.key}`);
@@ -474,7 +511,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
     getCount(): number {
         const owner = this.owner ? this.owner.get() : null;
         if (!owner) return 0;
-        return owner.items ? owner.items.length : 0;
+        return owner.items ? owner.items.length : owner._childrenCount;
     }
 
     getItem(position: number): PagerFragment {

@@ -1,4 +1,5 @@
 import {
+    AddChildFromBuilder,
     booleanConverter,
     CoercibleProperty,
     ContainerView,
@@ -21,6 +22,7 @@ import { Observable } from 'tns-core-modules/data/observable';
 import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
 import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -73,7 +75,7 @@ export enum Transformer {
 }
 
 @CSSType('Pager')
-export abstract class PagerBase extends ContainerView {
+export abstract class PagerBase extends ContainerView implements AddChildFromBuilder {
     public items: any[] | ItemsSource;
     public selectedIndex: number;
     public showNativePageIndicator: boolean;
@@ -93,6 +95,8 @@ export abstract class PagerBase extends ContainerView {
     public _effectiveItemWidth: number;
     public transformer: Transformer;
     public loadMoreCount: number = 1;
+    public _childrenViews: Map<number, View>;
+    _childrenCount: number;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
 
@@ -260,6 +264,18 @@ export abstract class PagerBase extends ContainerView {
         }
         return converted;
     }
+
+    abstract _addChildFromBuilder(name: string, value: any): void;
+}
+
+export class PagerItem extends StackLayout {
+    constructor() {
+        super();
+    }
+
+    onLoaded(): void {
+        super.onLoaded();
+    }
 }
 
 function onItemsChanged(pager: PagerBase, oldValue, newValue) {
@@ -299,9 +315,9 @@ export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
     valueChanged: onSelectedIndexChanged,
     affectsLayout: isIOS,
     coerceValue: (target, value) => {
-        let items = target.items;
+        let items = target._childrenCount;
         if (items) {
-            let max = items.length - 1;
+            let max = items - 1;
             if (value < 0) {
                 value = 0;
             }
