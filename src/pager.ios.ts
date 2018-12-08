@@ -3,6 +3,7 @@ import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 import { ProxyViewContainer } from 'tns-core-modules/ui/proxy-view-container';
 import * as common from './pager.common';
 import {
+    disableSwipeProperty,
     ItemEventData,
     ITEMLOADING,
     itemsProperty,
@@ -77,10 +78,8 @@ export class Pager extends PagerBase {
         this._layout.scrollDirection = UICollectionViewScrollDirection.Horizontal;
         this._layout.minimumLineSpacing = 0;
         this._layout.minimumInteritemSpacing = 0;
-        this._ios = UICollectionView.alloc().initWithFrameCollectionViewLayout(
-            CGRectZero,
-            this._layout
-        );
+        this._ios = UICollectionView.alloc().initWithFrameCollectionViewLayout(CGRectZero,
+            this._layout);
         this._ios.alwaysBounceHorizontal = false;
         this._ios.alwaysBounceVertical = false;
         this._ios.showsHorizontalScrollIndicator = false;
@@ -103,7 +102,7 @@ export class Pager extends PagerBase {
         nativeView.dataSource = this._dataSource = UICollectionViewDataSourceImpl.initWithOwner(
             new WeakRef(this)
         );
-
+        nativeView.scrollEnabled = !this.disableSwipe;
         if (this.orientation === 'vertical') {
             this._layout.scrollDirection = UICollectionViewScrollDirection.Vertical;
             nativeView.alwaysBounceVertical = true;
@@ -276,17 +275,11 @@ export class Pager extends PagerBase {
         super.onUnloaded();
     }
 
-    get disableSwipe(): boolean {
-        return this._disableSwipe;
-    }
-
-    set disableSwipe(value: boolean) {
-        this._disableSwipe = value;
-        if (this._ios && value) {
-            this._ios.scrollEnabled = !value;
-        } else {
-            this._ios.scrollEnabled = true;
+    [disableSwipeProperty.setNative](value: boolean) {
+        if (this.ios) {
+            this.ios.scrollEnabled = !value;
         }
+        this._disableSwipe = value;
     }
 
     get disableAnimation(): boolean {

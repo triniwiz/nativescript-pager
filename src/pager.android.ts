@@ -37,7 +37,6 @@ export { Transformer } from './pager.common';
 
 export class Pager extends PagerBase {
     _androidViewId: number;
-    disableSwipe: boolean;
     private _disableAnimation: boolean;
     public pagesCount: number;
     widthMeasureSpec: number;

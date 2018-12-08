@@ -97,6 +97,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public loadMoreCount: number = 1;
     public _childrenViews: Map<number, View>;
     _childrenCount: number;
+    public disableSwipe: boolean = false;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
 
@@ -192,9 +193,6 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         });
         return lbl;
     }
-
-    abstract get disableSwipe(): boolean;
-    abstract set disableSwipe(value: boolean);
 
     abstract get disableAnimation(): boolean;
     abstract set disableAnimation(value: boolean);
@@ -427,5 +425,11 @@ export const orientationProperty = new Property<PagerBase, Orientation>({
     },
     valueConverter: converter
 });
-
 orientationProperty.register(PagerBase);
+
+export const disableSwipeProperty = new Property<PagerBase, boolean>({
+    name: 'disableSwipe',
+    defaultValue: false
+});
+
+disableSwipeProperty.register(PagerBase);
