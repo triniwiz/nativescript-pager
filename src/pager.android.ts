@@ -148,6 +148,9 @@ export class Pager extends PagerBase {
         if (this._androidViewId < 0) {
             this._androidViewId = android.view.View.generateViewId();
         }
+        if (this.pagesCount > 0) {
+            this._android.setOffscreenPageLimit(this.pagesCount);
+        }
         this.nativeView.setId(this._androidViewId);
     }
 
@@ -268,6 +271,7 @@ export class Pager extends PagerBase {
 
 export const pagesCountProperty = new Property<Pager, number>({
     name: 'pagesCount',
+    defaultValue: 0,
     valueChanged: (pager: Pager, oldValue, newValue) => {
         pager.updatePagesCount(pager.pagesCount);
     }
