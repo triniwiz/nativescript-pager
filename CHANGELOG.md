@@ -1,5 +1,17 @@
 # Change Log
 
+## [v9.3.0](https://github.com/triniwiz/nativescript-pager/tree/v9.3.0) (2018-12-08)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.2.3...v9.3.0)
+
+**Implemented enhancements:**
+
+- feat: Single item [\#80](https://github.com/triniwiz/nativescript-pager/issues/80)
+- Can we load Components within the pager ?  [\#53](https://github.com/triniwiz/nativescript-pager/issues/53)
+- Using Pager instead TabView [\#42](https://github.com/triniwiz/nativescript-pager/issues/42)
+
+## [v9.2.3](https://github.com/triniwiz/nativescript-pager/tree/v9.2.3) (2018-12-07)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.2.2...v9.2.3)
+
 ## [v9.2.2](https://github.com/triniwiz/nativescript-pager/tree/v9.2.2) (2018-12-07)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.2.0...v9.2.2)
 
