@@ -19,7 +19,7 @@
            </ScrollView>
            <c:Pager selectedIndex="2" peaking="15%" spacing="5%" transformer="scale" selectedIndexChange="selectedIndexChange" items="{{items}}" row="6" id="pager" showNativePageIndicator="false" backgroundColor="lightsteelblue">
                <c:Pager.itemTemplate>
-                   <GridLayout backgroundColor="red" rows="auto,*" columns="*">
+                   <GridLayout id="{{ title }}" loaded="loaded" backgroundColor="red" rows="auto,*" columns="*">
                        <Label row="0" text="{{title}}"/>
                        <i:ImageCacheIt resize="300,300"  loaded="loadedImage" row="2" imageUri="{{image}}"/>
                    </GridLayout>

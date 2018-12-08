@@ -38,6 +38,10 @@ export function resetItems() {
     page.bindingContext = vm = new HelloWorldModel();
 }
 
+export function loaded(event) {
+    console.log('loaded', !!event, event.object.id.replace('Slide', ''));
+}
+
 
 export function goToPagerWithLists(event) {
     topmost().navigate('list-page');

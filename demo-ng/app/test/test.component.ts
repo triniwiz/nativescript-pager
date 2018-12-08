@@ -83,6 +83,10 @@ export class TestComponent implements OnInit {
         }, 1000);
     }
 
+    loaded(index: number) {
+        console.log('view loaded', index);
+    }
+
     loadedImage($event) {
         console.log(`loaded image ${$event}`);
     }

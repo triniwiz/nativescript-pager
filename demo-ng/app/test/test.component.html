@@ -7,7 +7,7 @@
     <Pager row="3" [items]="items | async" loadMoreCount="5" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager"
         backgroundColor="lightsteelblue">
         <ng-template let-i="index" let-item="item">
-            <GridLayout class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
+            <GridLayout (loaded)="loaded(i)" class="pager-item" rows="auto, *" columns="*" backgroundColor="red">
                 <Label [text]="item.title"></Label>
                 <Image heighht="300" (loaded)="loadedImage($event)" stretch="fill" row="1" [src]="item.image"></Image>
             </GridLayout>
