@@ -11,23 +11,26 @@ import { TestComponent } from './test/test.component';
 import { DummyComponent } from './dummy.component';
 import { TestMultiComponent } from './test-multi/test-multi.component';
 import { TestListComponent } from './test-list/test-list.component';
+import { StaticComponent } from '~/static/static.component';
 
 @NgModule({
-  bootstrap: [AppComponent],
-  imports: [
-    NativeScriptModule,
-    NativeScriptFormsModule,
-    AppRoutingModule,
-    PagerModule
-  ],
-  declarations: [
-    AppComponent,
-    TestComponent,
-    TestMultiComponent,
-    TestListComponent,
-    DummyComponent
-  ],
-  providers: [],
-  schemas: [NO_ERRORS_SCHEMA]
+    bootstrap: [AppComponent],
+    imports: [
+        NativeScriptModule,
+        NativeScriptFormsModule,
+        AppRoutingModule,
+        PagerModule
+    ],
+    declarations: [
+        AppComponent,
+        TestComponent,
+        TestMultiComponent,
+        TestListComponent,
+        DummyComponent,
+        StaticComponent
+    ],
+    providers: [],
+    schemas: [NO_ERRORS_SCHEMA]
 })
-export class AppModule {}
+export class AppModule {
+}

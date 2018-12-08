@@ -43,6 +43,10 @@ export function goToPagerWithLists(event) {
     topmost().navigate('list-page');
 }
 
+export function goToStatic(event) {
+    topmost().navigate('static/static-page');
+}
+
 export function prevPage() {
     const pager: Pager = <Pager>page.getViewById('pager');
     --pager.selectedIndex;

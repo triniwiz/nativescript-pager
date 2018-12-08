@@ -1,0 +1,22 @@
+<Page
+        xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+        xmlns:c="nativescript-pager">
+    <GridLayout rows="auto,*,auto" columns="*" id="sl">
+        <Label text="Pager With List"/>
+        <c:Pager selectedIndex="2" row="1" id="pager" backgroundColor="lightsteelblue">
+            <c:PagerItem backgroundColor="red">
+                <Label text="First"/>
+            </c:PagerItem>
+            <c:PagerItem backgroundColor="white">
+                <Label text="Second"/>
+            </c:PagerItem>
+            <c:PagerItem backgroundColor="black">
+                <Label text="Third" color="white"/>
+            </c:PagerItem>
+            <c:PagerItem backgroundColor="green">
+                <Label text="Fourth"/>
+            </c:PagerItem>
+        </c:Pager>
+        <Button text="Nav" row="2" tap="navigate"/>
+    </GridLayout>
+</Page>
