@@ -1,5 +1,17 @@
 # Change Log
 
+## [v9.3.3](https://github.com/triniwiz/nativescript-pager/tree/v9.3.3) (2018-12-09)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.2...v9.3.3)
+
+**Fixed bugs:**
+
+- \[object Object\], when set a variable of array type previously created in this.items [\#71](https://github.com/triniwiz/nativescript-pager/issues/71)
+- insert/remove objects with array.splice doesn't work fine IOS [\#67](https://github.com/triniwiz/nativescript-pager/issues/67)
+
+**Closed issues:**
+
+- Dynamic data for pager [\#66](https://github.com/triniwiz/nativescript-pager/issues/66)
+
 ## [v9.3.2](https://github.com/triniwiz/nativescript-pager/tree/v9.3.2) (2018-12-08)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.1...v9.3.2)
 
