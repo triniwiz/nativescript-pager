@@ -80,22 +80,19 @@ export class Pager extends PagerBase {
         this._layout.minimumInteritemSpacing = 0;
         this._ios = UICollectionView.alloc().initWithFrameCollectionViewLayout(CGRectZero,
             this._layout);
-        this._ios.alwaysBounceHorizontal = false;
-        this._ios.alwaysBounceVertical = false;
         this._ios.showsHorizontalScrollIndicator = false;
         this._ios.showsVerticalScrollIndicator = false;
         this._ios.decelerationRate = UIScrollViewDecelerationRateFast;
-        this._ios.registerClassForCellWithReuseIdentifier(
-            PagerCell.class(),
-            this._defaultTemplate.key
-        );
-
         return this._ios;
     }
 
     initNativeView() {
         super.initNativeView();
         const nativeView = this.nativeViewProtected;
+        nativeView.registerClassForCellWithReuseIdentifier(
+            PagerCell.class(),
+            this._defaultTemplate.key
+        );
         nativeView.backgroundColor = UIColor.clearColor;
         nativeView.autoresizesSubviews = false;
         nativeView.autoresizingMask = UIViewAutoresizing.None;
@@ -110,7 +107,6 @@ export class Pager extends PagerBase {
             this._layout.scrollDirection = UICollectionViewScrollDirection.Horizontal;
             nativeView.alwaysBounceHorizontal = true;
         }
-
         this._delegate = UICollectionDelegateImpl.initWithOwner(new WeakRef(this));
         this._setNativeClipToBounds();
     }
@@ -146,10 +142,9 @@ export class Pager extends PagerBase {
     }
 
     updateNativeIndex(oldIndex: number, newIndex: number) {
-        if (this.ios && this.isLoaded) {
-            this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(newIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !this.disableAnimation);
+        if (this.isLoaded) {
+            this.scrollToIndexAnimated(newIndex, !this.disableAnimation);
         }
-
     }
 
     updateNativeItems(oldItems: View[], newItems: View[]) {
@@ -221,12 +216,20 @@ export class Pager extends PagerBase {
         selectedIndexProperty.coerce(this);
     }
 
+    private _scrollToIndexAnimated(index: number, animate: boolean) {
+        if (!this.ios) return;
+        this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(index < 0 ? 0 : index, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+    }
+
+    public scrollToIndexAnimated(index: number, animate: boolean) {
+        this._scrollToIndexAnimated(index, animate);
+    }
+
     private _refresh() {
         this.ios.reloadData();
         this.ios.collectionViewLayout.invalidateLayout();
         this.ios.layoutIfNeeded();
     }
-
 
     refresh() {
         if (this.isLoaded) {
@@ -235,10 +238,10 @@ export class Pager extends PagerBase {
                 dispatch_async(main_queue, () => {
                     this._refresh();
                     if (!this._initialLoad) {
-                        this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(this.selectedIndex < 0 ? 0 : this.selectedIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, false);
+                        this._scrollToIndexAnimated(this.selectedIndex, false);
                         this._initialLoad = true;
                     } else if (this.selectedIndex !== this._previousIndex) {
-                        this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(this.selectedIndex < 0 ? 0 : this.selectedIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, false);
+                        this._scrollToIndexAnimated(this.selectedIndex, false);
                     }
                     this._isDataDirty = false;
                 });
@@ -263,7 +266,7 @@ export class Pager extends PagerBase {
 
         if (!this.items && this._childrenCount > 0) {
             setTimeout(() => {
-                this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(this.selectedIndex < 0 ? 0 : this.selectedIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, false);
+                this._scrollToIndexAnimated(this.selectedIndex, false);
             }, 0);
         }
     }
@@ -323,14 +326,14 @@ export class Pager extends PagerBase {
                     this.ios.alpha = 0;
                     this._initialLoad = false;
                     this._refresh();
-                    this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(this.selectedIndex < 0 ? 0 : this.selectedIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, false);
+                    this._scrollToIndexAnimated(this.selectedIndex, false);
                     this.ios.alpha = 1;
                 }, null);
             }
         }
     }
 
-    onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+    public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         this._map.forEach((childView: any, pagerCell) => {
             View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
@@ -510,13 +513,13 @@ class UICollectionDelegateImpl extends NSObject
     _owner: WeakRef<Pager>;
 
     public static initWithOwner(owner: WeakRef<Pager>): UICollectionDelegateImpl {
-        const delegate = new UICollectionDelegateImpl();
+        const delegate = UICollectionDelegateImpl.alloc().init() as UICollectionDelegateImpl;
         delegate._owner = owner;
         delegate.startingScrollingOffset = CGPointMake(0, 0);
         return delegate;
     }
 
-    collectionViewLayoutInsetForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): UIEdgeInsets {
+    public collectionViewLayoutInsetForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): UIEdgeInsets {
         let owner = this._owner ? this._owner.get() : null;
         if (owner) {
             const peaking = owner.convertToSize(owner.peaking);
@@ -575,7 +578,7 @@ class UICollectionDelegateImpl extends NSObject
         }
     }
 
-    collectionViewLayoutMinimumLineSpacingForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): number {
+    public collectionViewLayoutMinimumLineSpacingForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): number {
         let owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
         return layout.toDeviceIndependentPixels(owner.convertToSize(owner.spacing));
@@ -591,10 +594,9 @@ class UICollectionDelegateImpl extends NSObject
         const spacing = owner.convertToSize(owner.spacing);
         const peaking = owner.convertToSize(owner.peaking);
         let width = layout.toDeviceIndependentPixels(owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0));
-        let height = owner._effectiveItemHeight;
         let proportionalOffset = owner.ios.contentOffset.x / width;
         let index = round(proportionalOffset);
-        let numberOfItems = owner.items ? owner.items.length : owner._childrenCount;
+        let numberOfItems = owner._childrenCount;
         return Math.max(0, Math.min(numberOfItems - 1, index));
     }
 
@@ -618,7 +620,7 @@ class UICollectionDelegateImpl extends NSObject
         let indexOfMajorCell = this.indexOfMajorCell();
 
         // calculate conditions:
-        let dataSourceCount = owner.items ? owner.items.length : owner._childrenCount;
+        let dataSourceCount = owner._childrenCount;
         let swipeVelocityThreshold = 0.5; // after some trail and error
         let hasEnoughVelocityToSlideToTheNextCell = this.indexOfCellBeforeDragging + 1 < dataSourceCount && velocity.x > swipeVelocityThreshold;
         let hasEnoughVelocityToSlideToThePreviousCell = this.indexOfCellBeforeDragging - 1 >= 0 && velocity.x < -swipeVelocityThreshold;
@@ -657,20 +659,15 @@ class UICollectionDelegateImpl extends NSObject
             */
 
             this.currentPage = snapToIndex;
-            let indexPath = NSIndexPath.indexPathForItemInSection(snapToIndex, 0);
-            owner.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(indexPath, owner.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, true);
+            owner.scrollToIndexAnimated(snapToIndex, true);
         } else {
             this.currentPage = indexOfMajorCell;
-            let indexPath = NSIndexPath.indexPathForItemInSection(indexOfMajorCell, 0);
-            owner.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(indexPath, owner.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, true);
+            owner.scrollToIndexAnimated(indexOfMajorCell, true);
         }
-
         owner.selectedIndex = this.currentPage;
-
     }
 
 }
-
 
 @ObjCClass(UICollectionViewDataSource)
 class UICollectionViewDataSourceImpl extends NSObject
@@ -678,7 +675,7 @@ class UICollectionViewDataSourceImpl extends NSObject
     _owner: WeakRef<Pager>;
 
     public static initWithOwner(owner: WeakRef<Pager>): UICollectionViewDataSourceImpl {
-        const delegate = UICollectionViewDataSourceImpl.new() as UICollectionViewDataSourceImpl;
+        const delegate = UICollectionViewDataSourceImpl.alloc().init() as UICollectionViewDataSourceImpl;
         delegate._owner = owner;
         return delegate;
     }
@@ -746,6 +743,7 @@ class UICollectionViewDataSourceImpl extends NSObject
             owner._preparingCell = false;
             return cell;
         }
+
         const template = owner && owner._getItemTemplate(indexPath.row);
 
         if (!(String(owner.cache) === 'true')) {
@@ -790,7 +788,7 @@ class UICollectionViewDataSourceImpl extends NSObject
                                                 section: number): number {
         const owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
-        return owner.items ? owner.items.length : owner._childrenCount;
+        return owner._childrenCount;
     }
 
     public numberOfSectionsInCollectionView(collectionView: UICollectionView): number {
@@ -798,49 +796,14 @@ class UICollectionViewDataSourceImpl extends NSObject
     }
 }
 
-
 class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
     _owner: WeakRef<Pager>;
 
     previousOffset = 0;
     currentPage = 0;
 
-    /*
-        targetContentOffsetForProposedContentOffsetWithScrollingVelocity(proposedContentOffset: CGPoint, velocity: CGPoint): CGPoint {
-            let owner = this._owner ? this._owner.get() : null;
-            const scrollView = owner.ios;
-            const peaking = layout.toDeviceIndependentPixels(owner.convertToSize(owner.peaking));
-            const spacing = layout.toDeviceIndependentPixels(owner.convertToSize(owner.spacing));
-            let vX = velocity.x;
-            let cell = this.collectionView.visibleCells.firstObject;
-            if (vX > 0) {
-                cell = this.collectionView.visibleCells.lastObject;
-            }
-            const itemWidth =  layout.toDeviceIndependentPixels(owner._effectiveItemWidth) - (2 * peaking) - (4 * spacing) / 3; // cell.frame.size.width;
-            let currentItemIdx = round(this.collectionView.contentOffset.x / itemWidth);
-
-            if (vX > 0) {
-                currentItemIdx += 1;
-            } else if (vX < 0) {
-                currentItemIdx -= 1;
-            }
-
-            if (currentItemIdx < 0) {
-                currentItemIdx = 0;
-            }
-
-            console.log('updated', currentItemIdx);
-
-            let nearestPageOffset = currentItemIdx * itemWidth + (peaking / 2);
-
-            return CGPointMake(nearestPageOffset, proposedContentOffset.y);
-
-        }
-
-        */
-
     public static initWithOwner(owner: WeakRef<Pager>): UICollectionViewFlowLinearLayoutImpl {
-        const layout = UICollectionViewFlowLinearLayoutImpl.new() as UICollectionViewFlowLinearLayoutImpl;
+        const layout = UICollectionViewFlowLinearLayoutImpl.alloc().init() as UICollectionViewFlowLinearLayoutImpl;
         layout._owner = owner;
         return layout;
     }
@@ -860,6 +823,8 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
                     const scale = 1.1 * Math.min(Math.max(1 - distance / (this.collectionView.bounds.size.width), .75), 1);
                     attributes.transform = CGAffineTransformMakeScale(1, scale);
                 }
+            } else {
+                return originalLayoutAttribute;
             }
         }
         return <any>visibleLayoutAttributes;

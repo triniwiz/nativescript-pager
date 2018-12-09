@@ -96,7 +96,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public transformer: Transformer;
     public loadMoreCount: number = 1;
     public _childrenViews: Map<number, View>;
-    _childrenCount: number;
+    readonly _childrenCount: number;
     public disableSwipe: boolean = false;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
