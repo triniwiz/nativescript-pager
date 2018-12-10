@@ -1,6 +1,5 @@
 import {
     AddChildFromBuilder,
-    booleanConverter,
     CoercibleProperty,
     ContainerView,
     CSSType,
@@ -356,6 +355,11 @@ export const itemsProperty = new Property<PagerBase, any>({
 });
 itemsProperty.register(PagerBase);
 
+
+const booleanConverter = (v: any): boolean => {
+    return String(v) === 'true';
+}
+
 export const showNativePageIndicatorProperty = new Property<PagerBase, boolean>(
     {
         name: 'showNativePageIndicator',
@@ -429,7 +433,8 @@ orientationProperty.register(PagerBase);
 
 export const disableSwipeProperty = new Property<PagerBase, boolean>({
     name: 'disableSwipe',
-    defaultValue: false
+    defaultValue: false,
+    valueConverter: booleanConverter
 });
 
 disableSwipeProperty.register(PagerBase);

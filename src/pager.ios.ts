@@ -99,7 +99,7 @@ export class Pager extends PagerBase {
         nativeView.dataSource = this._dataSource = UICollectionViewDataSourceImpl.initWithOwner(
             new WeakRef(this)
         );
-        nativeView.scrollEnabled = !this.disableSwipe;
+        nativeView.scrollEnabled = !(String(this.disableSwipe) === 'true');
         if (this.orientation === 'vertical') {
             this._layout.scrollDirection = UICollectionViewScrollDirection.Vertical;
             nativeView.alwaysBounceVertical = true;
@@ -294,9 +294,9 @@ export class Pager extends PagerBase {
 
     [disableSwipeProperty.setNative](value: boolean) {
         if (this.ios) {
-            this.ios.scrollEnabled = !value;
+            this.ios.scrollEnabled = !(String(this.disableSwipe) === 'true');
         }
-        this._disableSwipe = value;
+        this._disableSwipe = String(this.disableSwipe) === 'true';
     }
 
     get disableAnimation(): boolean {

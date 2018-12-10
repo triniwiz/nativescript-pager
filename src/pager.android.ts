@@ -639,7 +639,7 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
 
     onInterceptTouchEvent(ev) {
         const owner = this.owner.get();
-        if (owner.disableSwipe) return false;
+        if (String(owner.disableSwipe) === 'true') return false;
         return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
         /*
         const intercepted = super.onInterceptTouchEvent(this.swapXY(ev));
@@ -651,7 +651,7 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
 
     onTouchEvent(ev) {
         const owner = this.owner.get();
-        if (owner.disableSwipe) return false;
+        if (String(owner.disableSwipe) === 'true') return false;
 
         return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
         // return super.onTouchEvent(this.swapXY(ev));
