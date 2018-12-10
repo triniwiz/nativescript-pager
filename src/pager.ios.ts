@@ -218,7 +218,21 @@ export class Pager extends PagerBase {
 
     private _scrollToIndexAnimated(index: number, animate: boolean) {
         if (!this.ios) return;
-        this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(index < 0 ? 0 : index, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+        let maxMinIndex = -1;
+        const max = this._childrenCount - 1;
+        if (index < 0) {
+            maxMinIndex = 0;
+        } else if (index > max) {
+            maxMinIndex = max;
+        } else {
+            maxMinIndex = index;
+        }
+
+        if (maxMinIndex === -1) {
+            maxMinIndex = 0;
+        }
+
+        this.ios.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
     }
 
     public scrollToIndexAnimated(index: number, animate: boolean) {
