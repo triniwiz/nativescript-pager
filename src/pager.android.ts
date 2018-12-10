@@ -1,4 +1,4 @@
-import { KeyedTemplate, Property, View } from 'tns-core-modules/ui/core/view';
+import { KeyedTemplate, Observable, Property, View } from 'tns-core-modules/ui/core/view';
 import * as common from './pager.common';
 import {
     ITEMLOADING,
@@ -203,7 +203,7 @@ export class Pager extends PagerBase {
         }
     }
 
-    refresh(hardReset = false) {
+    refresh() {
         if (this._android && this._pagerAdapter) {
             this._android.getAdapter().notifyDataSetChanged();
         }
@@ -327,7 +327,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             return view.nativeView;
         }
 
-        if (this.position === owner.items.length - owner.loadMoreCount) {
+        if (owner.items && this.position === owner.items.length - owner.loadMoreCount) {
             owner.notify({eventName: LOADMOREITEMS, object: owner});
         }
         const template = owner._getItemTemplate(this.position);
@@ -464,6 +464,13 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
         const cachedView = this.getViewByPosition(position);
         if (cachedView && cachedView.nativeView && cachedView.nativeView.getParent() && container) {
             container.removeView(cachedView.nativeView);
+        }
+
+        const owner = this.owner.get();
+
+        if (owner && cachedView) {
+            const template = owner._getItemTemplate(position);
+            owner._viewMap.delete(`${position}-${template.key}`);
         }
 
         this.mCurTransaction.remove(fragment);
