@@ -11,7 +11,7 @@ import { TestComponent } from './test/test.component';
 import { DummyComponent } from './dummy.component';
 import { TestMultiComponent } from './test-multi/test-multi.component';
 import { TestListComponent } from './test-list/test-list.component';
-import { StaticComponent } from '~/static/static.component';
+import { StaticComponent } from './static/static.component';
 
 @NgModule({
     bootstrap: [AppComponent],

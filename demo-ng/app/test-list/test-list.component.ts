@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  selector: 'ns-test-list',
   moduleId: module.id,
+  selector: 'ns-test-list',
   templateUrl: './test-list.component.html',
   styleUrls: ['test-list.component.css']
 })
