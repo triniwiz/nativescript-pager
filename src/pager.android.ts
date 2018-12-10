@@ -331,7 +331,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             owner.notify({eventName: LOADMOREITEMS, object: owner});
         }
         const template = owner._getItemTemplate(this.position);
-        if (owner._viewMap.has(`${this.position}-${template.key}`)) {
+        if (!owner.cache && owner._viewMap.has(`${this.position}-${template.key}`)) {
             const cachedView = owner._viewMap.get(`${this.position}-${template.key}`);
             this.view = cachedView;
             return cachedView ? cachedView.nativeView : null;

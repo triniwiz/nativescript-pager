@@ -358,7 +358,7 @@ itemsProperty.register(PagerBase);
 
 const booleanConverter = (v: any): boolean => {
     return String(v) === 'true';
-}
+};
 
 export const showNativePageIndicatorProperty = new Property<PagerBase, boolean>(
     {
