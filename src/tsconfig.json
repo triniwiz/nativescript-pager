@@ -20,7 +20,7 @@
         "noFallthroughCasesInSwitch": true
     },
     "include":[
-        "*.ts",
+        "**/*.ts",
         "!*.d.ts"
     ],
     "exclude": [

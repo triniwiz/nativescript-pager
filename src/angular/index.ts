@@ -9,7 +9,7 @@ import {
     NO_ERRORS_SCHEMA
 } from '@angular/core';
 
-import { Pager } from '../';
+import { Pager } from '../pager';
 import {
     PagerItemDirective,
     TEMPLATED_ITEMS_COMPONENT,

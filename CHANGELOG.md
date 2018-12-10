@@ -1,5 +1,8 @@
 # Change Log
 
+## [v9.3.7](https://github.com/triniwiz/nativescript-pager/tree/v9.3.7) (2018-12-10)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.6...v9.3.7)
+
 ## [v9.3.6](https://github.com/triniwiz/nativescript-pager/tree/v9.3.6) (2018-12-10)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.5...v9.3.6)
 

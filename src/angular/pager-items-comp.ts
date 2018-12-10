@@ -29,7 +29,7 @@ import { profile } from 'tns-core-modules/profiling';
 import { getSingleViewRecursive, InvisibleNode, registerElement } from 'nativescript-angular/element-registry';
 import { isEnabled as isLogEnabled } from 'tns-core-modules/trace';
 import { PagerError, PagerItem, PagerLog } from '../pager.common';
-import { Pager } from '../';
+import { Pager } from '../pager';
 import { isBlank } from 'nativescript-angular/lang-facade';
 
 registerElement('Pager', () => Pager);
