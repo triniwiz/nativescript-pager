@@ -74,8 +74,6 @@ export interface SetupItemViewArgs {
 export abstract class TemplatedItemsComponent
     implements DoCheck, OnDestroy, AfterContentInit {
     public abstract get nativeElement(): Pager;
-
-    private viewInitialized: true;
     protected templatedItemsView: Pager;
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
@@ -122,13 +120,10 @@ export abstract class TemplatedItemsComponent
 
     set selectedIndex(value) {
         this._selectedIndex = value;
-        if (this.viewInitialized) {
-            this.templatedItemsView.selectedIndex = this._selectedIndex;
-        }
+        this.templatedItemsView.selectedIndex = this._selectedIndex;
     }
 
     ngAfterViewInit() {
-        this.viewInitialized = true;
         if (!isBlank(this._selectedIndex)) {
             setTimeout(() => {
                 if (isIOS) {
