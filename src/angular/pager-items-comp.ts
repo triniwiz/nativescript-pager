@@ -21,7 +21,7 @@ import {
     ɵisListLikeIterable as isListLikeIterable
 } from '@angular/core';
 import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
-import { KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
+import { isIOS, KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
 import { EventData, LayoutBase, Template } from 'tns-core-modules/ui/layouts/layout-base';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 import { profile } from 'tns-core-modules/profiling';
@@ -123,7 +123,12 @@ export abstract class TemplatedItemsComponent
     set selectedIndex(value) {
         this._selectedIndex = value;
         if (this.viewInitialized) {
-            this.templatedItemsView.selectedIndex = this._selectedIndex;
+            setTimeout(() => {
+                if (isIOS) {
+                    this.templatedItemsView.scrollToIndexAnimated(this._selectedIndex, false);
+                }
+                this.templatedItemsView.selectedIndex = this._selectedIndex;
+            });
         }
     }
 
