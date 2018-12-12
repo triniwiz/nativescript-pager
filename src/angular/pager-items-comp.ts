@@ -123,19 +123,19 @@ export abstract class TemplatedItemsComponent
     set selectedIndex(value) {
         this._selectedIndex = value;
         if (this.viewInitialized) {
-            setTimeout(() => {
-                if (isIOS) {
-                    this.templatedItemsView.scrollToIndexAnimated(this._selectedIndex, false);
-                }
-                this.templatedItemsView.selectedIndex = this._selectedIndex;
-            });
+            this.templatedItemsView.selectedIndex = this._selectedIndex;
         }
     }
 
     ngAfterViewInit() {
         this.viewInitialized = true;
         if (!isBlank(this._selectedIndex)) {
-            this.templatedItemsView.selectedIndex = this._selectedIndex;
+            setTimeout(() => {
+                if (isIOS) {
+                    this.templatedItemsView.scrollToIndexAnimated(this._selectedIndex, false);
+                }
+                this.templatedItemsView.selectedIndex = this._selectedIndex;
+            });
         }
     }
 
