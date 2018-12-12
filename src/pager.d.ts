@@ -11,6 +11,8 @@ export declare class Pager extends PagerBase {
     readonly android: any;
     readonly ios: any;
 
+    scrollToIndexAnimated(index: number, animate: boolean): void;
+
     eachChildView(callback: (child: View) => boolean): void;
 
     updateNativeIndex(oldIndex: number, newIndex: number): void;

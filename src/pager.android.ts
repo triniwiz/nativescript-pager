@@ -1,4 +1,4 @@
-import { KeyedTemplate, Observable, Property, View } from 'tns-core-modules/ui/core/view';
+import { KeyedTemplate, Property, View } from 'tns-core-modules/ui/core/view';
 import * as common from './pager.common';
 import {
     ITEMLOADING,
@@ -200,6 +200,12 @@ export class Pager extends PagerBase {
     [selectedIndexProperty.setNative](value: number) {
         if (this._android) {
             this._android.setCurrentItem(value, !this.disableAnimation);
+        }
+    }
+
+    public scrollToIndexAnimated(index: number, animate: boolean) {
+        if (this._android) {
+            this._android.setCurrentItem(index, animate);
         }
     }
 
