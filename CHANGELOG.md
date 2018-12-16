@@ -1,5 +1,16 @@
 # Change Log
 
+## [v9.3.12](https://github.com/triniwiz/nativescript-pager/tree/v9.3.12) (2018-12-16)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.11...v9.3.12)
+
+**Fixed bugs:**
+
+- selectedIndex binding with static view does not updateNativeIndex [\#90](https://github.com/triniwiz/nativescript-pager/issues/90)
+
+**Merged pull requests:**
+
+- Fix selectedIndex binding with static view [\#91](https://github.com/triniwiz/nativescript-pager/pull/91) ([mailiam](https://github.com/mailiam))
+
 ## [v9.3.11](https://github.com/triniwiz/nativescript-pager/tree/v9.3.11) (2018-12-12)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.10...v9.3.11)
 
