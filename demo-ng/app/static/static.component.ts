@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChildren, QueryList } from '@angular/core';
+import { PagerItemDirective } from 'nativescript-pager/angular/pager-items-comp';
 
 @Component({
     moduleId: module.id,
@@ -7,5 +8,17 @@ import { Component } from '@angular/core';
     styleUrls: ['static.component.css']
 })
 export class StaticComponent {
-    currentPagerIndex = 5;
+    @ViewChildren(PagerItemDirective) pages: QueryList<PagerItemDirective>;
+
+    currentPagerIndex = 0;
+
+    prevPage() {
+        const newIndex = Math.max(0, this.currentPagerIndex - 1);
+        this.currentPagerIndex = newIndex;
+    }
+
+    nextPage() {
+        const newIndex = Math.min(this.pages.length - 1, this.currentPagerIndex + 1);
+        this.currentPagerIndex = newIndex;
+    }
 }
