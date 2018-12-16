@@ -301,7 +301,7 @@ function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
 }
 
 function onSelectedIndexChanged(pager: PagerBase, oldValue, newValue) {
-    if (pager && pager.items && types.isNumber(newValue)) {
+    if (pager && pager._childrenCount && types.isNumber(newValue)) {
         pager.updateNativeIndex(oldValue, newValue);
     }
 }

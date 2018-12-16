@@ -1,8 +1,8 @@
 <ActionBar title="Static" class="action-bar">
 </ActionBar>
-<GridLayout rows="auto,*" columns="*" class="page">
+<GridLayout rows="auto,*,auto" columns="*" class="page">
 	<Button text="Single Template" [nsRouterLink]="['/test']" class="btn btn-primary"></Button>
-	<Pager backgroundColor="orange" row="1" #pager [selectedIndex]="1" height="100%">
+	<Pager backgroundColor="orange" row="1" #pager [selectedIndex]="currentPagerIndex" height="100%">
 		<StackLayout *pagerItem backgroundColor="red">
 			<Label text="First"></Label>
 		</StackLayout>
@@ -16,4 +16,8 @@
 			<Label text="Fourth"></Label>
 		</StackLayout>
 	</Pager>
+	<GridLayout row="2" columns="*,*">
+		<Button col="0" text="Prev" (tap)="prevPage()" class="btn btn-primary"></Button>
+        <Button col="1" text="Next" (tap)="nextPage()" class="btn btn-primary"></Button>
+	</GridLayout>
 </GridLayout>
