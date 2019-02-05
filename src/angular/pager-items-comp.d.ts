@@ -1,8 +1,8 @@
-import { AfterContentInit, DoCheck, ElementRef, EmbeddedViewRef, EventEmitter, InjectionToken, IterableDiffer, IterableDiffers, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, DoCheck, ElementRef, EmbeddedViewRef, EventEmitter, InjectionToken, IterableDiffer, IterableDiffers, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
 import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
-import { View, KeyedTemplate } from 'tns-core-modules/ui/core/view';
-import { Template, EventData } from 'tns-core-modules/ui/layouts/layout-base';
-import { Pager } from '../';
+import { KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
+import { EventData, Template } from 'tns-core-modules/ui/layouts/layout-base';
+import { Pager } from '../pager';
 export interface PagerTemplatedItemsView {
     items: any[] | ItemsSource;
     itemTemplate: string | Template;
@@ -32,11 +32,14 @@ export declare abstract class TemplatedItemsComponent implements DoCheck, OnDest
     protected _items: any;
     protected _differ: IterableDiffer<KeyedTemplate>;
     protected _templateMap: Map<string, KeyedTemplate>;
+    private _selectedIndex;
     loader: ViewContainerRef;
     setupItemView: EventEmitter<SetupItemViewArgs>;
     itemTemplateQuery: TemplateRef<ItemContext>;
     itemTemplate: TemplateRef<ItemContext>;
     items: any;
+    selectedIndex: number;
+    ngAfterViewInit(): void;
     constructor(_elementRef: ElementRef, _iterableDiffers: IterableDiffers);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
@@ -55,9 +58,19 @@ export interface ComponentView {
 export declare type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 export declare function getItemViewRoot(viewRef: ComponentView, rootLocator?: RootLocator): View;
 export declare const TEMPLATED_ITEMS_COMPONENT: InjectionToken<TemplatedItemsComponent>;
+export declare class PagerItemDirective implements OnInit {
+    private templateRef;
+    private owner;
+    private viewContainer;
+    private item;
+    constructor(templateRef: TemplateRef<any>, owner: TemplatedItemsComponent, viewContainer: ViewContainerRef);
+    private ensureItem;
+    private applyConfig;
+    ngOnInit(): void;
+}
 export declare class TemplateKeyDirective {
     private templateRef;
     private comp;
     constructor(templateRef: TemplateRef<any>, comp: TemplatedItemsComponent);
-    nsTemplateKey: any;
+    pagerTemplateKey: any;
 }

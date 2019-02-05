@@ -8,7 +8,8 @@ import {
     PagerBase,
     peakingProperty,
     selectedIndexProperty,
-    spacingProperty
+    spacingProperty,
+    Transformer
 } from './pager.common';
 
 global.moduleMerge(common, exports);
@@ -41,6 +42,7 @@ export class Pager extends PagerBase {
     public pagesCount: number;
     widthMeasureSpec: number;
     heightMeasureSpec: number;
+    private _transformer: Transformer = Transformer.NONE;
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
@@ -121,6 +123,7 @@ export class Pager extends PagerBase {
         } else {
             this._android.setOffscreenPageLimit(3);
         }
+
         return this._android;
     }
 
@@ -128,6 +131,7 @@ export class Pager extends PagerBase {
         const size = this.convertToSize(value);
         if (size > 0) {
             this._android.setClipToPadding(false);
+            this._android.setClipChildren(false);
             this._android.setPageMargin(size / 2);
         }
     }
@@ -136,6 +140,7 @@ export class Pager extends PagerBase {
         const size = this.convertToSize(value);
         if (size > 0) {
             this._android.setClipToPadding(false);
+            this._android.setClipChildren(false);
             this._android.setPadding(size, 0, size, 0);
         }
     }
@@ -152,6 +157,13 @@ export class Pager extends PagerBase {
             this._android.setOffscreenPageLimit(this.pagesCount);
         }
         this.nativeView.setId(this._androidViewId);
+
+        if (this._transformer === 'scale') {
+            const transformer = new ZoomOutPageTransformer();
+            transformer.owner = new WeakRef<Pager>(this);
+            this._android.setPageTransformer(true, transformer);
+        }
+
     }
 
     public disposeNativeView() {
@@ -185,6 +197,21 @@ export class Pager extends PagerBase {
             selectedIndexProperty.coerce(this);
             this.refresh();
         }
+    }
+
+    get transformer() {
+        return this._transformer;
+    }
+
+    set transformer(value: Transformer) {
+        if (this._android) {
+            if (value === 'scale') {
+                const transformer = new ZoomOutPageTransformer();
+                transformer.owner = new WeakRef<Pager>(this);
+                this._android.setPageTransformer(true, transformer);
+            }
+        }
+        this._transformer = value;
     }
 
     onLoaded(): void {
@@ -362,6 +389,8 @@ export class PagerFragment extends android.support.v4.app.Fragment {
         if (view.nativeView && !view.nativeView.getParent()) {
             owner._android.addView(view.nativeView);
         }
+        view.nativeView.setId(this.position); //android.view.View.generateViewId()
+
         return view.nativeView;
     }
 
@@ -625,7 +654,6 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     disableSwipe: boolean;
     owner: WeakRef<Pager>;
     lastEventX;
-    transformer: VerticalPageTransformer;
     currentView;
 
     constructor(context) {
@@ -634,7 +662,6 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         // this.setPageTransformer(true, new VerticalPageTransformer());
         // The easiest way to get rid of the overscroll drawing that happens on the left and right
         // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
-
         return global.__native(this);
     }
 
@@ -688,9 +715,10 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     }
 }
 
-// @ts-ignore
-export class VerticalPageTransformer extends java.lang.Object
-    implements android.support.v4.view.ViewPager.PageTransformer {
+@JavaProxy('com.triniwiz.tns.pager.VerticalPageTransformer')
+export class VerticalPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+
+    owner: WeakRef<Pager>;
 
     constructor() {
         super();
@@ -718,4 +746,30 @@ export class VerticalPageTransformer extends java.lang.Object
             view.setAlpha(0);
         }
     }
+}
+
+
+@JavaProxy('com.triniwiz.tns.pager.ZoomOutPageTransformer')
+export class ZoomOutPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+    owner: WeakRef<Pager>;
+
+    constructor() {
+        super();
+        return global.__native(this);
+    }
+
+    public transformPage(view, position) {
+        const MIN_SCALE = 0.75;
+        const owner = this.owner ? this.owner.get() : null;
+        if (!owner) return;
+        if (position <= -.1 || position >= 1) {
+            const scale = Math.max(MIN_SCALE, 1 - Math.abs(position));
+            view.setScaleX(scale);
+            view.setScaleY(scale);
+        } else {
+            view.setScaleX(1);
+            view.setScaleY(1);
+        }
+    }
+
 }

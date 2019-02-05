@@ -70,7 +70,8 @@ const autoEffectiveItemHeight = 100;
 const autoEffectiveItemWidth = 100;
 
 export enum Transformer {
-    SCALE = 'scale'
+    SCALE = 'scale',
+    NONE = 'none'
 }
 
 @CSSType('Pager')

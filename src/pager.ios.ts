@@ -830,12 +830,17 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
             if (owner.transformer === 'scale') {
                 const count = originalLayoutAttribute.count;
                 for (let i = 0; i < count; i++) {
-                    let attributes = originalLayoutAttribute[i].copy();
+                    let attributes = originalLayoutAttribute.objectAtIndex(i);
                     visibleLayoutAttributes[i] = attributes;
                     const frame = attributes.frame;
-                    const distance = Math.abs(this.collectionView.contentOffset.x + this.collectionView.contentInset.left - frame.origin.x);
-                    const scale = 1.1 * Math.min(Math.max(1 - distance / (this.collectionView.bounds.size.width), .75), 1);
-                    attributes.transform = CGAffineTransformMakeScale(1, scale);
+                    const width = attributes.frame.size.width * .75;
+                    const height = attributes.frame.size.height * .75;
+                    attributes.frame.size.width = width;
+                    attributes.frame.size.height = height;
+                    const spacing = owner.convertToSize(owner.spacing);
+                    const distance = Math.abs(this.collectionView.contentOffset.x + this.collectionView.contentInset.left + spacing - frame.origin.x);
+                    const scale = Math.min(Math.max(1 - distance / (this.collectionView.bounds.size.width), .75), 1);
+                    attributes.transform = CGAffineTransformScale(attributes.transform, 1, scale);
                 }
             } else {
                 return originalLayoutAttribute;
