@@ -1,6 +1,6 @@
 {
 	"name": "nativescript-pager",
-	"version": "9.3.14",
+	"version": "9.3.15",
 	"description": "A Carousel/Pager plugin for NativeScript",
 	"main": "pager",
 	"typings": "pager.d.ts",
@@ -33,7 +33,7 @@
 		"plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-pager && tns plugin add ../src && cd ../demo-ng && tns plugin remove nativescript-pager && tns plugin add ../src",
 		"clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../demo-ng && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
 		"ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/+(node_modules|platforms)/**'",
-		"ngc": "npm i && npm run ngc.clean && node --max-old-space-size=8192 ngc -skipLibCheck -p tsconfig.json",
+		"ngc": "npm i && npm run ngc.clean && node --max-old-space-size=8192 node_modules/.bin/ngc -skipLibCheck -p tsconfig.json",
 		"ngc.clean": "find ./ angular/ -name '*.metadata.json' -delete"
 	},
 	"keywords": [

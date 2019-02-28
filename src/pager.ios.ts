@@ -521,9 +521,9 @@ export class PagerCell extends UICollectionViewCell {
     }
 }
 
-@ObjCClass(UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate)
+@ObjCClass(UICollectionViewDelegate, UICollectionViewDelegateFlowLayout)
 class UICollectionDelegateImpl extends NSObject
-    implements UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate {
+    implements UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     _owner: WeakRef<Pager>;
 
     public static initWithOwner(owner: WeakRef<Pager>): UICollectionDelegateImpl {
