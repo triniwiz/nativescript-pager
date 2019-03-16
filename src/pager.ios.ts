@@ -49,6 +49,7 @@ global.moduleMerge(common, exports);
 export class Pager extends PagerBase {
     private _disableSwipe: boolean = false;
     private _disableAnimation: boolean = false;
+    public perPage: number;
     _layout: any;  /*UICollectionViewFlowLinearLayoutImpl*/
     private _initialLoad: boolean = false;
     _preparingCell: boolean = false;
@@ -359,7 +360,7 @@ export class Pager extends PagerBase {
         this._map.forEach((childView, pagerCell) => {
             const peaking = this.convertToSize(this.peaking);
             const spacing = this.convertToSize(this.spacing);
-            const width = this._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0);
+            const width = (this._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / this.perPage;
             const height = this._effectiveItemHeight;
             View.layoutChild(this, childView, 0, 0, width < 0 ? 0 : width, height < 0 ? 0 : height);
         });
@@ -451,7 +452,7 @@ export class Pager extends PagerBase {
         if (cellView) {
             const peaking = this.convertToSize(this.peaking);
             const spacing = this.convertToSize(this.spacing);
-            let width = this._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0);
+            let width = (this._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / this.perPage;
             let height = this._effectiveItemHeight;
 
             if (this._measuredMap && this._measuredMap.has(index.row)) {
@@ -558,7 +559,7 @@ class UICollectionDelegateImpl extends NSObject
         if (!owner) return CGSizeZero;
         const peaking = owner.convertToSize(owner.peaking);
         const spacing = owner.convertToSize(owner.spacing);
-        width = owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0);
+        width = (owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage;
         height = owner._effectiveItemHeight;
         const nativeWidth = layout.toDeviceIndependentPixels(width);
         const nativeHeight = layout.toDeviceIndependentPixels(height);
@@ -607,7 +608,7 @@ class UICollectionDelegateImpl extends NSObject
         if (!owner) return 0;
         const spacing = owner.convertToSize(owner.spacing);
         const peaking = owner.convertToSize(owner.peaking);
-        let width = layout.toDeviceIndependentPixels(owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0));
+        let width = layout.toDeviceIndependentPixels((owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
         let proportionalOffset = owner.ios.contentOffset.x / width;
         let index = round(proportionalOffset);
         let numberOfItems = owner._childrenCount;
@@ -652,7 +653,7 @@ class UICollectionDelegateImpl extends NSObject
 
             const spacing = owner.convertToSize(owner.spacing);
             const peaking = owner.convertToSize(owner.peaking);
-            let width = layout.toDeviceIndependentPixels(owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0));
+            let width = layout.toDeviceIndependentPixels((owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
             let height = owner._effectiveItemHeight;
 
             let toValue = width * snapToIndex;
@@ -711,7 +712,7 @@ class UICollectionViewDataSourceImpl extends NSObject
             let view = owner._childrenViews.get(indexPath.row);
             const peaking = owner.convertToSize(owner.peaking);
             const spacing = owner.convertToSize(owner.spacing);
-            width = owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0);
+            width = (owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage;
             height = owner._effectiveItemHeight;
 
 
@@ -787,7 +788,7 @@ class UICollectionViewDataSourceImpl extends NSObject
                 } else {
                     const peaking = owner.convertToSize(owner.peaking);
                     const spacing = owner.convertToSize(owner.spacing);
-                    width = owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0);
+                    width = (owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage;
                     height = owner._effectiveItemHeight;
                 }
                 View.layoutChild(owner, cellView, 0, 0, width < 0 ? 0 : width, height < 0 ? 0 : height);

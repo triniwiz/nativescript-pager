@@ -439,3 +439,11 @@ export const disableSwipeProperty = new Property<PagerBase, boolean>({
 });
 
 disableSwipeProperty.register(PagerBase);
+
+
+export const perPageProperty = new Property<PagerBase, number>({
+    name: 'perPage',
+    defaultValue: 1
+});
+
+perPageProperty.register(PagerBase);

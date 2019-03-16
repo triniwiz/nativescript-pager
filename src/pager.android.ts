@@ -42,6 +42,7 @@ export class Pager extends PagerBase {
     public pagesCount: number;
     widthMeasureSpec: number;
     heightMeasureSpec: number;
+    public perPage: number;
     private _transformer: Transformer = Transformer.NONE;
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
@@ -123,6 +124,7 @@ export class Pager extends PagerBase {
         } else {
             this._android.setOffscreenPageLimit(3);
         }
+
 
         return this._android;
     }
@@ -423,6 +425,14 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
     registerDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
         super.registerDataSetObserver(param0);
+    }
+
+    getPageWidth(position) {
+        const owner = this.owner ? this.owner.get() : null;
+        if (owner) {
+            return float(1 / owner.perPage);
+        }
+        return 1.0;
     }
 
     unregisterDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
