@@ -16,7 +16,7 @@
                     <Button text="Remove Items" tap="removeNextItems"/>
                     <Button text="Reset Items" tap="resetItems"/>
                 </StackLayout>
-                <c:Pager height="100%" peaking="15%" spacing="5%" selectedIndex="2" transformer="scale" selectedIndexChange="selectedIndexChange"
+                <c:Pager height="100%" perPage="3" selectedIndex="2" selectedIndexChange="selectedIndexChange"
                          items="{{items}}" row="6" id="pager" showNativePageIndicator="false"
                          backgroundColor="lightsteelblue">
                     <c:Pager.itemTemplate>
