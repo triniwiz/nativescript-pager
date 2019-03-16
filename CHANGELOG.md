@@ -1,5 +1,25 @@
 # Change Log
 
+## [9.4.0](https://github.com/triniwiz/nativescript-pager/tree/9.4.0) (2019-03-16)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.15...9.4.0)
+
+**Implemented enhancements:**
+
+- Per Page Feature? [\#100](https://github.com/triniwiz/nativescript-pager/issues/100)
+
+## [v9.3.15](https://github.com/triniwiz/nativescript-pager/tree/v9.3.15) (2019-02-28)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.14...v9.3.15)
+
+## [v9.3.14](https://github.com/triniwiz/nativescript-pager/tree/v9.3.14) (2019-02-05)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.13...v9.3.14)
+
+**Fixed bugs:**
+
+- The nativescript-pager plugin is not found [\#94](https://github.com/triniwiz/nativescript-pager/issues/94)
+
+## [v9.3.13](https://github.com/triniwiz/nativescript-pager/tree/v9.3.13) (2019-01-29)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.12...v9.3.13)
+
 ## [v9.3.12](https://github.com/triniwiz/nativescript-pager/tree/v9.3.12) (2018-12-16)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.11...v9.3.12)
 
