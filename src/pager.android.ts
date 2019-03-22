@@ -7,6 +7,8 @@ import {
     LOADMOREITEMS,
     PagerBase,
     peakingProperty,
+    Orientation,
+    orientationProperty,
     selectedIndexProperty,
     spacingProperty,
     Transformer
@@ -300,6 +302,13 @@ export class Pager extends PagerBase {
     _addChildFromBuilder(name: string, value: any): void {
         if (name === 'PagerItem') {
             this._childrenViews.set(this._childrenCount, value);
+        }
+    }
+    public [orientationProperty.setNative](value: Orientation) {
+        if (value === 'horizontal') {
+            this.android.verticalScrolling = false;
+        } else {
+            this.android.verticalScrolling = true;
         }
     }
 }
@@ -665,9 +674,11 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     owner: WeakRef<Pager>;
     lastEventX;
     currentView;
+    _verticalScrolling: boolean;
 
     constructor(context) {
         super(context);
+        this._verticalScrolling = false;
         // this.transformer = new VerticalPageTransformer();
         // this.setPageTransformer(true, new VerticalPageTransformer());
         // The easiest way to get rid of the overscroll drawing that happens on the left and right
@@ -675,7 +686,34 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         return global.__native(this);
     }
 
-    swapXY(ev) {
+    canScrollHorizontally( direction) {
+        if (this._verticalScrolling) {
+            return false;
+        }
+        return super.canScrollHorizontally(direction);
+    }
+
+    canScrollVertically( direction) {
+        if (this._verticalScrolling) {
+            return super.canScrollHorizontally(direction);
+        }
+        return false;
+    }
+
+    set verticalScrolling(value: boolean) {
+        if (value !== this._verticalScrolling) {
+            this._verticalScrolling = value;
+            if (value) {
+                this.setPageTransformer(true, new VerticalPageTransformer());
+                this.setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+            } else {
+                this.setPageTransformer(false, null);
+                this.setOverScrollMode(android.view.View.OVER_SCROLL_ALWAYS);
+            }
+        }
+    }
+
+    flipXY(ev) {
         const width = this.getWidth();
         const height = this.getHeight();
 
@@ -689,21 +727,31 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
 
     onInterceptTouchEvent(ev) {
         const owner = this.owner.get();
-        if (String(owner.disableSwipe) === 'true') return false;
-        return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
-        /*
-        const intercepted = super.onInterceptTouchEvent(this.swapXY(ev));
-        this.swapXY(ev);
-        return intercepted;
-        */
-        //    return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
+        if (!!owner.disableSwipe) return false;
+        if (this.isSwipeAllowed(owner, ev)) {
+            if (this._verticalScrolling) {
+                const toHandle = super.onInterceptTouchEvent(this.flipXY(ev));
+                this.flipXY(ev);
+                return toHandle;
+            }
+            return super.onInterceptTouchEvent(ev);
+        }
+        return false;
     }
 
     onTouchEvent(ev) {
         const owner = this.owner.get();
-        if (String(owner.disableSwipe) === 'true') return false;
-
-        return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
+        if (!!owner.disableSwipe) return false;
+        
+        if (this.isSwipeAllowed(owner, ev)) {
+            if (this._verticalScrolling) {
+                const toHandle = super.onTouchEvent(this.flipXY(ev));
+                this.flipXY(ev);
+                return toHandle;
+            }
+            return super.onTouchEvent(ev);
+        }
+        return false;
         // return super.onTouchEvent(this.swapXY(ev));
 
         //  return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
