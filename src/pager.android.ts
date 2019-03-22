@@ -16,6 +16,8 @@ import {
 
 global.moduleMerge(common, exports);
 
+
+
 function notifyForItemAtIndex(
     owner,
     nativeView: any,
@@ -95,7 +97,11 @@ export class Pager extends PagerBase {
         });
         const that = new WeakRef(this);
         this._viewMap = new Map();
-        this._android = new TNSViewPager(this._context);
+        if (this.orientation === 'vertical') {
+            this._android = new TNSVerticalViewPager(this._context);
+        } else {
+            this._android = new TNSViewPager(this._context);
+        }
 
         this._android.owner = that;
         this._pageListener = new android.support.v4.view.ViewPager.OnPageChangeListener(
@@ -304,13 +310,13 @@ export class Pager extends PagerBase {
             this._childrenViews.set(this._childrenCount, value);
         }
     }
-    public [orientationProperty.setNative](value: Orientation) {
-        if (value === 'horizontal') {
-            this.android.verticalScrolling = false;
-        } else {
-            this.android.verticalScrolling = true;
-        }
-    }
+    // public [orientationProperty.setNative](value: Orientation) {
+    //     if (value === 'horizontal') {
+    //         this.android.verticalScrolling = false;
+    //     } else {
+    //         this.android.verticalScrolling = true;
+    //     }
+    // }
 }
 
 export const pagesCountProperty = new Property<Pager, number>({
@@ -410,7 +416,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
     }
 }
 
-export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
+export class PagerStateAdapter extends com.lambergar.verticalviewpager.PagerAdapter {
     owner: WeakRef<Pager>;
     mFragmentManager: any /*android.support.v4.app.FragmentManager*/;
     mCurTransaction: any /*android.support.v4.app.FragmentTransaction*/;
@@ -438,10 +444,17 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
     getPageWidth(position) {
         const owner = this.owner ? this.owner.get() : null;
-        if (owner) {
-            return float(1 / owner.perPage);
+        if (owner && owner.orientation === 'horizontal') {
+            return float(1.0 / owner.perPage);
         }
-        return 1.0;
+        return float(1.0);
+    }
+    getPageHeight(position) {
+        const owner = this.owner ? this.owner.get() : null;
+        if (owner && owner.orientation === 'vertical') {
+            return float(1.0 / owner.perPage);
+        }
+        return float(1.0);
     }
 
     unregisterDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
@@ -555,7 +568,7 @@ export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
 
 
         if (owner && owner._childrenCount > 0 && !owner.items) {
-            return owner._childrenViews.get(this.position);
+            return owner._childrenViews.get(position);
         }
 
         const template = owner._getItemTemplate(position);
@@ -674,11 +687,11 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     owner: WeakRef<Pager>;
     lastEventX;
     currentView;
-    _verticalScrolling: boolean;
+    // _verticalScrolling: boolean;
 
     constructor(context) {
         super(context);
-        this._verticalScrolling = false;
+        // this._verticalScrolling = false;
         // this.transformer = new VerticalPageTransformer();
         // this.setPageTransformer(true, new VerticalPageTransformer());
         // The easiest way to get rid of the overscroll drawing that happens on the left and right
@@ -686,54 +699,54 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         return global.__native(this);
     }
 
-    canScrollHorizontally( direction) {
-        if (this._verticalScrolling) {
-            return false;
-        }
-        return super.canScrollHorizontally(direction);
-    }
+    // canScrollHorizontally( direction) {
+    //     if (this._verticalScrolling) {
+    //         return false;
+    //     }
+    //     return super.canScrollHorizontally(direction);
+    // }
 
-    canScrollVertically( direction) {
-        if (this._verticalScrolling) {
-            return super.canScrollHorizontally(direction);
-        }
-        return false;
-    }
+    // canScrollVertically( direction) {
+    //     if (this._verticalScrolling) {
+    //         return super.canScrollHorizontally(direction);
+    //     }
+    //     return false;
+    // }
 
-    set verticalScrolling(value: boolean) {
-        if (value !== this._verticalScrolling) {
-            this._verticalScrolling = value;
-            if (value) {
-                this.setPageTransformer(true, new VerticalPageTransformer());
-                this.setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
-            } else {
-                this.setPageTransformer(false, null);
-                this.setOverScrollMode(android.view.View.OVER_SCROLL_ALWAYS);
-            }
-        }
-    }
+    // set verticalScrolling(value: boolean) {
+    //     if (value !== this._verticalScrolling) {
+    //         this._verticalScrolling = value;
+    //         if (value) {
+    //             this.setPageTransformer(true, new VerticalPageTransformer());
+    //             this.setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+    //         } else {
+    //             this.setPageTransformer(false, null);
+    //             this.setOverScrollMode(android.view.View.OVER_SCROLL_ALWAYS);
+    //         }
+    //     }
+    // }
 
-    flipXY(ev) {
-        const width = this.getWidth();
-        const height = this.getHeight();
+    // flipXY(ev) {
+    //     const width = this.getWidth();
+    //     const height = this.getHeight();
 
-        const newX = (ev.getY() / height) * width;
-        const newY = (ev.getX() / width) * height;
+    //     const newX = (ev.getY() / height) * width;
+    //     const newY = (ev.getX() / width) * height;
 
-        ev.setLocation(newX, newY);
+    //     ev.setLocation(newX, newY);
 
-        return ev;
-    }
+    //     return ev;
+    // }
 
     onInterceptTouchEvent(ev) {
         const owner = this.owner.get();
         if (!!owner.disableSwipe) return false;
         if (this.isSwipeAllowed(owner, ev)) {
-            if (this._verticalScrolling) {
-                const toHandle = super.onInterceptTouchEvent(this.flipXY(ev));
-                this.flipXY(ev);
-                return toHandle;
-            }
+            // if (this._verticalScrolling) {
+            //     const toHandle = super.onInterceptTouchEvent(this.flipXY(ev));
+            //     this.flipXY(ev);
+            //     return toHandle;
+            // }
             return super.onInterceptTouchEvent(ev);
         }
         return false;
@@ -744,11 +757,11 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         if (!!owner.disableSwipe) return false;
         
         if (this.isSwipeAllowed(owner, ev)) {
-            if (this._verticalScrolling) {
-                const toHandle = super.onTouchEvent(this.flipXY(ev));
-                this.flipXY(ev);
-                return toHandle;
-            }
+            // if (this._verticalScrolling) {
+            //     const toHandle = super.onTouchEvent(this.flipXY(ev));
+            //     this.flipXY(ev);
+            //     return toHandle;
+            // }
             return super.onTouchEvent(ev);
         }
         return false;
@@ -773,38 +786,91 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
     }
 }
 
-@JavaProxy('com.triniwiz.tns.pager.VerticalPageTransformer')
-export class VerticalPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
-
+@JavaProxy('com.triniwiz.tns.pager.TNSVerticalViewPager')
+export class TNSVerticalViewPager extends com.lambergar.verticalviewpager.VerticalViewPager {
+    disableSwipe: boolean;
     owner: WeakRef<Pager>;
+    lastEventX;
+    currentView;
+    // _verticalScrolling: boolean;
 
-    constructor() {
-        super();
+    constructor(context) {
+        super(context);
+        // this._verticalScrolling = false;
+        // this.transformer = new VerticalPageTransformer();
+        // this.setPageTransformer(true, new VerticalPageTransformer());
+        // The easiest way to get rid of the overscroll drawing that happens on the left and right
+        // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
         return global.__native(this);
     }
 
-    public transformPage(view, position) {
-        if (position < -1) {
-            // [-Infinity,-1)
-            // This page is way off-screen to the left.
-            view.setAlpha(0);
-        } else if (position <= 1) {
-            // [-1,1]
-            view.setAlpha(1);
-
-            // Counteract the default slide transition
-            view.setTranslationX(view.getWidth() * -position);
-
-            // set Y position to swipe in from top
-            const yPosition = position * view.getHeight();
-            view.setTranslationY(yPosition);
-        } else {
-            // (1,+Infinity]
-            // This page is way off-screen to the right.
-            view.setAlpha(0);
+    onInterceptTouchEvent(ev) {
+        const owner = this.owner.get();
+        if (!!owner.disableSwipe) return false;
+        if (this.isSwipeAllowed(owner, ev)) {
+            return super.onInterceptTouchEvent(ev);
         }
+        return false;
+    }
+
+    onTouchEvent(ev) {
+        const owner = this.owner.get();
+        if (!!owner.disableSwipe) return false;
+        
+        if (this.isSwipeAllowed(owner, ev)) {
+            return super.onTouchEvent(ev);
+        }
+        return false;
+    }
+
+    isSwipeAllowed(owner, ev) {
+        const action = ev.getAction();
+        if (action === android.view.MotionEvent.ACTION_DOWN) {
+            this.lastEventX = ev.getX();
+            return true;
+        }
+
+        if (action === android.view.MotionEvent.ACTION_MOVE) {
+            const dx = ev.getX() - this.lastEventX;
+            return dx > 0 ? owner.canGoLeft : owner.canGoRight;
+        }
+
+        return true;
     }
 }
+
+// @JavaProxy('com.triniwiz.tns.pager.VerticalPageTransformer')
+// export class VerticalPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+
+//     owner: WeakRef<Pager>;
+
+//     constructor() {
+//         super();
+//         return global.__native(this);
+//     }
+
+//     public transformPage(view, position) {
+//         if (position < -1) {
+//             // [-Infinity,-1)
+//             // This page is way off-screen to the left.
+//             view.setAlpha(0);
+//         } else if (position <= 1) {
+//             // [-1,1]
+//             view.setAlpha(1);
+
+//             // Counteract the default slide transition
+//             view.setTranslationX(view.getWidth() * -position);
+
+//             // set Y position to swipe in from top
+//             const yPosition = position * view.getHeight();
+//             view.setTranslationY(yPosition);
+//         } else {
+//             // (1,+Infinity]
+//             // This page is way off-screen to the right.
+//             view.setAlpha(0);
+//         }
+//     }
+// }
 
 
 @JavaProxy('com.triniwiz.tns.pager.ZoomOutPageTransformer')
