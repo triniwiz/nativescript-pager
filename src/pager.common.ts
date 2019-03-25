@@ -173,7 +173,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     }
 
     public _prepareItem(item: View, index: number) {
-        if (item) {
+        if (this.items && item) {
             item.bindingContext = this._getDataItem(index);
         }
     }
