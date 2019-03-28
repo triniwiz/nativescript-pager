@@ -474,7 +474,7 @@ export class Pager extends PagerBase {
     }
 
     _addChildFromBuilder(name: string, value: any): void {
-        if (name === 'PagerItem') {
+        if (value instanceof common.PagerItem) {
             if (!this._childrenViews) {
                 this._childrenViews = new Map<number, View>();
             }

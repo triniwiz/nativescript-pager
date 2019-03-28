@@ -298,7 +298,7 @@ export class Pager extends PagerBase {
     }
 
     _addChildFromBuilder(name: string, value: any): void {
-        if (name === 'PagerItem') {
+        if (value instanceof common.PagerItem) {
             this._childrenViews.set(this._childrenCount, value);
         }
     }
