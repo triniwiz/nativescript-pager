@@ -11,16 +11,11 @@ import {
     spacingProperty,
     Transformer
 } from './pager.common';
+export { Transformer } from './pager.common';
 
 global.moduleMerge(common, exports);
 
-function notifyForItemAtIndex(
-    owner,
-    nativeView: any,
-    view: any,
-    eventName: string,
-    index: number
-) {
+function notifyForItemAtIndex(owner, nativeView: any, view: any, eventName: string, index: number) {
     let args = {
         eventName: eventName,
         object: owner,
@@ -33,10 +28,8 @@ function notifyForItemAtIndex(
     return args;
 }
 
-declare var java, android;
-export { Transformer } from './pager.common';
-
 export class Pager extends PagerBase {
+    nativeViewProtected: android.support.v4.view.ViewPager;
     _androidViewId: number;
     private _disableAnimation: boolean;
     public pagesCount: number;
@@ -45,11 +38,10 @@ export class Pager extends PagerBase {
     public perPage: number;
     private _transformer: Transformer = Transformer.NONE;
 
-    public itemTemplateUpdated(oldData: any, newData: any): void {
-    }
+    public itemTemplateUpdated(oldData: any, newData: any): void {}
 
-    _android: TNSViewPager;
-    _pagerAdapter: PagerStateAdapter;
+    // private _android: TNSViewPager | TNSVerticalViewPager;
+    private _pagerAdapter: PagerStateAdapter;
     private _views: Array<any>;
     private _pageListener: any;
     _viewMap: Map<string, View>;
@@ -71,7 +63,7 @@ export class Pager extends PagerBase {
     }
 
     get android() {
-        return this._android;
+        return this.nativeViewProtected;
     }
 
     // get pagesCount() {
@@ -82,95 +74,93 @@ export class Pager extends PagerBase {
     // }
 
     public createNativeView() {
-        this.on(View.layoutChangedEvent, (args: any) => {
-            const spacing = this.convertToSize(args.object.spacing);
-            const peaking = this.convertToSize(args.object.peaking);
-            if (spacing > 0 && peaking > 0) {
-                this._android.setClipToPadding(false);
-                this._android.setPadding(peaking, 0, peaking, 0);
-                this._android.setPageMargin(spacing / 2);
-            }
-        });
         const that = new WeakRef(this);
         this._viewMap = new Map();
-        this._android = new TNSViewPager(this._context);
+        let view: android.support.v4.view.ViewPager & {
+            owner: WeakRef<Pager>;
+        } = new TNSViewPager(this._context);
 
-        this._android.owner = that;
-        this._pageListener = new android.support.v4.view.ViewPager.OnPageChangeListener(
-            {
-                onPageSelected: function (position: number) {
-                    const owner = that.get();
-                    if (owner) {
-                        owner.selectedIndex = position;
-                    }
-                },
-                onPageScrolled: function (
-                    position,
-                    positionOffset,
-                    positionOffsetPixels
-                ) {
-                },
-                onPageScrollStateChanged: function (state) {
+        view.owner = that;
+        this._pageListener = new android.support.v4.view.ViewPager.OnPageChangeListener({
+            onPageSelected: function(position: number) {
+                const owner = that.get();
+                if (owner) {
+                    owner.selectedIndex = position;
                 }
-            }
-        );
-
+            },
+            onPageScrolled: function(position, positionOffset, positionOffsetPixels) {},
+            onPageScrollStateChanged: function(state) {}
+        });
+        initPagerStateAdapter();
         this._pagerAdapter = new PagerStateAdapter();
         this._pagerAdapter.mFragmentManager = (this as any)._getFragmentManager();
-        this._pagerAdapter.owner = new WeakRef(this);
+        this._pagerAdapter.owner = that;
 
         if (this.pagesCount > 0) {
-            this._android.setOffscreenPageLimit(this.pagesCount);
+            view.setOffscreenPageLimit(this.pagesCount);
         } else {
-            this._android.setOffscreenPageLimit(3);
+            view.setOffscreenPageLimit(3);
         }
 
-
-        return this._android;
+        return view;
     }
-
+    onLayoutChange(args: any) {
+        const spacing = this.convertToSize(args.object.spacing);
+        const peaking = this.convertToSize(args.object.peaking);
+        if (spacing > 0 && peaking > 0) {
+            this.nativeViewProtected.setClipToPadding(false);
+            this.nativeViewProtected.setPadding(peaking, 0, peaking, 0);
+            this.nativeViewProtected.setPageMargin(spacing / 2);
+        }
+    }
     [spacingProperty.setNative](value: any) {
         const size = this.convertToSize(value);
         if (size > 0) {
-            this._android.setClipToPadding(false);
-            this._android.setClipChildren(false);
-            this._android.setPageMargin(size / 2);
+            const view = this.nativeViewProtected;
+            view.setClipToPadding(false);
+            view.setClipChildren(false);
+            view.setPageMargin(size / 2);
         }
     }
 
     [peakingProperty.setNative](value: any) {
         const size = this.convertToSize(value);
         if (size > 0) {
-            this._android.setClipToPadding(false);
-            this._android.setClipChildren(false);
-            this._android.setPadding(size, 0, size, 0);
+            const view = this.nativeViewProtected;
+            view.setClipToPadding(false);
+            view.setClipChildren(false);
+            view.setPadding(size, 0, size, 0);
         }
     }
 
-
     public initNativeView() {
         super.initNativeView();
-        this._android.setOnPageChangeListener(this._pageListener);
-        this._android.setAdapter(this._pagerAdapter);
+        this.on(View.layoutChangedEvent, this.onLayoutChange, this);
+        const view = this.nativeViewProtected;
+        view.setOnPageChangeListener(this._pageListener);
+        view.setAdapter(this._pagerAdapter);
         if (this._androidViewId < 0) {
             this._androidViewId = android.view.View.generateViewId();
         }
         if (this.pagesCount > 0) {
-            this._android.setOffscreenPageLimit(this.pagesCount);
+            view.setOffscreenPageLimit(this.pagesCount);
         }
         this.nativeView.setId(this._androidViewId);
 
         if (this._transformer === 'scale') {
+            initZoomOutPageTransformer();
             const transformer = new ZoomOutPageTransformer();
             transformer.owner = new WeakRef<Pager>(this);
-            this._android.setPageTransformer(true, transformer);
+            view.setPageTransformer(true, transformer);
         }
-
     }
 
     public disposeNativeView() {
+        this.off(View.layoutChangedEvent, this.onLayoutChange, this);
         this._viewMap.clear();
         this.off(View.layoutChangedEvent);
+        this._pageListener = null;
+        this._pagerAdapter = null;
         super.disposeNativeView();
     }
 
@@ -183,7 +173,7 @@ export class Pager extends PagerBase {
     }
 
     get pagerAdapter() {
-        return this._pagerAdapter;
+        return this._pagerAdapter as com.lambergar.verticalviewpager.PagerAdapter;
     }
 
     get _childrenCount(): number {
@@ -206,11 +196,12 @@ export class Pager extends PagerBase {
     }
 
     set transformer(value: Transformer) {
-        if (this._android) {
+        if (this.nativeViewProtected) {
             if (value === 'scale') {
+                initZoomOutPageTransformer();
                 const transformer = new ZoomOutPageTransformer();
                 transformer.owner = new WeakRef<Pager>(this);
-                this._android.setPageTransformer(true, transformer);
+                this.nativeViewProtected.setPageTransformer(true, transformer);
             }
         }
         this._transformer = value;
@@ -221,38 +212,37 @@ export class Pager extends PagerBase {
         if (!this.items && this._childrenCount > 0) {
             selectedIndexProperty.coerce(this);
             setTimeout(() => {
-                this._android.setCurrentItem(this.selectedIndex, false);
+                this.nativeViewProtected.setCurrentItem(this.selectedIndex, false);
             }, 0);
         }
     }
 
     [selectedIndexProperty.setNative](value: number) {
-        if (this._android) {
-            this._android.setCurrentItem(value, !this.disableAnimation);
+        if (this.nativeViewProtected) {
+            this.nativeViewProtected.setCurrentItem(value, !this.disableAnimation);
         }
     }
 
     public scrollToIndexAnimated(index: number, animate: boolean) {
-        if (this._android) {
-            this._android.setCurrentItem(index, animate);
+        if (this.nativeViewProtected) {
+            this.nativeViewProtected.setCurrentItem(index, animate);
         }
     }
 
     refresh() {
-        if (this._android && this._pagerAdapter) {
-            this._android.getAdapter().notifyDataSetChanged();
+        if (this.nativeViewProtected && this._pagerAdapter) {
+            this.nativeViewProtected.getAdapter().notifyDataSetChanged();
         }
     }
 
     updatePagesCount(value: number) {
-        if (this._android) {
+        if (this.nativeViewProtected) {
             this._pagerAdapter.notifyDataSetChanged();
-            this._android.setOffscreenPageLimit(value);
+            this.nativeViewProtected.setOffscreenPageLimit(value);
         }
     }
 
-    updateNativeIndex(oldIndex: number, newIndex: number) {
-    }
+    updateNativeIndex(oldIndex: number, newIndex: number) {}
 
     updateNativeItems(oldItems: Array<View>, newItems: Array<View>) {
         this.refresh();
@@ -262,7 +252,6 @@ export class Pager extends PagerBase {
         // this._android.setAdapter(null);
         super.onUnloaded();
     }
-
 
     eachChildView(callback: (child: View) => boolean): void {
         if (this._viewMap && this._viewMap.size > 0) {
@@ -276,17 +265,14 @@ export class Pager extends PagerBase {
         this._pagerAdapter.notifyDataSetChanged();
     }
 
-    _selectedIndexUpdatedFromNative(newIndex: number) {
-    }
+    _selectedIndexUpdatedFromNative(newIndex: number) {}
 
     [itemTemplatesProperty.getDefault](): KeyedTemplate[] {
         return null;
     }
 
     [itemTemplatesProperty.setNative](value: KeyedTemplate[]) {
-        this._itemTemplatesInternal = new Array<KeyedTemplate>(
-            this._defaultTemplate
-        );
+        this._itemTemplatesInternal = new Array<KeyedTemplate>(this._defaultTemplate);
         if (value) {
             this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
         }
@@ -298,7 +284,7 @@ export class Pager extends PagerBase {
     }
 
     _addChildFromBuilder(name: string, value: any): void {
-        if (name === 'PagerItem') {
+        if (value instanceof common.PagerItem) {
             this._childrenViews.set(this._childrenCount, value);
         }
     }
@@ -317,7 +303,6 @@ const pagers = new Map<number, WeakRef<Pager>>();
 const getPagerById = (id: number) => {
     return pagers.get(id);
 };
-
 
 const POSITION_UNCHANGED = -1;
 const POSITION_NONE = -2;
@@ -357,13 +342,13 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             }
             this.view = view;
             if (view.nativeView && !view.nativeView.getParent()) {
-                owner._android.addView(view.nativeView);
+                owner.android.addView(view.nativeView);
             }
             return view.nativeView;
         }
 
         if (owner.items && this.position === owner.items.length - owner.loadMoreCount) {
-            owner.notify({eventName: LOADMOREITEMS, object: owner});
+            owner.notify({ eventName: LOADMOREITEMS, object: owner });
         }
         const template = owner._getItemTemplate(this.position);
         if (!owner.cache && owner._viewMap.has(`${this.position}-${template.key}`)) {
@@ -372,13 +357,7 @@ export class PagerFragment extends android.support.v4.app.Fragment {
             return cachedView ? cachedView.nativeView : null;
         }
         let view: any = template.createView();
-        let _args: any = notifyForItemAtIndex(
-            owner,
-            view ? view.nativeView : null,
-            view,
-            ITEMLOADING,
-            this.position
-        );
+        let _args: any = notifyForItemAtIndex(owner, view ? view.nativeView : null, view, ITEMLOADING, this.position);
         view = _args.view || owner._getDefaultItemContent(this.position);
         if (view) {
             owner._prepareItem(view, this.position);
@@ -389,9 +368,9 @@ export class PagerFragment extends android.support.v4.app.Fragment {
         }
         this.view = view;
         if (view.nativeView && !view.nativeView.getParent()) {
-            owner._android.addView(view.nativeView);
+            owner.android.addView(view.nativeView);
         }
-        view.nativeView.setId(this.position); //android.view.View.generateViewId()
+        view.nativeView.setId(this.position); // android.view.View.generateViewId()
 
         return view.nativeView;
     }
@@ -401,279 +380,290 @@ export class PagerFragment extends android.support.v4.app.Fragment {
     }
 }
 
-export class PagerStateAdapter extends android.support.v4.view.PagerAdapter {
+let PagerStateAdapter: PagerStateAdapter;
+interface PagerStateAdapter extends com.lambergar.verticalviewpager.PagerAdapter {
+    new (): PagerStateAdapter;
+    mFragmentManager: android.support.v4.app.FragmentManager;
     owner: WeakRef<Pager>;
-    mFragmentManager: any /*android.support.v4.app.FragmentManager*/;
-    mCurTransaction: any /*android.support.v4.app.FragmentTransaction*/;
-    mCurrentPrimaryItem: any;
-    mFragments: any /*android.support.v4.util.LongSparseArray<number>*/;
-    mSavedStates: any /*android.support.v4.util.LongSparseArray<any>*/;
+}
+function initPagerStateAdapter() {
+    class PagerStateAdapterImpl extends com.lambergar.verticalviewpager.PagerAdapter {
+        owner: WeakRef<Pager>;
+        mFragmentManager: android.support.v4.app.FragmentManager;
+        mCurTransaction: android.support.v4.app.FragmentTransaction;
+        mCurrentPrimaryItem: any;
+        mFragments: android.support.v4.util.LongSparseArray<number>;
+        mSavedStates: android.support.v4.util.LongSparseArray<any>;
 
-    constructor() {
-        super();
-        this.mFragments = new android.support.v4.util.LongSparseArray();
-        this.mSavedStates = new android.support.v4.util.LongSparseArray();
-        return global.__native(this);
-    }
-
-    startUpdate(container: any /*android.view.ViewGroup*/): void {
-        if (container.getId() === android.view.View.NO_ID) {
-            throw new Error('ViewPager with adapter ' + this
-                + ' requires a view id');
+        constructor() {
+            super();
+            this.mFragments = new android.support.v4.util.LongSparseArray();
+            this.mSavedStates = new android.support.v4.util.LongSparseArray();
+            return global.__native(this);
         }
-    }
 
-    registerDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
-        super.registerDataSetObserver(param0);
-    }
+        startUpdate(container: any /*android.view.ViewGroup*/): void {
+            if (container.getId() === android.view.View.NO_ID) {
+                throw new Error('ViewPager with adapter ' + this + ' requires a view id');
+            }
+        }
 
-    getPageWidth(position) {
-        const owner = this.owner ? this.owner.get() : null;
+        registerDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
+            super.registerDataSetObserver(param0);
+        }
+
+        getPageWidth(position) {
+            const owner = this.owner ? this.owner.get() : null;
         if (owner) {
             return float(1 / owner.perPage);
-        }
+            }
         return 1.0;
-    }
-
-    unregisterDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
-        super.unregisterDataSetObserver(param0);
-    }
-
-    instantiateItem(container: any /*android.view.ViewGroup*/, position: number): any {
-        const tag = this.getItemId(position);
-        let fragment = this.mFragments.get(tag);
-        // If we already have this item instantiated, there is nothing
-        // to do.  This can happen when we are restoring the entire pager
-        // from its saved state, where the fragment manager has already
-        // taken care of restoring the fragments we previously had instantiated.
-        if (fragment != null) {
-            return fragment;
         }
 
-        const owner = this.owner ? this.owner.get() : null;
-        if (owner) {
-            if (owner.items && position === owner.items.length - 1) {
-                owner.notify({eventName: LOADMOREITEMS, object: owner});
-            }
+        unregisterDataSetObserver(param0: any /*android.database.DataSetObserver*/): void {
+            super.unregisterDataSetObserver(param0);
         }
 
-        if (this.mCurTransaction == null) {
-            this.mCurTransaction = this.mFragmentManager.beginTransaction();
-            this.mCurTransaction.setReorderingAllowed(true);
-        }
-
-        fragment = this.getItem(position);
-        // restore state
-        const savedState = this.mSavedStates.get(tag);
-        if (savedState != null) {
-            fragment.setInitialSavedState(savedState);
-        }
-        fragment.setMenuVisibility(false);
-        fragment.setUserVisibleHint(false);
-        this.mFragments.put(tag, fragment);
-        this.mCurTransaction.add(container.getId(), fragment, 'f' + tag);
-
-        const cachedView = this.getViewByPosition(position);
-
-        if (owner && cachedView) {
-            owner._prepareItem(cachedView, position);
-        }
-        if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
-            container.addView(cachedView.nativeView);
-        }
-        return fragment;
-    }
-
-    destroyItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
-        let fragment = /*<android.support.v4.app.Fragment>*/object;
-        const currentPosition = this.getItemPosition(fragment);
-
-        const index = this.mFragments.indexOfValue(fragment);
-        let fragmentKey = -1;
-        if (index !== -1) {
-            fragmentKey = this.mFragments.keyAt(index);
-            this.mFragments.removeAt(index);
-        }
-
-        // item hasn't been removed
-        if (fragment.isAdded() && currentPosition !== android.support.v4.view.PagerAdapter.POSITION_NONE) {
-            this.mSavedStates.put(fragmentKey, this.mFragmentManager.saveFragmentInstanceState(fragment));
-        } else {
-            this.mSavedStates.remove(fragmentKey);
-        }
-
-        if (this.mCurTransaction == null) {
-            this.mCurTransaction = this.mFragmentManager.beginTransaction();
-        }
-
-        const cachedView = this.getViewByPosition(position);
-        if (cachedView && cachedView.nativeView && cachedView.nativeView.getParent() && container) {
-            container.removeView(cachedView.nativeView);
-        }
-
-        const owner = this.owner.get();
-
-        if (owner && cachedView) {
-            const template = owner._getItemTemplate(position);
-            owner._viewMap.delete(`${position}-${template.key}`);
-        }
-
-        this.mCurTransaction.remove(fragment);
-    }
-
-    setPrimaryItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
-        const fragment = <android.support.v4.app.Fragment>object;
-        if (fragment !== this.mCurrentPrimaryItem) {
-            if (this.mCurrentPrimaryItem != null) {
-                this.mCurrentPrimaryItem.setMenuVisibility(false);
-                this.mCurrentPrimaryItem.setUserVisibleHint(false);
-            }
+        instantiateItem(container: any /*android.view.ViewGroup*/, position: number): any {
+            const tag = this.getItemId(position);
+            let fragment = this.mFragments.get(tag);
+            // If we already have this item instantiated, there is nothing
+            // to do.  This can happen when we are restoring the entire pager
+            // from its saved state, where the fragment manager has already
+            // taken care of restoring the fragments we previously had instantiated.
             if (fragment != null) {
-                fragment.setMenuVisibility(true);
-                fragment.setUserVisibleHint(true);
+                return fragment;
             }
-            this.mCurrentPrimaryItem = fragment;
+
+            const owner = this.owner ? this.owner.get() : null;
+            if (owner) {
+                if (owner.items && position === owner.items.length - 1) {
+                    owner.notify({ eventName: LOADMOREITEMS, object: owner });
+                }
+            }
+
+            if (this.mCurTransaction == null) {
+                this.mCurTransaction = this.mFragmentManager.beginTransaction();
+                this.mCurTransaction.setReorderingAllowed(true);
+            }
+
+            fragment = this.getItem(position);
+            // restore state
+            const savedState = this.mSavedStates.get(tag);
+            if (savedState != null) {
+                fragment.setInitialSavedState(savedState);
+            }
+            fragment.setMenuVisibility(false);
+            fragment.setUserVisibleHint(false);
+            this.mFragments.put(tag, fragment);
+            this.mCurTransaction.add(container.getId(), fragment, 'f' + tag);
+
             const cachedView = this.getViewByPosition(position);
+
+            if (owner && cachedView) {
+                owner._prepareItem(cachedView, position);
+            }
             if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
                 container.addView(cachedView.nativeView);
             }
+            return fragment;
         }
-    }
 
-    private getViewByPosition(position: number): View {
-        let cachedView = null;
-        const owner = this.owner.get();
+        destroyItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
+            let fragment = /*<android.support.v4.app.Fragment>*/ object;
+            const currentPosition = this.getItemPosition(fragment);
 
+            const index = this.mFragments.indexOfValue(fragment);
+            let fragmentKey = -1;
+            if (index !== -1) {
+                fragmentKey = this.mFragments.keyAt(index);
+                this.mFragments.removeAt(index);
+            }
 
-        if (owner && owner._childrenCount > 0 && !owner.items) {
+            // item hasn't been removed
+            if (fragment.isAdded() && currentPosition !== android.support.v4.view.PagerAdapter.POSITION_NONE) {
+                this.mSavedStates.put(fragmentKey, this.mFragmentManager.saveFragmentInstanceState(fragment));
+            } else {
+                this.mSavedStates.remove(fragmentKey);
+            }
+
+            if (this.mCurTransaction == null) {
+                this.mCurTransaction = this.mFragmentManager.beginTransaction();
+            }
+
+            const cachedView = this.getViewByPosition(position);
+            if (cachedView && cachedView.nativeView && cachedView.nativeView.getParent() && container) {
+                container.removeView(cachedView.nativeView);
+            }
+
+            const owner = this.owner.get();
+
+            if (owner && cachedView) {
+                const template = owner._getItemTemplate(position);
+                owner._viewMap.delete(`${position}-${template.key}`);
+            }
+
+            this.mCurTransaction.remove(fragment);
+        }
+
+        setPrimaryItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
+            const fragment = <android.support.v4.app.Fragment>object;
+            if (fragment !== this.mCurrentPrimaryItem) {
+                if (this.mCurrentPrimaryItem != null) {
+                    this.mCurrentPrimaryItem.setMenuVisibility(false);
+                    this.mCurrentPrimaryItem.setUserVisibleHint(false);
+                }
+                if (fragment != null) {
+                    fragment.setMenuVisibility(true);
+                    fragment.setUserVisibleHint(true);
+                }
+                this.mCurrentPrimaryItem = fragment;
+                const cachedView = this.getViewByPosition(position);
+                if (cachedView && cachedView.nativeView && !cachedView.nativeView.getParent() && container) {
+                    container.addView(cachedView.nativeView);
+                }
+            }
+        }
+
+        private getViewByPosition(position: number): View {
+            let cachedView = null;
+            const owner = this.owner.get();
+
+            if (owner && owner._childrenCount > 0 && !owner.items) {
             return owner._childrenViews.get(this.position);
-        }
-
-        const template = owner._getItemTemplate(position);
-        if (owner._viewMap.has(`${position}-${template.key}`)) {
-            cachedView = <View>owner._viewMap.get(`${position}-${template.key}`);
-        }
-        return cachedView;
-    }
-
-    finishUpdate(container: any /*android.view.ViewGroup*/): void {
-        if (this.mCurTransaction != null) {
-            this.mCurTransaction.commitNowAllowingStateLoss();
-            this.mCurTransaction = null;
-        }
-    }
-
-    getCount(): number {
-        const owner = this.owner ? this.owner.get() : null;
-        if (!owner) return 0;
-        return owner.items ? owner.items.length : owner._childrenCount;
-    }
-
-    getItem(position: number): PagerFragment {
-        if (!this.owner) {
-            return null;
-        }
-        const owner = this.owner.get();
-        return PagerFragment.newInstance(owner._domId, position);
-    }
-
-    saveState(): any /*android.os.Parcelable*/ {
-        let state = null;
-        if (this.mSavedStates.size() > 0) {
-            // save Fragment states
-            state = new android.os.Bundle();
-            let stateIds = Array.create('long', this.mSavedStates.size());
-            for (let i = 0; i < this.mSavedStates.size(); i++) {
-                const entry = this.mSavedStates.valueAt(i);
-                stateIds[i] = this.mSavedStates.keyAt(i);
-                state.putParcelable(java.lang.Long.toString(stateIds[i]), entry);
             }
-            state.putLongArray('states', stateIds);
+
+            const template = owner._getItemTemplate(position);
+            if (owner._viewMap.has(`${position}-${template.key}`)) {
+                cachedView = <View>owner._viewMap.get(`${position}-${template.key}`);
+            }
+            return cachedView;
         }
-        for (let i = 0; i < this.mFragments.size(); i++) {
-            const f = this.mFragments.valueAt(i);
-            if (f != null && f.isAdded()) {
-                if (state == null) {
-                    state = new android.os.Bundle();
+
+        finishUpdate(container: any /*android.view.ViewGroup*/): void {
+            if (this.mCurTransaction != null) {
+                this.mCurTransaction.commitNowAllowingStateLoss();
+                this.mCurTransaction = null;
+            }
+        }
+
+        getCount(): number {
+            const owner = this.owner ? this.owner.get() : null;
+            if (!owner) return 0;
+            return owner.items ? owner.items.length : owner._childrenCount;
+        }
+
+        getItem(position: number): PagerFragment {
+            if (!this.owner) {
+                return null;
+            }
+            const owner = this.owner.get();
+            return PagerFragment.newInstance(owner._domId, position);
+        }
+
+        saveState(): any /*android.os.Parcelable*/ {
+            let state = null;
+            if (this.mSavedStates.size() > 0) {
+                // save Fragment states
+                state = new android.os.Bundle();
+                let stateIds = Array.create('long', this.mSavedStates.size());
+                for (let i = 0; i < this.mSavedStates.size(); i++) {
+                    const entry = this.mSavedStates.valueAt(i);
+                    stateIds[i] = this.mSavedStates.keyAt(i);
+                    state.putParcelable(java.lang.Long.toString(stateIds[i]), entry);
                 }
-                const key = 'f' + this.mFragments.keyAt(i);
-                this.mFragmentManager.putFragment(state, key, f);
+                state.putLongArray('states', stateIds);
             }
-        }
-        return state;
-
-    }
-
-    restoreState(state: any /*android.os.Parcelable*/, loader: any /*java.lang.ClassLoader*/): void {
-        if (state != null) {
-            const bundle = <android.os.Bundle>state;
-            bundle.setClassLoader(loader);
-            const fss = bundle.getLongArray('states');
-            this.mSavedStates.clear();
-            this.mFragments.clear();
-            if (fss != null) {
-                const size = fss.length;
-                for (let i = 0; i < size; i++) {
-                    const fs = fss[i];
-                    this.mSavedStates.put(fs, bundle.getParcelable(java.lang.Long.toString(fs)));
+            for (let i = 0; i < this.mFragments.size(); i++) {
+                const f = this.mFragments.valueAt(i);
+                if (f != null && f.isAdded()) {
+                    if (state == null) {
+                        state = new android.os.Bundle();
+                    }
+                    const key = 'f' + this.mFragments.keyAt(i);
+                    this.mFragmentManager.putFragment(state, key, f);
                 }
             }
-            const keys = bundle.keySet();
-            const keysArray = keys.toArray();
-            const keysSize = keys.size();
-            for (let i = 0; i < keysSize; i++) {
-                const key = keysArray[i];
-                if (key.startsWith('f')) {
-                    const f = this.mFragmentManager.getFragment(bundle, key);
-                    if (f != null) {
-                        f.setMenuVisibility(false);
-                        this.mFragments.put(java.lang.Long.parseLong(key.substring(1)), f);
-                    } else {
-                        console.log('FragmentPagerAdapter', `Bad fragment at key ${key}`);
+            return state;
+        }
+
+        restoreState(state: any /*android.os.Parcelable*/, loader: any /*java.lang.ClassLoader*/): void {
+            if (state != null) {
+                const bundle = <android.os.Bundle>state;
+                bundle.setClassLoader(loader);
+                const fss = bundle.getLongArray('states');
+                this.mSavedStates.clear();
+                this.mFragments.clear();
+                if (fss != null) {
+                    const size = fss.length;
+                    for (let i = 0; i < size; i++) {
+                        const fs = fss[i];
+                        this.mSavedStates.put(fs, bundle.getParcelable(java.lang.Long.toString(fs)));
+                    }
+                }
+                const keys = bundle.keySet();
+                const keysArray = keys.toArray();
+                const keysSize = keys.size();
+                for (let i = 0; i < keysSize; i++) {
+                    const key = keysArray[i];
+                    if (key.startsWith('f')) {
+                        const f = this.mFragmentManager.getFragment(bundle, key);
+                        if (f != null) {
+                            f.setMenuVisibility(false);
+                            this.mFragments.put(java.lang.Long.parseLong(key.substring(1)), f);
+                        } else {
+                            console.log('FragmentPagerAdapter', `Bad fragment at key ${key}`);
+                        }
                     }
                 }
             }
         }
-    }
 
-    getItemId(position: number) {
-        return position;
-    }
-
-    isViewFromObject(view: any /*android.view.View*/, object: any /*java.lang.Object*/): boolean {
-        return (<android.support.v4.app.Fragment>object).getView() === view;
-    }
-
-    getItemPosition(object: any) {
-        const count = this.mFragments.size();
-        const fragment = /*<android.support.v4.app.Fragment>*/object;
-        let position = POSITION_NONE;
-        for (let i = 0; i < count; i++) {
-            const item = this.getItem(i);
-            if (item && item.equals(fragment)) {
-                position = i;
-                break;
-            }
+        getItemId(position: number) {
+            return position;
         }
-        return position;
+
+        isViewFromObject(view: any /*android.view.View*/, object: any /*java.lang.Object*/): boolean {
+            return (<android.support.v4.app.Fragment>object).getView() === view;
+        }
+
+        getItemPosition(object: any) {
+            const count = this.mFragments.size();
+            const fragment = /*<android.support.v4.app.Fragment>*/ object;
+            let position = POSITION_NONE;
+            for (let i = 0; i < count; i++) {
+                const item = this.getItem(i);
+                if (item && item.equals(fragment)) {
+                    position = i;
+                    break;
+                }
+            }
+            return position;
+        }
     }
+    PagerStateAdapter = PagerStateAdapterImpl as any;
 }
 
-@JavaProxy('com.triniwiz.tns.pager.TNSViewPager')
-export class TNSViewPager extends android.support.v4.view.ViewPager {
-    disableSwipe: boolean;
+let TNSViewPager: TNSViewPager;
+interface TNSViewPager extends android.support.v4.view.ViewPager {
+    new (context: android.content.Context): TNSViewPager;
     owner: WeakRef<Pager>;
-    lastEventX;
-    currentView;
+}
+function initTNSViewPager() {
+    class TNSViewPagerImpl extends android.support.v4.view.ViewPager {
+        disableSwipe: boolean;
+        owner: WeakRef<Pager>;
+        lastEventX;
+        currentView;
 
-    constructor(context) {
-        super(context);
-        // this.transformer = new VerticalPageTransformer();
-        // this.setPageTransformer(true, new VerticalPageTransformer());
-        // The easiest way to get rid of the overscroll drawing that happens on the left and right
-        // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
-        return global.__native(this);
-    }
+        constructor(context) {
+            super(context);
+            // this.transformer = new VerticalPageTransformer();
+            // this.setPageTransformer(true, new VerticalPageTransformer());
+            // The easiest way to get rid of the overscroll drawing that happens on the left and right
+            // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
+            return global.__native(this);
+        }
 
     swapXY(ev) {
         const width = this.getWidth();
@@ -687,8 +677,8 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         return ev;
     }
 
-    onInterceptTouchEvent(ev) {
-        const owner = this.owner.get();
+        onInterceptTouchEvent(ev) {
+            const owner = this.owner.get();
         if (String(owner.disableSwipe) === 'true') return false;
         return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
         /*
@@ -697,89 +687,64 @@ export class TNSViewPager extends android.support.v4.view.ViewPager {
         return intercepted;
         */
         //    return this.isSwipeAllowed(owner, ev) ? super.onInterceptTouchEvent(ev) : false;
-    }
+        }
 
-    onTouchEvent(ev) {
-        const owner = this.owner.get();
+        onTouchEvent(ev) {
+            const owner = this.owner.get();
         if (String(owner.disableSwipe) === 'true') return false;
 
         return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
-        // return super.onTouchEvent(this.swapXY(ev));
+            // return super.onTouchEvent(this.swapXY(ev));
 
-        //  return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
-    }
+            //  return this.isSwipeAllowed(owner, ev) ? super.onTouchEvent(ev) : false;
+        }
 
-    isSwipeAllowed(owner, ev) {
-        const action = ev.getAction();
-        if (action === android.view.MotionEvent.ACTION_DOWN) {
-            this.lastEventX = ev.getX();
+        isSwipeAllowed(owner, ev) {
+            const action = ev.getAction();
+            if (action === android.view.MotionEvent.ACTION_DOWN) {
+                this.lastEventX = ev.getX();
+                return true;
+            }
+
+            if (action === android.view.MotionEvent.ACTION_MOVE) {
+                const dx = ev.getX() - this.lastEventX;
+                return dx > 0 ? owner.canGoLeft : owner.canGoRight;
+            }
+
             return true;
         }
-
-        if (action === android.view.MotionEvent.ACTION_MOVE) {
-            const dx = ev.getX() - this.lastEventX;
-            return dx > 0 ? owner.canGoLeft : owner.canGoRight;
-        }
-
-        return true;
     }
-}
-
-@JavaProxy('com.triniwiz.tns.pager.VerticalPageTransformer')
-export class VerticalPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
-
-    owner: WeakRef<Pager>;
-
-    constructor() {
-        super();
-        return global.__native(this);
-    }
-
-    public transformPage(view, position) {
-        if (position < -1) {
-            // [-Infinity,-1)
-            // This page is way off-screen to the left.
-            view.setAlpha(0);
-        } else if (position <= 1) {
-            // [-1,1]
-            view.setAlpha(1);
-
-            // Counteract the default slide transition
-            view.setTranslationX(view.getWidth() * -position);
-
-            // set Y position to swipe in from top
-            const yPosition = position * view.getHeight();
-            view.setTranslationY(yPosition);
-        } else {
-            // (1,+Infinity]
-            // This page is way off-screen to the right.
-            view.setAlpha(0);
-        }
-    }
+    TNSViewPager = TNSViewPagerImpl as any;
 }
 
 
-@JavaProxy('com.triniwiz.tns.pager.ZoomOutPageTransformer')
-export class ZoomOutPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+let ZoomOutPageTransformer: ZoomOutPageTransformer;
+interface ZoomOutPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+    new (): ZoomOutPageTransformer;
     owner: WeakRef<Pager>;
+}
+function initZoomOutPageTransformer() {
+    class ZoomOutPageTransformerImpl extends android.support.v4.view.ViewPager.PageTransformer {
+        owner: WeakRef<Pager>;
 
-    constructor() {
-        super();
-        return global.__native(this);
-    }
+        constructor() {
+            super();
+            return global.__native(this);
+        }
 
-    public transformPage(view, position) {
-        const MIN_SCALE = 0.75;
-        const owner = this.owner ? this.owner.get() : null;
-        if (!owner) return;
-        if (position <= -.1 || position >= 1) {
-            const scale = Math.max(MIN_SCALE, 1 - Math.abs(position));
-            view.setScaleX(scale);
-            view.setScaleY(scale);
-        } else {
-            view.setScaleX(1);
-            view.setScaleY(1);
+        public transformPage(view, position) {
+            const MIN_SCALE = 0.75;
+            const owner = this.owner ? this.owner.get() : null;
+            if (!owner) return;
+            if (position <= -0.1 || position >= 1) {
+                const scale = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                view.setScaleX(scale);
+                view.setScaleY(scale);
+            } else {
+                view.setScaleX(1);
+                view.setScaleY(1);
+            }
         }
     }
-
+    ZoomOutPageTransformer = ZoomOutPageTransformerImpl as any;
 }
