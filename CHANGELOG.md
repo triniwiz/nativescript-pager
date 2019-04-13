@@ -1,5 +1,20 @@
 # Change Log
 
+## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
+
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/9.4.0...HEAD)
+
+**Implemented enhancements:**
+
+- More events for swipe [\#77](https://github.com/triniwiz/nativescript-pager/issues/77)
+
+**Merged pull requests:**
+
+- feat\(\): \#77 [\#112](https://github.com/triniwiz/nativescript-pager/pull/112) ([triniwiz](https://github.com/triniwiz))
+- Revert "vertical orientation support for android" [\#111](https://github.com/triniwiz/nativescript-pager/pull/111) ([triniwiz](https://github.com/triniwiz))
+- Android fixes: support uglify and markMode [\#109](https://github.com/triniwiz/nativescript-pager/pull/109) ([farfromrefug](https://github.com/farfromrefug))
+- vertical orientation support for android [\#105](https://github.com/triniwiz/nativescript-pager/pull/105) ([farfromrefug](https://github.com/farfromrefug))
+
 ## [9.4.0](https://github.com/triniwiz/nativescript-pager/tree/9.4.0) (2019-03-16)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v9.3.15...9.4.0)
 
