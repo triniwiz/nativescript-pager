@@ -22,6 +22,10 @@ export function toggleSwipe() {
     pager.disableSwipe = !pager.disableSwipe;
 }
 
+export function onScroll(event) {
+    console.log('x', event.scrollX, 'y', event.scrollY);
+}
+
 export function removeNextItems() {
     const pager: Pager = <Pager>page.getViewById('pager');
     const selectedIndex = pager.selectedIndex;

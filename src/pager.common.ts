@@ -88,6 +88,11 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public peaking: PercentLength;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
+    public static scrollEvent = 'scroll';
+    public static swipeEvent = 'swipe';
+    public static swipeStartEvent = 'swipeStart';
+    public static swipeOverEvent = 'swipeOver';
+    public static swipeEndEvent = 'swipeEnd';
     public orientation: Orientation;
     public _innerWidth: number = 0;
     public _innerHeight: number = 0;

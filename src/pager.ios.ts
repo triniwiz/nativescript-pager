@@ -47,6 +47,7 @@ const main_queue = dispatch_get_current_queue();
 global.moduleMerge(common, exports);
 
 export class Pager extends PagerBase {
+    lastEvent: number = 0;
     private _disableSwipe: boolean = false;
     private _disableAnimation: boolean = false;
     public perPage: number;
@@ -495,6 +496,14 @@ export class Pager extends PagerBase {
 
         }
     }
+
+    get horizontalOffset(): number {
+        return this.nativeViewProtected ? this.nativeViewProtected.contentOffset.x : 0;
+    }
+
+    get verticalOffset(): number {
+        return this.nativeViewProtected ? this.nativeViewProtected.contentOffset.y : 0;
+    }
 }
 
 export class PagerCell extends UICollectionViewCell {
@@ -608,8 +617,8 @@ class UICollectionDelegateImpl extends NSObject
         if (!owner) return 0;
         const spacing = owner.convertToSize(owner.spacing);
         const peaking = owner.convertToSize(owner.peaking);
-        let width = layout.toDeviceIndependentPixels((owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
-        let proportionalOffset = owner.ios.contentOffset.x / width;
+        let width = layout.toDeviceIndependentPixels(((owner.orientation === 'horizontal' ? owner._effectiveItemWidth : owner._effectiveItemHeight) - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
+        let proportionalOffset = (owner.orientation === 'horizontal' ? owner.ios.contentOffset.x : owner.ios.contentOffset.y) / width;
         let index = round(proportionalOffset);
         let numberOfItems = owner._childrenCount;
         return Math.max(0, Math.min(numberOfItems - 1, index));
@@ -620,13 +629,60 @@ class UICollectionDelegateImpl extends NSObject
     scrollViewWillBeginDragging(scrollView: UIScrollView): void {
         this.startingScrollingOffset = scrollView.contentOffset;
         this.indexOfCellBeforeDragging = this.indexOfMajorCell();
+        let owner = this._owner ? this._owner.get() : null;
+        if (owner) {
+            if (owner.lastEvent === 0) {
+                owner.notify({
+                    eventName: Pager.swipeStartEvent,
+                    object: owner
+                });
+                owner.lastEvent = 1;
+            }
+        }
+    }
 
+    scrollViewDidEndScrollingAnimation(scrollView: UIScrollView): void {
+        let owner = this._owner ? this._owner.get() : null;
+        if (owner) {
+            owner.notify({
+                eventName: Pager.swipeEvent,
+                object: owner
+            });
+        }
+    }
+
+    public scrollViewDidScroll(scrollView: UIScrollView): void {
+        let owner = this._owner.get();
+        if (owner) {
+            owner.notify({
+                object: owner,
+                eventName: Pager.scrollEvent,
+                scrollX: owner.horizontalOffset,
+                scrollY: owner.verticalOffset
+            });
+
+           if (owner.lastEvent === 1) {
+               owner.notify({
+                   eventName: Pager.swipeOverEvent,
+                   object: owner
+               });
+               owner.lastEvent = 1;
+           }
+        }
     }
 
     scrollViewWillEndDraggingWithVelocityTargetContentOffset(scrollView: UIScrollView, velocity: CGPoint, targetContentOffset: interop.Pointer | interop.Reference<CGPoint>) {
         let owner = this._owner ? this._owner.get() : null;
 
         if (!owner) return;
+
+        if (owner.lastEvent === 1) {
+            owner.notify({
+                eventName: Pager.swipeEndEvent,
+                object: owner
+            });
+            owner.lastEvent =  0;
+        }
 
         // Stop scrollView sliding:
         (targetContentOffset as any).value = scrollView.contentOffset;
@@ -637,8 +693,8 @@ class UICollectionDelegateImpl extends NSObject
         // calculate conditions:
         let dataSourceCount = owner._childrenCount;
         let swipeVelocityThreshold = 0.5; // after some trail and error
-        let hasEnoughVelocityToSlideToTheNextCell = this.indexOfCellBeforeDragging + 1 < dataSourceCount && velocity.x > swipeVelocityThreshold;
-        let hasEnoughVelocityToSlideToThePreviousCell = this.indexOfCellBeforeDragging - 1 >= 0 && velocity.x < -swipeVelocityThreshold;
+        let hasEnoughVelocityToSlideToTheNextCell = this.indexOfCellBeforeDragging + 1 < dataSourceCount && (owner.orientation === 'horizontal' ? velocity.x : velocity.y) > swipeVelocityThreshold;
+        let hasEnoughVelocityToSlideToThePreviousCell = this.indexOfCellBeforeDragging - 1 >= 0 && (owner.orientation === 'horizontal' ? velocity.x : velocity.y) < -swipeVelocityThreshold;
         let majorCellIsTheCellBeforeDragging = indexOfMajorCell === this.indexOfCellBeforeDragging;
         let didUseSwipeToSkipCell = majorCellIsTheCellBeforeDragging && (hasEnoughVelocityToSlideToTheNextCell || hasEnoughVelocityToSlideToThePreviousCell);
 
@@ -653,8 +709,8 @@ class UICollectionDelegateImpl extends NSObject
 
             const spacing = owner.convertToSize(owner.spacing);
             const peaking = owner.convertToSize(owner.peaking);
-            let width = layout.toDeviceIndependentPixels((owner._effectiveItemWidth - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
-            let height = owner._effectiveItemHeight;
+            let width = layout.toDeviceIndependentPixels(((owner.orientation === 'horizontal' ? owner._effectiveItemWidth : owner._effectiveItemHeight) - (peaking && spacing ? ((2 * peaking) - (4 * spacing) / 3) : 0)) / owner.perPage);
+            let height = (owner.orientation === 'horizontal' ? owner._effectiveItemHeight : owner._effectiveItemWidth);
 
             let toValue = width * snapToIndex;
 
@@ -680,6 +736,7 @@ class UICollectionDelegateImpl extends NSObject
             owner.scrollToIndexAnimated(indexOfMajorCell, true);
         }
         owner.selectedIndex = this.currentPage;
+
     }
 
 }
