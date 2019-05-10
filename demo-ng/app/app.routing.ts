@@ -7,6 +7,8 @@ import { TestMultiComponent } from './test-multi/test-multi.component';
 import { DummyComponent } from './dummy.component';
 import { TestListComponent } from './test-list/test-list.component';
 import { StaticComponent } from '~/static/static.component';
+import { RouterComponent } from './router/router.component';
+import { Page1Component } from './router/page1.component';
 
 const routes: Routes = [
     {path: '', redirectTo: '/test', pathMatch: 'full'},
@@ -15,6 +17,10 @@ const routes: Routes = [
     {path: 'dummy', component: DummyComponent},
     {path: 'list', component: TestListComponent},
     {path: 'static', component: StaticComponent},
+    {path: 'router-test', component: RouterComponent, children: [
+        {path: 'page1', component: Page1Component},
+        {path: 'page2', component: Page1Component}
+    ]}
 ];
 
 @NgModule({

@@ -4,6 +4,7 @@
     <Button text="Multi Template" [nsRouterLink]="['/multi']" class="btn btn-primary"></Button>
     <Button row="1" text="Pager With List" [nsRouterLink]="['/list']" class="btn btn-primary"></Button>
     <Button row="2" text="Pager With Static Content" [nsRouterLink]="['/static']" class="btn btn-primary"></Button>
+    <Button row="2" text="Pager With Static Content inside router outlet" [nsRouterLink]="['/router-test/page1']" class="btn btn-primary"></Button>
     <Pager row="3" [items]="items | async" loadMoreCount="5" #pager [selectedIndex]="currentPagerIndex" (selectedIndexChange)="onIndexChanged($event)" class="pager"
         backgroundColor="lightsteelblue">
         <ng-template let-i="index" let-item="item">
