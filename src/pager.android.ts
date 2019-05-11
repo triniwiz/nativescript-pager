@@ -342,6 +342,7 @@ export class Pager extends PagerBase {
     _addChildFromBuilder(name: string, value: any): void {
         if (value instanceof PagerItem) {
             this._childrenViews.set(this._childrenCount, value);
+            this.refresh();
         }
     }
     // public [orientationProperty.setNative](value: Orientation) {
