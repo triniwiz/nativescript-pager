@@ -26,5 +26,5 @@ export declare class Pager extends PagerBase {
 
     requestLayout(): void;
 
-    _addChildFromBuilder(name: string, value: Array<any>): void;
+    _addChildFromBuilder(name: string, value: any): void;
 }

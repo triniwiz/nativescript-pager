@@ -12,6 +12,8 @@ import { DummyComponent } from './dummy.component';
 import { TestMultiComponent } from './test-multi/test-multi.component';
 import { TestListComponent } from './test-list/test-list.component';
 import { StaticComponent } from './static/static.component';
+import { RouterComponent } from './router/router.component';
+import { Page1Component } from './router/page1.component';
 
 @NgModule({
     bootstrap: [AppComponent],
@@ -27,7 +29,9 @@ import { StaticComponent } from './static/static.component';
         TestMultiComponent,
         TestListComponent,
         DummyComponent,
-        StaticComponent
+        StaticComponent,
+        RouterComponent,
+        Page1Component
     ],
     providers: [],
     schemas: [NO_ERRORS_SCHEMA]

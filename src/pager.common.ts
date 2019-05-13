@@ -21,7 +21,7 @@ import { Observable } from 'tns-core-modules/data/observable';
 import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
 import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
+import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -271,7 +271,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     abstract _addChildFromBuilder(name: string, value: any): void;
 }
 
-export class PagerItem extends StackLayout {
+export class PagerItem extends GridLayout {
     constructor() {
         super();
     }

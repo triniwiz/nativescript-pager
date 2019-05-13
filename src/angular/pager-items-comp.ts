@@ -71,8 +71,7 @@ export interface SetupItemViewArgs {
     context: ItemContext;
 }
 
-export abstract class TemplatedItemsComponent
-    implements DoCheck, OnDestroy, AfterContentInit {
+export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, AfterContentInit {
     public abstract get nativeElement(): Pager;
     protected templatedItemsView: Pager;
     protected _items: any;
@@ -365,7 +364,8 @@ export class PagerItemDirective implements OnInit {
 
         if (realViews.length > 0) {
             const view = realViews[0];
-            this.owner.nativeElement._addChildFromBuilder('PagerItem', view);
+            this.item.addChild(view);
+            this.owner.nativeElement._addChildFromBuilder('PagerItem', this.item);
         }
     }
 }
