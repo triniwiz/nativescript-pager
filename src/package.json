@@ -1,6 +1,6 @@
 {
 	"name": "nativescript-pager",
-	"version": "9.5.0",
+	"version": "9.5.2",
 	"description": "A Carousel/Pager plugin for NativeScript",
 	"main": "pager",
 	"typings": "pager.d.ts",
@@ -77,8 +77,8 @@
 		"prompt": "^1.0.0",
 		"rimraf": "^2.5.0",
 		"rxjs": "^6.3.3",
-		"tns-core-modules": "^5.0.2",
-		"tns-platform-declarations": "^5.0.2",
+		"tns-core-modules": "^5.3.1",
+		"tns-platform-declarations": "^5.3.1",
 		"tslint": "^5.11.0",
 		"typescript": "~3.1.1",
 		"vue": "^2.5.13",
