@@ -7,17 +7,17 @@
   "nativescript": {
     "id": "org.nativescript.application",
     "tns-ios": {
-      "version": "5.0.0"
+      "version": "6.0.0-rc-2019-06-28-105002-01"
     },
     "tns-android": {
-      "version": "5.0.0"
+      "version": "6.0.0-rc-2019-06-27-172817-03"
     }
   },
   "dependencies": {
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "^1.0.4",
-    "nativescript-vue": "^2.0.0",
-    "tns-core-modules": "~5.0.0"
+    "nativescript-vue": "2.3.0-rc.1",
+    "tns-core-modules": "6.0.0-rc-2019-06-28-175837-02"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -27,7 +27,7 @@
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
     "lazy": "1.0.11",
-    "nativescript-dev-webpack": "^0.18.0",
+    "nativescript-dev-webpack": "1.0.0-rc-2019-07-02-161545-02",
     "nativescript-vue-template-compiler": "^2.0.0",
     "node-sass": "^4.9.2",
     "terser-webpack-plugin": "^1.1.0",

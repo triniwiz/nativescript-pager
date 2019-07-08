@@ -6,10 +6,10 @@
   "nativescript": {
     "id": "org.nativescript.demong",
     "tns-android": {
-      "version": "5.0.0"
+      "version": "6.0.0-rc-2019-06-27-172817-03"
     },
     "tns-ios": {
-      "version": "5.0.0"
+      "version": "6.0.0-rc-2019-06-28-105002-01"
     }
   },
   "dependencies": {
@@ -27,7 +27,7 @@
     "nativescript-theme-core": "^1.0.4",
     "reflect-metadata": "~0.1.8",
     "rxjs": "^6.3.3",
-    "tns-core-modules": "^5.0.2",
+    "tns-core-modules": "6.0.0-rc-2019-06-28-175837-02",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
@@ -38,8 +38,8 @@
     "babylon": "6.15.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-typescript": "^0.7.8",
-    "nativescript-dev-webpack": "^0.18.0"
+    "nativescript-dev-webpack": "1.0.0-rc-2019-07-02-161545-02",
+    "typescript": "3.4.1"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",

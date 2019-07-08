@@ -6,9 +6,13 @@
 
 ## Install
 
+#### NativeScript 6x
+
+- `tns plugin add nativescript-pager@10.x`
+
 #### NativeScript 5x
 
-- `tns plugin add nativescript-pager`
+- `tns plugin add nativescript-pager@9.x`
 
 #### NativeScript 4x
 
