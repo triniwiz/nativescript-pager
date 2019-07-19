@@ -29,8 +29,7 @@ export class TestListComponent implements OnInit {
     },
     {
       title: 'Slide 4',
-      image:
-        'http://img15.deviantart.net/60ea/i/2012/310/e/4/shazam_by_maiolo-d5k6fr5.jpg'
+      image: 'http://img15.deviantart.net/60ea/i/2012/310/e/4/shazam_by_maiolo-d5k6fr5.jpg'
     },
     {
       title: 'Slide 5',
@@ -48,12 +47,12 @@ export class TestListComponent implements OnInit {
     },
     {
       title: 'Slide 8',
-      image: 'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80'
+      image:
+        'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80'
     },
     {
       title: 'Slide 9',
-      image:
-        'http://otakukart.com/animeblog/wp-content/uploads/2016/04/Kurama-Naruto.png'
+      image: 'http://otakukart.com/animeblog/wp-content/uploads/2016/04/Kurama-Naruto.png'
     },
     {
       title: 'Slide 10',
@@ -61,7 +60,7 @@ export class TestListComponent implements OnInit {
         'https://images.unsplash.com/photo-1474861644511-0f2775ae97cc?auto=format&fit=crop&w=2391&q=80'
     }
   ];
-  @ViewChild('pager') pager: any;
+  @ViewChild('pager', { static: true }) pager: any;
   // tslint:disable-next-line:semicolon
   public templateSelector = (item: any, index: number, items: any) => {
     return index % 2 === 0 ? 'even' : 'odd';
@@ -88,8 +87,7 @@ export class TestListComponent implements OnInit {
       },
       {
         title: 'Slide 4',
-        image:
-          'http://img15.deviantart.net/60ea/i/2012/310/e/4/shazam_by_maiolo-d5k6fr5.jpg',
+        image: 'http://img15.deviantart.net/60ea/i/2012/310/e/4/shazam_by_maiolo-d5k6fr5.jpg',
         items: this._items
       },
       {
@@ -111,13 +109,13 @@ export class TestListComponent implements OnInit {
       },
       {
         title: 'Slide 8',
-        image: 'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80',
+        image:
+          'https://images.unsplash.com/photo-1519625073050-2815233885ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1955&q=80',
         items: this._items
       },
       {
         title: 'Slide 9',
-        image:
-          'http://otakukart.com/animeblog/wp-content/uploads/2016/04/Kurama-Naruto.png',
+        image: 'http://otakukart.com/animeblog/wp-content/uploads/2016/04/Kurama-Naruto.png',
         items: this._items
       },
       {

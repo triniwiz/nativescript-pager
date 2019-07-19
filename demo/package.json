@@ -2,18 +2,18 @@
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-android": {
-      "version": "6.0.0-rc-2019-06-27-172817-03"
+      "version": "6.0.0"
     },
     "tns-ios": {
-      "version": "6.0.0-rc-2019-06-28-105002-01"
+      "version": "6.0.1"
     }
   },
   "dependencies": {
-    "nativescript-image-cache-it": "^4.0.8",
+    "nativescript-image-cache-it": "^5.0.0-alpha.3",
     "nativescript-pager": "file:../src",
-    "nativescript-theme-core": "^1.0.4",
-    "nativescript-unit-test-runner": "0.6.3",
-    "tns-core-modules": "6.0.0-rc-2019-06-28-175837-02"
+    "nativescript-theme-core": "^2.0.2",
+    "nativescript-unit-test-runner": "0.7.0",
+    "tns-core-modules": "6.0.1"
   },
   "devDependencies": {
     "babel-traverse": "6.12.0",
@@ -25,11 +25,11 @@
     "karma-jasmine": "2.0.1",
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
-    "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-webpack": "1.0.0-rc-2019-07-02-161545-02",
-    "tns-platform-declarations": "6.0.0-rc-2019-06-28-175837-02",
-    "tslint": "~5.4.3",
-    "typescript": "3.4.1",
+    "nativescript-css-loader": "~0.26.1",
+    "nativescript-dev-webpack": "1.0.1",
+    "tns-platform-declarations": "6.0.1",
+    "tslint": "~5.18.0",
+    "typescript": "~3.4.5",
     "karma-webpack": "3.0.5"
   },
   "scripts": {

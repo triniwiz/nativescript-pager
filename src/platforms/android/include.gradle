@@ -1,0 +1,5 @@
+dependencies {
+	def androidxVersion =  project.hasProperty("androidxVersion") ? project.androidxVersion : "1.0.0"
+
+	compile "androidx.appcompat:appcompat:$androidxVersion"
+}

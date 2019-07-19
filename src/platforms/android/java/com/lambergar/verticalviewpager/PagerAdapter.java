@@ -16,7 +16,7 @@
 
 package com.lambergar.verticalviewpager;
 
-public abstract class PagerAdapter extends android.support.v4.view.PagerAdapter{
+public abstract class PagerAdapter extends androidx.viewpager.widget.PagerAdapter{
     
     public float getPageHeight(int position) {
     	return 1.f;
