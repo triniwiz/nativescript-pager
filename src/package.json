@@ -87,7 +87,7 @@
     "tns-core-modules": "^6.0.1",
     "tns-platform-declarations": "^6.0.1",
     "tslint": "^5.18.0",
-    "typescript": "~3.5.3",
+    "typescript": "~3.4.5",
     "vue": "^2.6.10",
     "zone.js": "^0.9.1"
   },
