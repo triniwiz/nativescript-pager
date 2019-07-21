@@ -37,3 +37,4 @@ demo-ng/report/stats.json
 package-lock.json
 demo-vue/platforms
 !demo-vue/app/main.js
+**/.migration_backup

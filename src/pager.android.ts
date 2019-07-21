@@ -41,7 +41,7 @@ declare var java, android;
 export { Transformer } from './pager.common';
 
 export class Pager extends PagerBase {
-    nativeViewProtected: android.support.v4.view.ViewPager;
+    nativeViewProtected: androidx.viewpager.widget.ViewPager;
     _androidViewId: number;
     private _disableAnimation: boolean;
     public pagesCount: number;
@@ -98,7 +98,7 @@ export class Pager extends PagerBase {
         }
 
         view.owner = that;
-        this._pageListener = new android.support.v4.view.ViewPager.OnPageChangeListener({
+        this._pageListener = new androidx.viewpager.widget.ViewPager.OnPageChangeListener({
             onPageSelected: function(position: number) {
                 const owner = that.get();
                 if (owner) {
@@ -390,7 +390,7 @@ const POSITION_UNCHANGED = -1;
 const POSITION_NONE = -2;
 
 let PagerFragment: PagerFragment;
-interface PagerFragment extends android.support.v4.app.Fragment {
+interface PagerFragment extends androidx.fragment.app.Fragment {
     new (): PagerFragment;
     newInstance(pagerId: number, position: number): PagerFragment;
     owner: WeakRef<Pager>;
@@ -401,7 +401,7 @@ function initPagerFragment() {
     if (PagerFragment) {
         return;
     }
-    class PagerFragmentImpl extends android.support.v4.app.Fragment {
+    class PagerFragmentImpl extends androidx.fragment.app.Fragment {
         owner: WeakRef<Pager>;
         position: number = -1;
         view: View;
@@ -479,7 +479,7 @@ function initPagerFragment() {
 let PagerStateAdapter: PagerStateAdapter;
 interface PagerStateAdapter extends com.lambergar.verticalviewpager.PagerAdapter {
     new (): PagerStateAdapter;
-    mFragmentManager: android.support.v4.app.FragmentManager;
+    mFragmentManager: androidx.fragment.app.FragmentManager;
     owner: WeakRef<Pager>;
 }
 function initPagerStateAdapter() {
@@ -489,16 +489,16 @@ function initPagerStateAdapter() {
     initPagerFragment();
     class PagerStateAdapterImpl extends com.lambergar.verticalviewpager.PagerAdapter {
         owner: WeakRef<Pager>;
-        mFragmentManager: any /*android.support.v4.app.FragmentManager*/;
-        mCurTransaction: any /*android.support.v4.app.FragmentTransaction*/;
+        mFragmentManager: any /*androidx.fragment.app.FragmentManager*/;
+        mCurTransaction: any /*androidx.fragment.app.FragmentTransaction*/;
         mCurrentPrimaryItem: any;
-        mFragments: any /*android.support.v4.util.LongSparseArray<number>*/;
-        mSavedStates: any /*android.support.v4.util.LongSparseArray<any>*/;
+        mFragments: any /*androidx.collection.LongSparseArray<number>*/;
+        mSavedStates: any /*androidx.collection.LongSparseArray<any>*/;
 
         constructor() {
             super();
-            this.mFragments = new android.support.v4.util.LongSparseArray();
-            this.mSavedStates = new android.support.v4.util.LongSparseArray();
+            this.mFragments = new androidx.collection.LongSparseArray();
+            this.mSavedStates = new androidx.collection.LongSparseArray();
             return global.__native(this);
         }
 
@@ -577,7 +577,7 @@ function initPagerStateAdapter() {
         }
 
         destroyItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
-            let fragment = /*<android.support.v4.app.Fragment>*/ object;
+            let fragment = /*<androidx.fragment.app.Fragment>*/ object;
             const currentPosition = this.getItemPosition(fragment);
 
             const index = this.mFragments.indexOfValue(fragment);
@@ -588,7 +588,7 @@ function initPagerStateAdapter() {
             }
 
             // item hasn't been removed
-            if (fragment.isAdded() && currentPosition !== android.support.v4.view.PagerAdapter.POSITION_NONE) {
+            if (fragment.isAdded() && currentPosition !== androidx.viewpager.widget.PagerAdapter.POSITION_NONE) {
                 this.mSavedStates.put(fragmentKey, this.mFragmentManager.saveFragmentInstanceState(fragment));
             } else {
                 this.mSavedStates.remove(fragmentKey);
@@ -614,7 +614,7 @@ function initPagerStateAdapter() {
         }
 
         setPrimaryItem(container: any /*android.view.ViewGroup*/, position: number, object: any): void {
-            const fragment = <android.support.v4.app.Fragment>object;
+            const fragment = <androidx.fragment.app.Fragment>object;
             if (fragment !== this.mCurrentPrimaryItem) {
                 if (this.mCurrentPrimaryItem != null) {
                     this.mCurrentPrimaryItem.setMenuVisibility(false);
@@ -731,12 +731,12 @@ function initPagerStateAdapter() {
         }
 
         isViewFromObject(view: any /*android.view.View*/, object: any /*java.lang.Object*/): boolean {
-            return (<android.support.v4.app.Fragment>object).getView() === view;
+            return (<androidx.fragment.app.Fragment>object).getView() === view;
         }
 
         getItemPosition(object: any) {
             const count = this.mFragments.size();
-            const fragment = /*<android.support.v4.app.Fragment>*/ object;
+            const fragment = /*<androidx.fragment.app.Fragment>*/ object;
             let position = POSITION_NONE;
             for (let i = 0; i < count; i++) {
                 const item = this.getItem(i);
@@ -752,7 +752,7 @@ function initPagerStateAdapter() {
 }
 
 let TNSViewPager: TNSViewPager;
-interface TNSViewPager extends android.support.v4.view.ViewPager {
+interface TNSViewPager extends androidx.viewpager.widget.ViewPager {
     new (context: android.content.Context): TNSViewPager;
     owner: WeakRef<Pager>;
 }
@@ -761,7 +761,7 @@ function initTNSViewPager() {
     if (TNSViewPager) {
         return;
     }
-    class TNSViewPagerImpl extends android.support.v4.view.ViewPager {
+    class TNSViewPagerImpl extends androidx.viewpager.widget.ViewPager {
         disableSwipe: boolean;
         owner: WeakRef<Pager>;
         lastEventX;
@@ -774,7 +774,7 @@ function initTNSViewPager() {
             // this.transformer = new VerticalPageTransformer();
             // this.setPageTransformer(true, new VerticalPageTransformer());
             // The easiest way to get rid of the overscroll drawing that happens on the left and right
-            // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
+            // this.setOverScrollMode(androidx.viewpager.widget.ViewPager.OVER_SCROLL_NEVER);
             return global.__native(this);
         }
 
@@ -869,7 +869,7 @@ function initTNSViewPager() {
 
 let TNSVerticalViewPager: TNSVerticalViewPager;
 
-interface TNSVerticalViewPager extends android.support.v4.view.ViewPager {
+interface TNSVerticalViewPager extends androidx.viewpager.widget.ViewPager {
     new (context: android.content.Context): TNSVerticalViewPager;
     owner: WeakRef<Pager>;
 }
@@ -890,7 +890,7 @@ function initTNSVerticalViewPager() {
             // this.transformer = new VerticalPageTransformer();
             // this.setPageTransformer(true, new VerticalPageTransformer());
             // The easiest way to get rid of the overscroll drawing that happens on the left and right
-            // this.setOverScrollMode(android.support.v4.view.ViewPager.OVER_SCROLL_NEVER);
+            // this.setOverScrollMode(androidx.viewpager.widget.ViewPager.OVER_SCROLL_NEVER);
             return global.__native(this);
         }
 
@@ -931,7 +931,7 @@ function initTNSVerticalViewPager() {
     TNSVerticalViewPager = TNSVerticalViewPagerImpl as any;
 }
 // @JavaProxy('com.triniwiz.tns.pager.VerticalPageTransformer')
-// export class VerticalPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+// export class VerticalPageTransformer extends androidx.viewpager.widget.ViewPager.PageTransformer {
 
 //     owner: WeakRef<Pager>;
 
@@ -964,7 +964,7 @@ function initTNSVerticalViewPager() {
 // }
 
 let ZoomOutPageTransformer: ZoomOutPageTransformer;
-interface ZoomOutPageTransformer extends android.support.v4.view.ViewPager.PageTransformer {
+interface ZoomOutPageTransformer extends androidx.viewpager.widget.ViewPager.PageTransformer {
     new (): ZoomOutPageTransformer;
     owner: WeakRef<Pager>;
 }
@@ -973,7 +973,7 @@ function initZoomOutPageTransformer() {
     if (ZoomOutPageTransformer) {
         return;
     }
-    class ZoomOutPageTransformerImpl extends android.support.v4.view.ViewPager.PageTransformer {
+    class ZoomOutPageTransformerImpl extends androidx.viewpager.widget.ViewPager.PageTransformer {
         owner: WeakRef<Pager>;
 
         constructor() {
