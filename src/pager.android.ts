@@ -2,6 +2,7 @@ import { KeyedTemplate, Property, View, layout } from 'tns-core-modules/ui/core/
 import * as common from './pager.common';
 import {
     ITEMLOADING,
+    ITEMDISPOSING,
     itemsProperty,
     itemTemplatesProperty,
     LOADMOREITEMS,
@@ -375,6 +376,7 @@ export class Pager extends PagerBase {
 export const pagesCountProperty = new Property<Pager, number>({
     name: 'pagesCount',
     defaultValue: 0,
+    valueConverter: (v) => parseInt(v),
     valueChanged: (pager: Pager, oldValue, newValue) => {
         pager.updatePagesCount(pager.pagesCount);
     }
@@ -607,6 +609,11 @@ function initPagerStateAdapter() {
 
             if (owner && cachedView) {
                 const template = owner._getItemTemplate(position);
+                let _args: any = notifyForItemAtIndex(owner, cachedView ? cachedView.nativeView : null, cachedView, ITEMDISPOSING, position);
+                const view = _args.view;
+                if (view && view.parent === owner) {
+                    owner._removeView(cachedView);
+                }
                 owner._viewMap.delete(`${position}-${template.key}`);
             }
 

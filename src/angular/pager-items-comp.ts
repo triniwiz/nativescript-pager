@@ -49,8 +49,10 @@ export interface PagerTemplatedItemsView {
   refresh(): void;
 
   on(event: 'itemLoading', callback: (args: ItemEventData) => void, thisArg?: any);
+  on(event: 'itemDisposing', callback: (args: ItemEventData) => void, thisArg?: any);
 
   off(event: 'itemLoading', callback: (args: EventData) => void, thisArg?: any);
+  off(event: 'itemDisposing', callback: (args: EventData) => void, thisArg?: any);
 }
 
 export class ItemContext {
@@ -133,6 +135,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
     this.templatedItemsView = _elementRef.nativeElement;
 
     this.templatedItemsView.on('itemLoading', this.onItemLoading, this);
+    this.templatedItemsView.on('itemDisposing', this.onItemDisposing, this);
   }
 
   ngAfterContentInit() {
@@ -144,6 +147,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
 
   ngOnDestroy() {
     this.templatedItemsView.off('itemLoading', this.onItemLoading, this);
+    this.templatedItemsView.off('itemDisposing', this.onItemDisposing, this);
   }
 
   private setItemTemplates() {
@@ -225,6 +229,39 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
     this.setupViewRef(viewRef, currentItem, index);
 
     this.detectChangesOnChild(viewRef, index);
+  }
+
+  @profile
+  public onItemDisposing(args: ItemEventData) {
+    if (!args.view) {
+      return;
+    }
+    let viewRef: EmbeddedViewRef<ItemContext>;
+
+    if (args.view) {
+      if (isLogEnabled()) {
+        PagerLog(`onItemDisposing: ${index} - Removing angular view`);
+      }
+
+      viewRef = args.view[NG_VIEW];
+      // Getting angular view from original element (in cases when ProxyViewContainer
+      // is used NativeScript internally wraps it in a StackLayout)
+      if (!viewRef && args.view instanceof LayoutBase && args.view.getChildrenCount() > 0) {
+        viewRef = args.view.getChildAt(0)[NG_VIEW];
+      }
+
+      if (!viewRef && isLogEnabled()) {
+        PagerError(`ViewReference not found for item ${index}. View disposing is not working`);
+      }
+    }
+
+    if (viewRef) {
+      if (isLogEnabled()) {
+        PagerLog(`onItemDisposing: ${index} - Disposing view reference`);
+      }
+
+      viewRef.destroy();
+    }
   }
 
   public setupViewRef(viewRef: EmbeddedViewRef<ItemContext>, data: any, index: number): void {

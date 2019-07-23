@@ -8,8 +8,10 @@ export interface PagerTemplatedItemsView {
     itemTemplate: string | Template;
     itemTemplates?: string | Array<KeyedTemplate>;
     refresh(): void;
-    on(event: 'itemLoading', callback: (args: ItemEventData) => void, thisArg?: any): any;
-    off(event: 'itemLoading', callback: (args: EventData) => void, thisArg?: any): any;
+    on(event: 'itemLoading', callback: (args: ItemEventData) => void, thisArg?: any);
+    on(event: 'itemDisposing', callback: (args: ItemEventData) => void, thisArg?: any);
+    off(event: 'itemLoading', callback: (args: EventData) => void, thisArg?: any);
+    off(event: 'itemDisposing', callback: (args: EventData) => void, thisArg?: any);
 }
 export declare class ItemContext {
     $implicit?: any;
