@@ -1,3 +1,5 @@
+const VUE_VIEW = '__vueVNodeRef__';
+
 module.exports = function pager(Vue) {
 	return {
 		model: {
@@ -28,7 +30,8 @@ module.exports = function pager(Vue) {
       v-bind="$attrs"
       v-on="listeners"
       :selectedIndex="selectedIndex"
-      @itemLoading="onItemLoading">
+	  @itemLoading="onItemLoading"
+	  @itemDisposing="onItemDisposing">
       <slot />
     </NativePager>
   `,
@@ -75,8 +78,16 @@ module.exports = function pager(Vue) {
 						: items[ index ];
 				const name = args.object._itemTemplateSelector(currentItem, index, items);
 				const context = this.getItemContext(currentItem, index);
-				const oldVnode = args.view && args.view[ Vue.VUE_VIEW ];
+				const oldVnode = args.view && args.view[ VUE_VIEW ];
 				args.view = this.$templates.patchTemplate(name, context, oldVnode);
+			},
+			onItemDisposing(args) {
+				// TODO: handle disposing template
+				// const oldVnode = args.view && args.view[ VUE_VIEW ];
+				// console.log("disposing", !!oldVnode, VUE_VIEW);
+				// if (oldVnode) {
+				// 	Vue.prototype.__patch__(oldVnode, null);
+				// }
 			},
 			onSelectedIndexChange({ value }) {
 				this.$emit('selectedIndexChange', value)
