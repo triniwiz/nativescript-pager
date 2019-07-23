@@ -6,6 +6,7 @@ import {
     disableSwipeProperty,
     ItemEventData,
     ITEMLOADING,
+    ITEMDISPOSING,
     itemsProperty,
     itemTemplatesProperty,
     LOADMOREITEMS,
@@ -310,14 +311,27 @@ export class Pager extends PagerBase {
     }
 
     public _removeContainer(cell: PagerCell,
-                            indexPath?: NSIndexPath): void {
+        indexPath?: NSIndexPath): void {
         let view = cell.view;
-        // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
-        if (!(view.parent instanceof Pager)) {
-            this._removeView(view.parent);
-        }
 
-        view.parent._removeView(view);
+        let args = <ItemEventData>{
+            eventName: ITEMDISPOSING,
+            object: this,
+            index: indexPath.row,
+            android: undefined,
+            ios: cell,
+            view: view
+        };
+        this.notify(args);
+        view = args.view;
+        if (view && view.parent) {
+            // This is to clear the StackLayout that is used to wrap ProxyViewContainer instances.
+            if (!(view.parent instanceof Pager)) {
+                this._removeView(view.parent);
+            }
+
+            view.parent._removeView(view);
+        }
         this._map.delete(cell);
         if (indexPath) {
             this._measuredMap.delete(indexPath.row);
@@ -550,18 +564,18 @@ class UICollectionDelegateImpl extends NSObject
             const spacing = owner.convertToSize(owner.spacing);
             const inset = layout.toDeviceIndependentPixels(peaking + spacing);
             if (owner.orientation === 'vertical') {
-                return new UIEdgeInsets({bottom: inset, left: 0, right: 0, top: inset});
+                return new UIEdgeInsets({ bottom: inset, left: 0, right: 0, top: inset });
             }
 
-            return new UIEdgeInsets({bottom: 0, left: inset, right: inset, top: 0});
+            return new UIEdgeInsets({ bottom: 0, left: inset, right: inset, top: 0 });
         }
-        return new UIEdgeInsets({bottom: 0, left: 0, right: 0, top: 0});
+        return new UIEdgeInsets({ bottom: 0, left: 0, right: 0, top: 0 });
     }
 
 
     public collectionViewLayoutSizeForItemAtIndexPath(collectionView: UICollectionView,
-                                                      collectionViewLayout: UICollectionViewLayout,
-                                                      indexPath: NSIndexPath): CGSize {
+        collectionViewLayout: UICollectionViewLayout,
+        indexPath: NSIndexPath): CGSize {
         let owner = this._owner ? this._owner.get() : null;
         let width;
         let height;
@@ -581,8 +595,8 @@ class UICollectionDelegateImpl extends NSObject
     }
 
     public collectionViewWillDisplayCellForItemAtIndexPath(collectionView: UICollectionView,
-                                                           cell: UICollectionViewCell,
-                                                           indexPath: NSIndexPath) {
+        cell: UICollectionViewCell,
+        indexPath: NSIndexPath) {
         const owner = this._owner ? this._owner.get() : null;
         if (owner) {
             if (owner.items && indexPath.row === owner.items.length - owner.loadMoreCount) {
@@ -661,13 +675,13 @@ class UICollectionDelegateImpl extends NSObject
                 scrollY: owner.verticalOffset
             });
 
-           if (owner.lastEvent === 1) {
-               owner.notify({
-                   eventName: Pager.swipeOverEvent,
-                   object: owner
-               });
-               owner.lastEvent = 1;
-           }
+            if (owner.lastEvent === 1) {
+                owner.notify({
+                    eventName: Pager.swipeOverEvent,
+                    object: owner
+                });
+                owner.lastEvent = 1;
+            }
         }
     }
 
@@ -681,7 +695,7 @@ class UICollectionDelegateImpl extends NSObject
                 eventName: Pager.swipeEndEvent,
                 object: owner
             });
-            owner.lastEvent =  0;
+            owner.lastEvent = 0;
         }
 
         // Stop scrollView sliding:
@@ -753,7 +767,7 @@ class UICollectionViewDataSourceImpl extends NSObject
     }
 
     public collectionViewCellForItemAtIndexPath(collectionView: UICollectionView,
-                                                indexPath: NSIndexPath): UICollectionViewCell {
+        indexPath: NSIndexPath): UICollectionViewCell {
         const owner = this._owner ? this._owner.get() : null;
         let cell;
         let width;
@@ -857,7 +871,7 @@ class UICollectionViewDataSourceImpl extends NSObject
 
 
     public collectionViewNumberOfItemsInSection(collectionView: UICollectionView,
-                                                section: number): number {
+        section: number): number {
         const owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
         return owner._childrenCount;

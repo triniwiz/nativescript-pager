@@ -26,6 +26,7 @@ import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 export type Orientation = 'horizontal' | 'vertical';
 
 export const ITEMLOADING = 'itemLoading';
+export const ITEMDISPOSING = 'itemDisposing';
 export const LOADMOREITEMS = 'loadMoreItems';
 export namespace knownTemplates {
     export const itemTemplate = 'itemTemplate';
