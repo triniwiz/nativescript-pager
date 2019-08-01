@@ -1,11 +1,11 @@
 import { Page } from 'tns-core-modules/ui/page';
-import { HelloWorldModel } from './main-view-model';
+import { RegularPageViewModel } from './regular-page-view-model';
 import { Pager } from 'nativescript-pager';
 import { Image } from 'tns-core-modules/ui/image';
 import { topmost } from 'tns-core-modules/ui/frame';
 
 let page: Page;
-let vm = new HelloWorldModel();
+let vm = new RegularPageViewModel();
 
 
 export function pageLoaded(args) {
@@ -29,44 +29,39 @@ export function onScroll(event) {
 }
 
 export function textChange(event) {
-    const item = vm.items.getItem(0);
+    const item = vm.items[0];
     item['text'] = event.value;
-    vm.items.setItem(0, item);
+    vm.items[0] = item;
 }
 
 export function removeNextItems() {
     const pager: Pager = <Pager>page.getViewById('pager');
     const selectedIndex = pager.selectedIndex;
     const count = (pager.items.length) - (selectedIndex + 1);
-    vm.items.splice(selectedIndex + 1, count);
-    const item = vm.items.getItem(selectedIndex);
+    const old = vm.items.slice(0);
+    old.splice(selectedIndex + 1, count);
+    vm.set('items', old);
+    const item = vm.items[selectedIndex];
     item['title'] = `After Reset ${selectedIndex + 1}`;
-    vm.items.setItem(selectedIndex, item);
-
+    vm.items[selectedIndex] = item;
 }
 
 export function resetItems() {
-    vm.resetItems();
+    vm.set('items', vm._originalItems);
 }
 
 export function loaded(event) {
 }
 
-export function goToApi(event) {
-    topmost().navigate('api/api-page');
+export function goBack(event) {
+    topmost().goBack();
 }
-
-
 export function goToPagerWithLists(event) {
     topmost().navigate('list-page');
 }
 
 export function goToStatic(event) {
     topmost().navigate('static/static-page');
-}
-
-export function goToRegular(event) {
-    topmost().navigate('regular/regular-page');
 }
 
 export function prevPage() {

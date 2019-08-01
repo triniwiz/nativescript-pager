@@ -20,13 +20,13 @@
 <script>
 	import Detail from './Detail'
 	import Static from './Static';
-
+	import { ObservableArray } from 'tns-core-modules/data/observable-array';
 	export default {
 		data() {
 			return {
 				detailPage: Detail,
 				staticPage: Static,
-				items: [
+				items: new ObservableArray([
 					{
 						title: 'Slide 1',
 						image: '~/assets/images/Hulk_(comics_character).png'
@@ -74,7 +74,7 @@
 						image:
 							'https://images.unsplash.com/photo-1474861644511-0f2775ae97cc?auto=format&fit=crop&w=2391&q=80'
 					}
-				]
+				])
 			};
 		}
 	};

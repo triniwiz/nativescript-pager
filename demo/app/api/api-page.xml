@@ -1,0 +1,33 @@
+<Page
+        xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+        xmlns:c="nativescript-pager"
+        xmlns:i="nativescript-image-cache-it"
+>
+    <Page.actionBar>
+        <ActionBar title="Pager Api Demo"/>
+    </Page.actionBar>
+    <GridLayout rows="*,*" columns="*" id="sl">
+        <c:Pager height="100%" width="100%" selectedIndexChange="selectedIndexChange" selectedIndex="5"
+                 items="{{items}}" id="pager"
+                 showNativePageIndicator="false" backgroundColor="lightsteelblue">
+            <c:Pager.itemTemplate>
+                <GridLayout marginTop="10" rows="*,*" height="100%" width="100%">
+                    <GridLayout rows="auto,auto">
+                        <i:ImageCacheIt colSpan="2" verticalAlignment="center" height="100" width="100"
+                                        loaded="loadedImage" src="{{picture.medium}}"/>
+                        <GridLayout verticalAlignment="center" row="1" rows="auto" columns="*,10,*">
+                            <Label class="text-right" row="1" text="Name: "/>
+                            <Label class="text-left" row="1" col="2"
+                                   text="{{ name.title + '. ' + name.first + ' ' + name.last }}"/>
+                        </GridLayout>
+                    </GridLayout>
+                </GridLayout>
+            </c:Pager.itemTemplate>
+        </c:Pager>
+        <ScrollView row="1">
+            <StackLayout>
+                <Button text="Load Data" tap="init"/>
+            </StackLayout>
+        </ScrollView>
+    </GridLayout>
+</Page>

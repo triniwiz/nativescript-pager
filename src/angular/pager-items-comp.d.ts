@@ -8,10 +8,10 @@ export interface PagerTemplatedItemsView {
     itemTemplate: string | Template;
     itemTemplates?: string | Array<KeyedTemplate>;
     refresh(): void;
-    on(event: 'itemLoading', callback: (args: ItemEventData) => void, thisArg?: any);
-    on(event: 'itemDisposing', callback: (args: ItemEventData) => void, thisArg?: any);
-    off(event: 'itemLoading', callback: (args: EventData) => void, thisArg?: any);
-    off(event: 'itemDisposing', callback: (args: EventData) => void, thisArg?: any);
+    on(event: 'itemLoading', callback: (args: ItemEventData) => void, thisArg?: any): any;
+    on(event: 'itemDisposing', callback: (args: ItemEventData) => void, thisArg?: any): any;
+    off(event: 'itemLoading', callback: (args: EventData) => void, thisArg?: any): any;
+    off(event: 'itemDisposing', callback: (args: EventData) => void, thisArg?: any): any;
 }
 export declare class ItemContext {
     $implicit?: any;
@@ -48,6 +48,7 @@ export declare abstract class TemplatedItemsComponent implements DoCheck, OnDest
     private setItemTemplates;
     registerTemplate(key: string, template: TemplateRef<ItemContext>): void;
     onItemLoading(args: ItemEventData): void;
+    onItemDisposing(args: ItemEventData): void;
     setupViewRef(viewRef: EmbeddedViewRef<ItemContext>, data: any, index: number): void;
     protected getItemTemplateViewFactory(template: TemplateRef<ItemContext>): () => View;
     private detectChangesOnChild;

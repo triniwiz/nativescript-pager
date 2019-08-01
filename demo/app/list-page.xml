@@ -1,29 +1,32 @@
 <Page
         xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-        xmlns:c="nativescript-pager">
-    <GridLayout rows="auto,auto ,auto,auto, *, auto" columns="*" id="sl">
-        <Label text="Pager With List"/>
-        <c:Pager selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="4" id="pager"
-                 showNativePageIndicator="false" backgroundColor="lightsteelblue">
-            <c:Pager.itemTemplate>
-                <GridLayout rows="auto,*">
-                    <GridLayout height="40%" rows="auto,auto,*" columns="*">
-                        <Label text="Even"/>
-                        <Label row="1" text="{{title}}"/>
-                        <Image height="300" loaded="loadedImage" row="2" src="{{image}}"/>
-                    </GridLayout>
-                    <ListView items="{{items}}" row="1">
-                        <ListView.itemTemplate>
-                            <GridLayout rows="auto,auto,*" columns="*">
-                                <Label text="Even"/>
-                                <Label row="1" text="{{title}}"/>
-                                <Image height="300" loaded="loadedImage" row="2" src="{{image}}"/>
-                            </GridLayout>
-                        </ListView.itemTemplate>
-                    </ListView>
-                </GridLayout>
-            </c:Pager.itemTemplate>
-        </c:Pager>
-        <Button text="Nav" row="5" tap="navigate"/>
+        xmlns:c="nativescript-pager"
+        xmlns:i="nativescript-image-cache-it"
+>
+    <GridLayout rows="auto,*" columns="*" id="sl">
+       <ScrollView row="1">
+           <c:Pager height="100%" width="100%"  selectedIndexChange="selectedIndexChange" selectedIndex="5" items="{{items}}" row="1" id="pager"
+                     indicator="none" backgroundColor="lightsteelblue">
+               <c:Pager.itemTemplate>
+                   <GridLayout rows="*,*" iosOverflowSafeArea="false" height="100%" width="100%">
+                       <GridLayout iosOverflowSafeArea="false" rows="auto,auto,*">
+                           <Label text="Even"/>
+                           <Label row="1" text="{{title}}"/>
+                           <i:ImageCacheIt height="300" loaded="loadedImage" row="2" src="{{image}}"/>
+                       </GridLayout>
+                      <ListView items="{{items}}" row="1" height="100%">
+                           <ListView.itemTemplate>
+                               <GridLayout rows="auto,auto,*" columns="*">
+                                   <Label text="Even"/>
+                                   <Label row="1" text="{{title}}"/>
+                                   <Image height="100" loaded="loadedImage" row="2" src="{{image}}"/>
+                               </GridLayout>
+                           </ListView.itemTemplate>
+                       </ListView>
+                   </GridLayout>
+               </c:Pager.itemTemplate>
+           </c:Pager>
+       </ScrollView>
+
     </GridLayout>
 </Page>

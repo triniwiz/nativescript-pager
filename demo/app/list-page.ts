@@ -62,6 +62,7 @@ export function selectedIndexChange(event: any) {
     const selectedIndex = event.object.get('selectedIndex');
     // vm.set('index', event.object.get('selectedIndex'));
 
+
     if ((selectedIndex + 2) % 3 === 0) {
         vm.items.push({
             title: 'Slide ' + (vm.items.length + 1),

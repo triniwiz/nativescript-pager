@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
 @Component({
   moduleId: module.id,
@@ -11,7 +12,7 @@ export class TestComponent implements OnInit {
   numItems;
   currentPagerIndex = 5;
   latestReceivedIndex = 0;
-  items: any;
+  items: ObservableArray<any>;
   @ViewChild('pager', { static: true }) pager: ElementRef;
   // tslint:disable-next-line:semicolon
   public templateSelector = (item: any, index: number, items: any) => {
@@ -19,7 +20,7 @@ export class TestComponent implements OnInit {
   }
 
   constructor() {
-    this.items = new BehaviorSubject([
+    this.items = new ObservableArray([
       {
         title: 'Slide 1',
         image: '~/images/Hulk_(comics_character).png'
@@ -67,18 +68,16 @@ export class TestComponent implements OnInit {
           'https://images.unsplash.com/photo-1474861644511-0f2775ae97cc?auto=format&fit=crop&w=2391&q=80'
       }
     ]);
-    this.numItems = this.items.value.length;
+    this.numItems = this.items.length
   }
 
   ngOnInit(): void {
     setTimeout(() => {
-      let newItems = (<BehaviorSubject<any>>this.items).value;
-      newItems.push({
+      this.items.push({
         title: 'Slide 11',
         image: '~/images/Hulk_(comics_character).png'
       });
-      this.items.next(newItems);
-      this.numItems = this.items.value.length;
+      this.numItems = this.items.length;
     }, 1000);
   }
 
@@ -103,11 +102,11 @@ export class TestComponent implements OnInit {
   }
 
   onIndexChanged($event) {
-    debugObj($event);
+    //debugObj($event);
     this.latestReceivedIndex = $event.value;
     this.currentPagerIndex = $event.value;
     if (($event.value + 2) % 3 === 0) {
-      let newItems = (<BehaviorSubject<any>>this.items).value;
+      let newItems = this.items;
       const items = [
         {
           title: 'Slide ' + (newItems.length + 1),
@@ -122,9 +121,8 @@ export class TestComponent implements OnInit {
           image: `https://robohash.org/${newItems.length + 3}.png`
         }
       ];
-      newItems.push(...items);
-      this.items.next(newItems);
-      this.numItems = this.items.value.length;
+      this.items.push(...items);
+      this.numItems = this.items.length;
     }
   }
 

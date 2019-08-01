@@ -15,14 +15,15 @@ import { StaticComponent } from './static/static.component';
 import { RouterComponent } from './router/router.component';
 import { Page1Component } from './router/page1.component';
 import { IndexLoggerDirective } from './index-logger.directive';
-
+import { TNSImageCacheItModule } from 'nativescript-image-cache-it/angular';
 @NgModule({
     bootstrap: [AppComponent],
     imports: [
         NativeScriptModule,
         NativeScriptFormsModule,
         AppRoutingModule,
-        PagerModule
+        PagerModule,
+        TNSImageCacheItModule
     ],
     declarations: [
         AppComponent,

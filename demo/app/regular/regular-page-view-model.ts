@@ -1,8 +1,7 @@
 import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
-export class HelloWorldModel extends Observable {
-    items: ObservableArray<any>;
+export class RegularPageViewModel extends Observable {
+    items: any[];
     index: number;
     _items = [
         {title: 'Slide 1', image: 'https://robohash.org/1.png?set=2'},
@@ -127,10 +126,6 @@ export class HelloWorldModel extends Observable {
 
     constructor() {
         super();
-        this.items = new ObservableArray(this._originalItems);
-    }
-
-    public resetItems() {
-        this.items.splice(0, this.items.length, ...this._originalItems);
+        this.items = this._originalItems;
     }
 }

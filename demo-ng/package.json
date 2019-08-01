@@ -1,8 +1,7 @@
 {
   "description": "NativeScript Application",
-  "license": "SEE LICENSE IN <your-license-filename>",
+  "license": "MIT",
   "readme": "NativeScript Application",
-  "repository": "<fill-your-repository-here>",
   "nativescript": {
     "id": "org.nativescript.demong",
     "tns-android": {
@@ -17,7 +16,6 @@
     "@angular/compiler": "~8.1.2",
     "@angular/core": "~8.1.2",
     "@angular/forms": "~8.1.2",
-    "@angular/http": "~8.0.0-beta.10",
     "@angular/platform-browser": "~8.1.2",
     "@angular/platform-browser-dynamic": "~8.1.2",
     "@angular/router": "~8.1.2",
@@ -31,14 +29,14 @@
     "zone.js": "^0.9.1"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~8.1.2",
-    "@ngtools/webpack": "~8.1.2",
+    "@angular/compiler-cli": "8.0.0",
+    "@ngtools/webpack": "8.0.0",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.1",
-    "nativescript-dev-webpack": "1.0.1",
+    "nativescript-dev-webpack": "^1.0.2",
     "typescript": "~3.4.5"
   },
   "scripts": {

@@ -8,7 +8,7 @@
 
 #### NativeScript 6x
 
-- `tns plugin add nativescript-pager@10.x`
+- `tns plugin add nativescript-pager`
 
 #### NativeScript 5x
 
@@ -31,7 +31,7 @@
 IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page element any element can be used in the pager
 
 ```xml
-<pager:Pager items="{{items}}" row="2" id="pager" spacing="2%" peaking="10%" transformer="scale" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+<pager:Pager items="{{items}}" row="2" id="pager" spacing="2%" peaking="10%" transformers="scale" pagesCount="10" showIndicator="true" backgroundColor="lightsteelblue">
             <pager:Pager.itemTemplate>
                 <GridLayout rows="auto, *" columns="*" backgroundColor="red">
                     <Label text="{{title}}"/>
@@ -44,7 +44,7 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
 ### Multi Template
 
 ```xml
-<c:Pager selectedIndexChange="selectedIndexChange" itemTemplateSelector="$index % 2 === 0 ? 'even' : 'odd'" selectedIndex="5" items="{{items}}" row="4" id="pager" pagesCount="10" showNativePageIndicator="false" backgroundColor="lightsteelblue">
+<c:Pager selectedIndexChange="selectedIndexChange" itemTemplateSelector="$index % 2 === 0 ? 'even' : 'odd'" selectedIndex="5" items="{{items}}" row="4" id="pager" pagesCount="10" showIndicator="true" backgroundColor="lightsteelblue">
       <Pager.itemTemplates>
         <template key="even">
           <GridLayout rows="auto,auto,*" columns="*">
@@ -72,7 +72,7 @@ IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page 
 
 ```xml
 <c:Pager selectedIndexChange="selectedIndexChange" row="4" id="pager"
-                 showNativePageIndicator="false" backgroundColor="lightsteelblue">
+                 showIndicator="true" backgroundColor="lightsteelblue">
             <c:PagerItem backgroundColor="red">
                 <Label text="First"></Label>
             </c:PagerItem>

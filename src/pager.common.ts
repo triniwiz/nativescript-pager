@@ -13,7 +13,6 @@ import {
     View
 } from 'tns-core-modules/ui/core/view';
 import { isIOS } from 'tns-core-modules/platform';
-import * as types from 'tns-core-modules/utils/types';
 import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
 import { Label } from 'tns-core-modules/ui/label';
 import { messageType, write } from 'tns-core-modules/trace';
@@ -22,6 +21,7 @@ import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/
 import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
+import { layout } from 'tns-core-modules/utils/utils';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -71,9 +71,19 @@ const autoEffectiveItemHeight = 100;
 const autoEffectiveItemWidth = 100;
 
 export enum Transformer {
-    SCALE = 'scale',
-    NONE = 'none'
+    SCALE = 'scale'
 }
+
+export enum Indicator {
+    Disabled = 'disable',
+    None = 'none',
+    Worm = 'worm',
+    Fill = 'fill',
+    Swap = 'swap',
+    THIN_WORM = 'thin_worm',
+    Flat = 'flat',
+}
+
 
 @CSSType('Pager')
 export abstract class PagerBase extends ContainerView implements AddChildFromBuilder {
@@ -87,6 +97,8 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public cache = true;
     public spacing: PercentLength;
     public peaking: PercentLength;
+    public perPage: number;
+    public indicator: Indicator;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
     public static scrollEvent = 'scroll';
@@ -99,13 +111,14 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public _innerHeight: number = 0;
     public _effectiveItemHeight: number;
     public _effectiveItemWidth: number;
-    public transformer: Transformer;
+    public transformers: string;
     public loadMoreCount: number = 1;
     public _childrenViews: Map<number, View>;
     readonly _childrenCount: number;
     public disableSwipe: boolean = false;
+    public showIndicator: boolean;
     // TODO: get rid of such hacks.
-    public static knownFunctions = ['itemTemplateSelector']; // See component-builder.ts isKnownFunction
+    public static knownFunctions = ['itemTemplateSelector', 'itemIdGenerator']; // See component-builder.ts isKnownFunction
 
     abstract refresh(): void;
 
@@ -128,6 +141,18 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public _itemTemplatesInternal = new Array<KeyedTemplate>(
         this._defaultTemplate
     );
+
+
+    private _itemIdGenerator: (item: any, index: number, items: any) => number = (_item: any,
+                                                                                  index: number) => index
+
+    get itemIdGenerator(): (item: any, index: number, items: any) => number {
+        return this._itemIdGenerator;
+    }
+
+    set itemIdGenerator(generatorFn: (item: any, index: number, items: any) => number) {
+        this._itemIdGenerator = generatorFn;
+    }
 
     get itemTemplateSelector():
         | string
@@ -184,7 +209,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         }
     }
 
-    private _getDataItem(index: number): any {
+    _getDataItem(index: number): any {
         let thisItems = this.items;
         return thisItems && (<ItemsSource>thisItems).getItem
             ? (<ItemsSource>thisItems).getItem(index)
@@ -203,64 +228,50 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     abstract get disableAnimation(): boolean;
     abstract set disableAnimation(value: boolean);
 
-    public abstract updateNativeItems(
-        oldItems: Array<View>,
-        newItems: Array<View>
-    ): void;
-
-    public abstract updateNativeIndex(oldIndex: number, newIndex: number): void;
-
     public abstract itemTemplateUpdated(oldData, newData): void;
 
     public onLayout(left: number, top: number, right: number, bottom: number) {
         super.onLayout(left, top, right, bottom);
-
         this._innerWidth =
             right - left - this.effectivePaddingLeft - this.effectivePaddingRight;
 
         this._innerHeight =
             bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
-
-        this._effectiveItemWidth = PercentLength.toDevicePixels(
-            PercentLength.parse('100%'),
-            autoEffectiveItemWidth,
-            this._innerWidth
-        );
-
-        this._effectiveItemHeight = PercentLength.toDevicePixels(
-            PercentLength.parse('100%'),
-            autoEffectiveItemHeight,
-            this._innerHeight
-        );
-
+        // @ts-ignore
+        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
+        // @ts-ignore
+        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
     }
 
     public convertToSize(length): number {
         let size = 0;
         if (this.orientation === 'horizontal') {
-            size = this.getMeasuredWidth();
+            // @ts-ignore
+            size = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
         } else {
-            size = this.getMeasuredHeight();
+            // @ts-ignore
+            size = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
         }
+
         let converted = 0;
-        if (length.unit === 'px') {
+        if (length && length.unit === 'px') {
             converted = length.value;
-        } else if (length.unit === 'dip') {
-            converted = Length.toDevicePixels(length.unit, size);
-        } else if (length.unit === '%') {
+        } else if (length && length.unit === 'dip') {
+            converted = layout.toDevicePixels(length.value);
+        } else if (length && length.unit === '%') {
             converted = size * length.value;
         } else if (typeof length === 'string') {
             if (length.indexOf('px') > -1) {
                 converted = parseInt(length.replace('px', ''));
             } else if (length.indexOf('dip') > -1) {
-                converted = Length.toDevicePixels(parseInt(length.replace('dip', '')), size);
+                converted = layout.toDevicePixels(parseInt(length.replace('dip', '')));
             } else if (length.indexOf('%') > -1) {
                 converted = size * (parseInt(length.replace('%', '')) / 100);
             } else {
-                converted = Length.toDevicePixels(parseInt(length), size);
+                converted = layout.toDevicePixels(parseInt(length));
             }
         } else if (typeof length === 'number') {
-            converted = Length.toDevicePixels(length, size);
+            converted = layout.toDevicePixels(length);
         }
 
         if (isNaN(converted)) {
@@ -270,7 +281,10 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     }
 
     abstract _addChildFromBuilder(name: string, value: any): void;
+
+    abstract _onItemsChanged(oldValue: any, newValue: any): void;
 }
+
 
 export class PagerItem extends GridLayout {
     constructor() {
@@ -292,7 +306,7 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
         );
     }
 
-    if (newValue instanceof Observable) {
+    if (newValue instanceof Observable && !(newValue instanceof ObservableArray)) {
         addWeakEventListener(
             newValue,
             ObservableArray.changeEvent,
@@ -300,23 +314,27 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
             pager
         );
     }
-    pager.refresh();
+
+    if (!(newValue instanceof Observable) || !(newValue instanceof ObservableArray)) {
+        pager.refresh();
+    }
+    pager._onItemsChanged(oldValue, newValue);
 }
 
 function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
     pager.itemTemplateUpdated(oldValue, newValue);
 }
 
-function onSelectedIndexChanged(pager: PagerBase, oldValue, newValue) {
-    if (pager && pager._childrenCount && types.isNumber(newValue)) {
-        pager.updateNativeIndex(oldValue, newValue);
-    }
-}
+export const indicatorProperty = new Property<PagerBase, Indicator>({
+    name: 'indicator',
+    defaultValue: Indicator.None
+});
+
+indicatorProperty.register(PagerBase);
 
 export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
     name: 'selectedIndex',
     defaultValue: -1,
-    valueChanged: onSelectedIndexChanged,
     affectsLayout: isIOS,
     coerceValue: (target, value) => {
         let items = target._childrenCount;
@@ -453,3 +471,17 @@ export const perPageProperty = new Property<PagerBase, number>({
 });
 
 perPageProperty.register(PagerBase);
+
+
+export const transformersProperty = new Property<PagerBase, string>({
+    name: 'transformers'
+});
+
+transformersProperty.register(PagerBase);
+
+
+export const showIndicatorProperty = new Property<PagerBase, boolean>({
+    name: 'showIndicator',
+    defaultValue: false
+});
+showIndicatorProperty.register(PagerBase);

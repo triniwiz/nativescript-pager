@@ -16,6 +16,9 @@
             <c:PagerItem backgroundColor="green">
                 <Label text="Fourth"/>
             </c:PagerItem>
+            <c:PagerItem backgroundColor="pink">
+                <Label text="Fifth"/>
+            </c:PagerItem>
         </c:Pager>
         <Button text="Nav" row="2" tap="navigate"/>
     </GridLayout>

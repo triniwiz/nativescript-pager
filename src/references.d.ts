@@ -1,12 +1,4 @@
 /* tslint:disable */
-/// <reference path="./node_modules/tns-platform-declarations/ios.d.ts" />
-/// <reference path="./node_modules/tns-platform-declarations/android.d.ts" />
+/// <reference path="../src/node_modules/tns-platform-declarations/ios.d.ts" />
+/// <reference path="../src/node_modules/tns-platform-declarations/android-28.d.ts" />
 /* tslint:enable */
-declare namespace com {
-  export namespace lambergar {
-    export namespace verticalviewpager {
-      export class VerticalViewPager extends androidx.viewpager.widget.ViewPager {}
-      export class PagerAdapter extends androidx.viewpager.widget.PagerAdapter {}
-    }
-  }
-}

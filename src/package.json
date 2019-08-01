@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pager",
-  "version": "10.0.0",
+  "version": "11.0.1",
   "description": "A Carousel/Pager plugin for NativeScript",
   "main": "pager",
   "typings": "pager.d.ts",
@@ -21,8 +21,8 @@
     "plugin.link": "npm link && cd ../demo && npm link nativescript-pager && cd ../demo-ng && npm link nativescript-pager && cd ../src",
     "plugin.tscwatch": "npm run tsc -- -w",
     "debug.demo.ios": "npm i && npm run tsc && cd ../demo && tns debug ios",
-    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios ",
-    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android ",
+    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --no-hmr",
+    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --no-hmr",
     "demo.ng.ios": "npm i && npm run tsc && cd ../demo-ng && tns run ios ",
     "demo.ng.ios.aot": "npm i && npm run tsc && cd ../demo-ng && tns run ios  --env.aot --env.uglify",
     "demo.ng.android": "npm i && npm run tsc && cd ../demo-ng && tns run android",
@@ -33,7 +33,7 @@
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-pager && tns plugin add ../src && cd ../demo-ng && tns plugin remove nativescript-pager && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../demo-ng && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
     "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/+(node_modules|platforms)/**'",
-    "ngc": "npm i && npm run ngc.clean && node --max-old-space-size=8192 node_modules/.bin/ngc -skipLibCheck -p tsconfig.json",
+    "ngc": "npm i && npm run ngc.clean && node --max-old-space-size=8192 node_modules/.bin/ngc -noEmitOnError -skipLibCheck -p tsconfig.json",
     "ngc.clean": "find ./ angular/ -name '*.metadata.json' -delete"
   },
   "keywords": [
@@ -75,7 +75,6 @@
     "@angular/compiler-cli": "~8.1.2",
     "@angular/core": "~8.1.2",
     "@angular/forms": "~8.1.2",
-    "@angular/http": "~8.0.0-beta.10",
     "@angular/platform-browser": "~8.1.2",
     "@angular/platform-browser-dynamic": "~8.1.2",
     "@angular/router": "~8.1.2",
