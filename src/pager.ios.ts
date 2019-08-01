@@ -811,8 +811,8 @@ class UICollectionDelegateImpl extends NSObject
             let w = (layout.toDeviceIndependentPixels(owner._effectiveItemWidth) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
             let h = (layout.toDeviceIndependentPixels(owner._effectiveItemHeight) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
             width = scrollView.contentOffset.x / w;
-            if (owner.indicatorView) {
-                owner.indicatorView.animateWithProgressAnimated(width, true);
+            if (owner.indicatorView && owner.indicatorView.setWithProgressAnimated) {
+                owner.indicatorView.setWithProgressAnimated(width, true);
             }
             owner.notify({
                 object: owner,

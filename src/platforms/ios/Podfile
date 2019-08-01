@@ -1,1 +1,1 @@
-pod 'CHIPageControl'
+pod 'CHIPageControl', :git => 'https://github.com/triniwiz/CHIPageControl.git'
