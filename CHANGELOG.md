@@ -1,8 +1,56 @@
 # Change Log
 
-## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
+## [11.0.2](https://github.com/triniwiz/nativescript-pager/tree/11.0.2) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.1...11.0.2)
 
-[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/9.4.0...HEAD)
+## [11.0.1](https://github.com/triniwiz/nativescript-pager/tree/11.0.1) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/10.0.0...11.0.1)
+
+**Implemented enhancements:**
+
+- Migration to AndroidX \(NativeScript 6\) [\#124](https://github.com/triniwiz/nativescript-pager/issues/124)
+- showNativePageIndicator not working in version 9.5.0 [\#113](https://github.com/triniwiz/nativescript-pager/issues/113)
+
+**Fixed bugs:**
+
+- Pager does not refresh/scale layout on \*device\* orientation change [\#102](https://github.com/triniwiz/nativescript-pager/issues/102)
+
+**Closed issues:**
+
+- insert new Item with newItems.push refresh the Pager all items on Android  [\#130](https://github.com/triniwiz/nativescript-pager/issues/130)
+-  Can't resolve '../' in [\#121](https://github.com/triniwiz/nativescript-pager/issues/121)
+- ListView inside angular component not refreshing on data load with Pager [\#120](https://github.com/triniwiz/nativescript-pager/issues/120)
+- ScrollView doesn't work with nativescript-pager [\#110](https://github.com/triniwiz/nativescript-pager/issues/110)
+- Dynamic height [\#108](https://github.com/triniwiz/nativescript-pager/issues/108)
+- ClassNotFound Android Angular [\#107](https://github.com/triniwiz/nativescript-pager/issues/107)
+- Vertical pager cannot swipe past index 0 [\#106](https://github.com/triniwiz/nativescript-pager/issues/106)
+- Pager failing to restore state after navigateBack [\#104](https://github.com/triniwiz/nativescript-pager/issues/104)
+- orientation not working on android [\#103](https://github.com/triniwiz/nativescript-pager/issues/103)
+- Rendering issues on android when navigating [\#99](https://github.com/triniwiz/nativescript-pager/issues/99)
+- App crashes when scrolling to dynamically added item \[Vue\] [\#98](https://github.com/triniwiz/nativescript-pager/issues/98)
+- console warning in iOS [\#97](https://github.com/triniwiz/nativescript-pager/issues/97)
+- Pager not working in NS 5.1/Angular 7.1 [\#96](https://github.com/triniwiz/nativescript-pager/issues/96)
+- How do I navigate between PagerItems? [\#95](https://github.com/triniwiz/nativescript-pager/issues/95)
+- get a peek of sibling pager items? [\#92](https://github.com/triniwiz/nativescript-pager/issues/92)
+
+## [10.0.0](https://github.com/triniwiz/nativescript-pager/tree/10.0.0) (2019-07-30)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/9.5.0...10.0.0)
+
+**Closed issues:**
+
+- \[Android\] Pager inside of \<router-outlet\> throws error [\#118](https://github.com/triniwiz/nativescript-pager/issues/118)
+- TypeError: Cannot read property 'verticalviewpager' of undefined tns run android --bundle [\#115](https://github.com/triniwiz/nativescript-pager/issues/115)
+- Incorrect reference to this [\#114](https://github.com/triniwiz/nativescript-pager/issues/114)
+
+**Merged pull requests:**
+
+- Delete angular view references [\#131](https://github.com/triniwiz/nativescript-pager/pull/131) ([edusperoni](https://github.com/edusperoni))
+- Update to ns6 [\#129](https://github.com/triniwiz/nativescript-pager/pull/129) ([danielgek](https://github.com/danielgek))
+- fix\(static\): static items are not added to pager [\#117](https://github.com/triniwiz/nativescript-pager/pull/117) ([danielgek](https://github.com/danielgek))
+- more android fixes [\#116](https://github.com/triniwiz/nativescript-pager/pull/116) ([farfromrefug](https://github.com/farfromrefug))
+
+## [9.5.0](https://github.com/triniwiz/nativescript-pager/tree/9.5.0) (2019-04-13)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/9.4.0...9.5.0)
 
 **Implemented enhancements:**
 
