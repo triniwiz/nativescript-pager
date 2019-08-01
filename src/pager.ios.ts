@@ -122,6 +122,7 @@ export class Pager extends PagerBase {
             nativeView.alwaysBounceHorizontal = true;
             nativeView.alwaysBounceVertical = false;
         }
+        this._setIndicator(this.indicator);
         this._delegate = UICollectionDelegateImpl.initWithOwner(new WeakRef(this));
         this._setNativeClipToBounds();
     }
@@ -191,7 +192,9 @@ export class Pager extends PagerBase {
         if (!view || view.contentSize.width === 0) {
             return;
         }
-        this.indicatorView.progress = this.selectedIndex;
+        if (this.indicatorView) {
+            this.indicatorView.progress = this.selectedIndex;
+        }
         this._scrollToIndexAnimated(this.selectedIndex, false);
         /*
         Which is better ?
@@ -239,7 +242,7 @@ export class Pager extends PagerBase {
     }
 
     [itemsProperty.setNative](value: any) {
-        if (value && value.length) {
+        if (this.indicatorView && value && value.length) {
             this.indicatorView.numberOfPages = value.length;
         }
         if (value instanceof ObservableArray) {
@@ -247,7 +250,9 @@ export class Pager extends PagerBase {
                 if (!this.pager) {
                     return;
                 }
-                this.indicatorView.numberOfPages = value.length;
+                if (this.indicatorView && value && value.length) {
+                    this.indicatorView.numberOfPages = value.length;
+                }
                 dispatch_async(main_queue, () => {
                     const collectionView = this.pager as UICollectionView;
                     collectionView.performBatchUpdatesCompletion(() => {
@@ -309,8 +314,12 @@ export class Pager extends PagerBase {
 
     [showIndicatorProperty.setNative](value: boolean) {
         if (!this.indicatorView) {
+            this._setIndicator(this.indicatorView);
+        }
+        if (!this.nativeView) {
             return;
         }
+        this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
         const hasParent = this.indicatorView.superview;
         if (value) {
             if (!hasParent) {
@@ -396,7 +405,7 @@ export class Pager extends PagerBase {
     @profile
     public onLoaded() {
         super.onLoaded();
-        if (this.indicatorView && this.showIndicator) {
+        if (this.showIndicator && this.indicatorView) {
             this.nativeView.addSubview(this.indicatorView);
         }
         if (!this._isDirty) {
@@ -497,7 +506,9 @@ export class Pager extends PagerBase {
     public onLayout(left: number, top: number, right: number, bottom: number) {
         super.onLayout(left, top, right, bottom);
         this.pager.frame = this.nativeView.bounds;
-        this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
+        if (this.indicatorView) {
+            this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
+        }
         const size = this._getSize();
         this._map.forEach((childView, pagerCell) => {
             const width = layout.toDevicePixels(size.width);
@@ -787,7 +798,9 @@ class UICollectionDelegateImpl extends NSObject
                 eventName: Pager.swipeEvent,
                 object: owner
             });
-            owner.indicatorView.progress = owner.selectedIndex;
+            if (owner.indicatorView) {
+                owner.indicatorView.progress = owner.selectedIndex;
+            }
         }
     }
 
@@ -798,7 +811,9 @@ class UICollectionDelegateImpl extends NSObject
             let w = (layout.toDeviceIndependentPixels(owner._effectiveItemWidth) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
             let h = (layout.toDeviceIndependentPixels(owner._effectiveItemHeight) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
             width = scrollView.contentOffset.x / w;
-            owner.indicatorView.animateWithProgressAnimated(width, true);
+            if (owner.indicatorView) {
+                owner.indicatorView.animateWithProgressAnimated(width, true);
+            }
             owner.notify({
                 object: owner,
                 eventName: Pager.scrollEvent,
