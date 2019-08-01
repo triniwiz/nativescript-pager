@@ -14,6 +14,7 @@ matrix:
       node_js: "10"
       jdk: oraclejdk8
       before_install:
+        - pod repo update
         - pip install --upgrade pip
         - pip install --user --upgrade matplotlib
         - pip install six
@@ -44,6 +45,7 @@ matrix:
       node_js: "10"
       jdk: oraclejdk8
       before_install:
+        - pod repo update
         - pip install --upgrade pip
         - pip install --user --upgrade matplotlib
         - pip install six
@@ -66,6 +68,7 @@ matrix:
       node_js: "10"
       jdk: oraclejdk8
       before_install:
+        - pod repo update
         - pip install --upgrade pip
         - pip install --user --upgrade matplotlib
         - pip install six
@@ -75,7 +78,7 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-28.0.2
+    - build-tools-28.0.3
     - android-28
     - extra-android-m2repository
 

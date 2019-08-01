@@ -150,7 +150,7 @@ export class Pager extends PagerBase {
         (this._indicatorView as android.widget.RelativeLayout).setLayoutParams(params);
         this._indicatorView.setViewPager(this.pager);
 
-        if(this.showIndicator){
+        if (this.showIndicator) {
             nativeView.addView(this._indicatorView);
         }
 
