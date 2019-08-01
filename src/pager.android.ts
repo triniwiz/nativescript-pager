@@ -150,7 +150,9 @@ export class Pager extends PagerBase {
         (this._indicatorView as android.widget.RelativeLayout).setLayoutParams(params);
         this._indicatorView.setViewPager(this.pager);
 
-        nativeView.addView(this._indicatorView);
+        if(this.showIndicator){
+            nativeView.addView(this._indicatorView);
+        }
 
         return nativeView;
     }
@@ -481,7 +483,16 @@ export class Pager extends PagerBase {
     }
 
     [showIndicatorProperty.setNative](value: boolean) {
-
+        const hasParent = this.indicatorView.getParent();
+        if (value) {
+            if (!hasParent) {
+                this.nativeView.addView(this.indicatorView);
+            }
+        } else {
+            if (hasParent) {
+                this.nativeView.removeView(this.indicatorView);
+            }
+        }
     }
 
     _addChildFromBuilder(name: string, value: any): void {

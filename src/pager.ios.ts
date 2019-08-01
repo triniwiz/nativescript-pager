@@ -308,7 +308,19 @@ export class Pager extends PagerBase {
     }
 
     [showIndicatorProperty.setNative](value: boolean) {
-
+        if (!this.indicatorView) {
+            return;
+        }
+        const hasParent = this.indicatorView.superview;
+        if (value) {
+            if (!hasParent) {
+                this.nativeView.addSubview(this.indicatorView);
+            }
+        } else {
+            if (hasParent) {
+                this.nativeView.removeFromSuperview();
+            }
+        }
     }
 
     _onItemsChanged(oldValue: any, newValue: any): void {
@@ -384,14 +396,13 @@ export class Pager extends PagerBase {
     @profile
     public onLoaded() {
         super.onLoaded();
-        if (this.indicatorView) {
+        if (this.indicatorView && this.showIndicator) {
             this.nativeView.addSubview(this.indicatorView);
         }
         if (!this._isDirty) {
             this.refresh();
             this._isDirty = true;
         }
-
 
         this.pager.delegate = this._delegate;
 
