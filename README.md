@@ -28,6 +28,13 @@
 
 ## Usage
 
+**Note** v11+
+
+```
+Pager for NativeScript supports the core ObservableArray module part of the core NativeScript modules collection. Using an ObservableArray instance as a source for Pager will ensure that changes in the source collection will be automatically taken care of by the control.
+````
+
+
 IMPORTANT: Make sure you include `xmlns:pager="nativescript-pager"` on the Page element any element can be used in the pager
 
 ```xml
