@@ -89,7 +89,6 @@ export enum Indicator {
 export abstract class PagerBase extends ContainerView implements AddChildFromBuilder {
     public items: any[] | ItemsSource;
     public selectedIndex: number;
-    public showNativePageIndicator: boolean;
     public itemTemplate: string | Template;
     public itemTemplates: string | Array<KeyedTemplate>;
     public canGoRight = true;
@@ -384,15 +383,6 @@ itemsProperty.register(PagerBase);
 const booleanConverter = (v: any): boolean => {
     return String(v) === 'true';
 };
-
-export const showNativePageIndicatorProperty = new Property<PagerBase, boolean>(
-    {
-        name: 'showNativePageIndicator',
-        defaultValue: false,
-        valueConverter: booleanConverter
-    }
-);
-showNativePageIndicatorProperty.register(PagerBase);
 
 export const itemTemplateProperty = new Property<PagerBase, string | Template>({
     name: 'itemTemplate',
