@@ -301,34 +301,34 @@ export class Pager extends PagerBase {
     }
 
     private _observableArrayHandler = (args) => {
-      if (this.indicatorView) {
-        this.indicatorView.setCount(this._childrenCount);
-      }
-      if (this.pagerAdapter) {
-        switch (args.action) {
-            case ChangeType.Add:
-                this.pagerAdapter.notifyItemRangeInserted(args.index, args.addedCount);
-                break;
-            case ChangeType.Delete:
-                this.pagerAdapter.notifyItemRangeRemoved(args.index, args.removed.length);
-                break;
-            case  ChangeType.Splice:
-                if (args.removed.length > 0) {
-                  this.pagerAdapter.notifyItemRangeRemoved(args.index, args.removed.length);
-                }
-                if (args.addedCount > 0) {
-                  this.pagerAdapter.notifyItemRangeInserted(args.index, args.addedCount);
-                }
-                break;
-            case ChangeType.Update:
-                this.pagerAdapter.notifyItemChanged(args.index);
-                break;
-            default:
-                break;
+        if (this.indicatorView) {
+            this.indicatorView.setCount(this._childrenCount);
         }
-      }
-      selectedIndexProperty.coerce(this);
-      this._updateScrollPosition();
+        if (this.pagerAdapter) {
+            switch (args.action) {
+                case ChangeType.Add:
+                    this.pagerAdapter.notifyItemRangeInserted(args.index, args.addedCount);
+                    break;
+                case ChangeType.Delete:
+                    this.pagerAdapter.notifyItemRangeRemoved(args.index, args.removed.length);
+                    break;
+                case  ChangeType.Splice:
+                    if (args.removed.length > 0) {
+                        this.pagerAdapter.notifyItemRangeRemoved(args.index, args.removed.length);
+                    }
+                    if (args.addedCount > 0) {
+                        this.pagerAdapter.notifyItemRangeInserted(args.index, args.addedCount);
+                    }
+                    break;
+                case ChangeType.Update:
+                    this.pagerAdapter.notifyItemChanged(args.index);
+                    break;
+                default:
+                    break;
+            }
+        }
+        selectedIndexProperty.coerce(this);
+        this._updateScrollPosition();
     }
 
     public disposeNativeView() {
@@ -339,8 +339,8 @@ export class Pager extends PagerBase {
         this._pagerAdapter = null;
         this._transformers = [];
         if (this._observableArrayInstance) {
-          this._observableArrayInstance.off('change', this._observableArrayHandler);
-          this._observableArrayInstance = null;
+            this._observableArrayInstance.off(ObservableArray.changeEvent, this._observableArrayHandler);
+            this._observableArrayInstance = null;
         }
         super.disposeNativeView();
     }
@@ -379,13 +379,18 @@ export class Pager extends PagerBase {
         if (value && value.length) {
             this.indicatorView.setCount(this._childrenCount);
         }
+        if (this._observableArrayInstance) {
+            this._observableArrayInstance.off(ObservableArray.changeEvent, this._observableArrayHandler);
+            this._observableArrayInstance = null;
+        }
+
         if (value) {
             if (value instanceof ObservableArray) {
                 const adapter = this.pagerAdapter;
                 if (!adapter) return;
                 selectedIndexProperty.coerce(this);
                 this._observableArrayInstance = value;
-                this._observableArrayInstance.on('change', this._observableArrayHandler);
+                this._observableArrayInstance.on(ObservableArray.changeEvent, this._observableArrayHandler);
             } else {
                 this.refresh();
                 selectedIndexProperty.coerce(this);

@@ -13,6 +13,7 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "repository": "<fill-your-repository-here>",
   "dependencies": {
+    "nativescript-image-cache-it": "^5.0.0-alpha.3",
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",

@@ -1,13 +1,17 @@
 import * as React from 'react';
-import { ItemsSource, Pager as NativeScriptPager } from '../pager';
+import { ItemsSource, Pager as NativeScriptPager, PagerItem as NativeScriptPagerItem } from '../pager';
 import { View } from 'tns-core-modules/ui/core/view/view';
 import { ContentView, KeyedTemplate } from 'tns-core-modules/ui/page/page';
 import * as ReactNativeScript from 'react-nativescript';
 import { PropsWithoutForwardedRef, ViewProps } from 'react-nativescript/dist/shared/NativeScriptComponentTypings';
-import { RCTView, ViewComponentProps, ViewComponentState } from 'react-nativescript/dist/components/View';
+import { ViewComponentProps, ViewComponentState } from 'react-nativescript/dist/components/View';
+import { RCTContainerView } from 'react-nativescript/dist/components/ContainerView';
 import { updateListener } from 'react-nativescript/dist/client/EventHandling';
-import { elementMap } from 'react-nativescript/dist/client/ElementRegistry';
+import { register } from 'react-nativescript/dist/client/ElementRegistry';
 import { ItemEventData } from '../pager.common';
+
+register('pager', NativeScriptPager);
+register('pagerItem', NativeScriptPagerItem);
 
 export type CellViewContainer = ContentView;
 type CellFactory = (item: any, ref: React.RefObject<any>) => React.ReactElement;
@@ -34,16 +38,13 @@ export type PagerProps = ViewProps & Pick<NativeScriptPager,
 
 
 interface Props {
-    items: PagerProps['items'];
+    items?: PagerProps['items'];
     /* User may specify cellFactory for single-template or cellFactories for multi-template. */
     cellFactory?: CellFactory;
     cellFactories?: Map<string, { placeholderItem: any; cellFactory: CellFactory }>;
     /* For now, we don't support custom onItemLoading event handlers. */
     // onItemLoading?: (args: ItemEventData) => void,
-    /**
-     * The event will be raised when the ListView is scrolled so that the last item is visible.
-     * This event is intended to be used to add additional data in the ListView.
-     */
+
     onLoadMoreItems?: (args: ItemEventData) => void;
 
     onSelectedIndexChange?(args: any): void;
@@ -75,7 +76,7 @@ export type PagerComponentState = State & ViewComponentState;
 // tslint:disable-next-line:class-name
 export class _Pager<P extends PagerComponentProps<E>,
     S extends PagerComponentState,
-    E extends NativeScriptPager> extends RCTView<P, S, E> {
+    E extends NativeScriptPager> extends RCTContainerView<P, S, E> {
     static readonly defaultProps = {
         _debug: {
             logLevel: 'info' as 'info',
@@ -100,6 +101,7 @@ export class _Pager<P extends PagerComponentProps<E>,
         const {logLevel, onCellRecycle, onCellFirstLoad} = this.props._debug;
         const {items, itemTemplateSelector} = this.props;
         const item: any = _Pager.isItemsSource(items) ? (items as any).getItem(args.index) : items[args.index];
+
         const template: string | null = itemTemplateSelector
             ? typeof itemTemplateSelector === 'string'
                 ? itemTemplateSelector
@@ -117,7 +119,6 @@ export class _Pager<P extends PagerComponentProps<E>,
             return;
         }
 
-        console.log('loading', args.view);
         let view: View | undefined = args.view;
         if (!view) {
             const rootKeyAndRef: RootKeyAndRef = this.renderNewRoot(item, cellFactory);
@@ -131,8 +132,18 @@ export class _Pager<P extends PagerComponentProps<E>,
         } else {
             console.log(`[Pager] existing view: `, view);
             if (onCellRecycle) onCellRecycle(view as CellViewContainer);
+            const data = this.argsViewToRootKeyAndRef.get(view);
+            let rootKey;
+            let ref;
+            if (data) {
+                rootKey = data.rootKey;
+                ref = data.ref;
+            } else {
+                const rootKeyAndRef: RootKeyAndRef = this.renderNewRoot(item, cellFactory);
+                rootKey = rootKeyAndRef.rootKey;
+                ref = rootKeyAndRef.ref;
+            }
 
-            const {rootKey, ref} = this.argsViewToRootKeyAndRef.get(view);
             if (typeof rootKey === 'undefined') {
                 console.error(`Unable to find root key that args.view corresponds to!`, view);
                 return;
@@ -163,14 +174,8 @@ export class _Pager<P extends PagerComponentProps<E>,
 
         if (attach === null) {
             /* We won't support non-default onItemLoading event handlers. */
-            // updateListener(node, NativeScriptListView.itemLoadingEvent, this.defaultOnItemLoading, nextProps.onLoaded);
+            // updateListener(node, NativeScriptPager.itemLoadingEvent, this.defaultOnItemLoading, nextProps.onLoaded);
 
-            updateListener(
-                node,
-                'selectedIndexChange',
-                this.props.onSelectedIndexChange,
-                nextProps.onSelectedIndexChange
-            );
             updateListener(
                 node,
                 NativeScriptPager.loadMoreItemsEvent,
@@ -185,7 +190,6 @@ export class _Pager<P extends PagerComponentProps<E>,
                 this.defaultOnItemLoading
             );
 
-            if (this.props.onSelectedIndexChange) method('selectedIndexChanged', this.props.onSelectedIndexChange);
             if (this.props.onLoadMoreItems) method(NativeScriptPager.loadMoreItemsEvent, this.props.onLoadMoreItems);
         }
     }
@@ -246,7 +250,7 @@ export class _Pager<P extends PagerComponentProps<E>,
     }
 
     public static isItemsSource(arr: any[] | ItemsSource): arr is ItemsSource {
-       return typeof (arr as ItemsSource).getItem === 'function';
+        return typeof (arr as ItemsSource).getItem === 'function';
     }
 
     render() {
@@ -278,6 +282,7 @@ export class _Pager<P extends PagerComponentProps<E>,
             ...rest
         } = this.props;
 
+
         return React.createElement(
             'pager',
             {
@@ -288,12 +293,13 @@ export class _Pager<P extends PagerComponentProps<E>,
             },
             children
         );
+
     }
 }
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PagerComponentProps<NativeScriptPager>>;
 
-const Pager: React.ComponentType<OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPager>> = React.forwardRef<NativeScriptPager, OwnPropsWithoutForwardedRef>(
+export const $Pager: React.ComponentType<OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPager>> = React.forwardRef<NativeScriptPager, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptPager>) => {
         const {children, ...rest} = props;
 
@@ -308,9 +314,4 @@ const Pager: React.ComponentType<OwnPropsWithoutForwardedRef & React.ClassAttrib
     }
 );
 
-
-elementMap['pager'] = Pager;
-
-export {
-    Pager as $Pager
-};
+export * from './pager-item';

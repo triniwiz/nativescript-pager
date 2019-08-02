@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { $Pager } from 'nativescript-pager/react';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { $Image, $Label, $StackLayout } from 'react-nativescript';
+import { $Label, $StackLayout, $GridLayout, $Button, $ScrollView, render, $Frame } from 'react-nativescript';
+import { $ImageCacheIt } from './nativescript-image-cache-it';
+import { ItemSpec } from 'tns-core-modules/ui/layouts/grid-layout/grid-layout';
+import { Page } from 'react-nativescript/dist/client/ElementRegistry';
 
-export const rootRef: React.RefObject<any> = React.createRef<any>();
-
+const apiPageRef = React.createRef<Page>();
+const listPageRef = React.createRef<Page>();
+const staticPageRef = React.createRef<Page>();
+const regularPageRef = React.createRef<Page>();
+import { StaticPage } from './StaticPage';
 export class AppContainer extends React.Component<{ forwardedRef: React.RefObject<any> }> {
     private selectedIndex: number = 3;
     private readonly items: ObservableArray<any> = new ObservableArray<any>([]);
@@ -115,28 +121,181 @@ export class AppContainer extends React.Component<{ forwardedRef: React.RefObjec
             text: ''
         }
     ];
-
+    private disableSwipe: boolean = false;
     constructor(props) {
         super(props);
         this.items.push(...this._originalItems);
     }
 
+    private toggleSwipe(event) {
+        this.disableSwipe = !this.disableSwipe;
+    }
+
+    private goToApi(event) {
+        const currentPage: Page = this.props.forwardedRef.current!;
+        currentPage.frame.navigate({
+            create: () => {
+                return apiPageRef.current;
+            }
+        });
+    }
+
+
+    private goToPagerWithLists(event) {
+        const currentPage: Page = this.props.forwardedRef.current!;
+        currentPage.frame.navigate({
+            create: () => {
+                return listPageRef.current;
+            }
+        });
+    }
+
+    private goToStatic(event) {
+        const currentPage: Page = this.props.forwardedRef.current!;
+        console.log(currentPage.frame, event.object.frame);
+        /*currentPage.frame.navigate({
+            create: () => {
+                return render(
+                    <StaticPage forwardedRef={staticPageRef}></StaticPage>,{},null
+                )
+            }
+        });*/
+    }
+
+    private goToRegular(event) {
+        const currentPage: Page = this.props.forwardedRef.current!;
+        currentPage.frame.navigate({
+            create: () => {
+                return regularPageRef.current;
+            }
+        });
+    }
+
+    private prevPage() {
+        --this.selectedIndex;
+    }
+
+    private nextPage() {
+        ++this.selectedIndex;
+    }
+
+    private firstPage() {
+        this.selectedIndex = 0;
+    }
+
+    private lastPage() {
+        this.selectedIndex = this.items.length - 1;
+    }
+
+    private resetItems() {
+        this.items.splice(0, this.items.length, ...this._originalItems);
+    }
+
+    private removeNextItems() {
+        const selectedIndex = this.selectedIndex;
+        const count = (this.items.length) - (selectedIndex + 1);
+        this.items.splice(selectedIndex + 1, count);
+        const item = this.items.getItem(selectedIndex);
+        item['title'] = `After Reset ${selectedIndex + 1}`;
+        this.items.setItem(selectedIndex, item);
+    }
+
+    private selectedIndexChange(event) {
+        console.log('selectedIndexChange', event);
+        // const selectedIndex = event.object.get('selectedIndex');
+        // vm.set('index', selectedIndex);
+    }
+
+    private loadMoreItems(event) {
+        /*const selectedIndex = event.object.get('selectedIndex');
+        vm.set('index', selectedIndex);
+        vm.items.push({
+            title: 'Slide ' + (vm.items.length + 1),
+            image: `https://robohash.org/${vm.items.length + 1}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 2),
+            image: `https://robohash.org/${vm.items.length + 2}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 3),
+            image: `https://robohash.org/${vm.items.length + 3}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 4),
+            image: `https://robohash.org/${vm.items.length + 4}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 5),
+            image: `https://robohash.org/${vm.items.length + 5}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 6),
+            image: `https://robohash.org/${vm.items.length + 6}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 7),
+            image: `https://robohash.org/${vm.items.length + 7}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 8),
+            image: `https://robohash.org/${vm.items.length + 8}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 9),
+            image: `https://robohash.org/${vm.items.length + 9}.png`,
+            items: vm._items
+        }, {
+            title: 'Slide ' + (vm.items.length + 10),
+            image: `https://robohash.org/${vm.items.length + 10}.png`,
+            items: vm._items
+        });*/
+    }
     render() {
         const {forwardedRef} = this.props;
         return (
-            <$StackLayout ref={forwardedRef}>
-                <$Pager selectedIndex={this.selectedIndex} items={this.items} cellFactory={
+            <$GridLayout ref={forwardedRef} rows={[new ItemSpec(1, "star"), new ItemSpec()]}>
+                <$Pager
+                disableSwipe={this.disableSwipe}
+                loadMoreItems={this.loadMoreItems}
+                height={{ unit: "%", value: 100 }}
+                 peaking={"10%"}
+                  spacing={"10%"}
+                   selectedIndex={this.selectedIndex}
+                   selectedIndexChange={this.selectedIndexChange.bind(this)}
+                    items={this.items}
+                     cellFactory={
                     (item, ref) => {
                         return (
                             <$StackLayout id={item.title} ref={ref}>
                                 <$Label text={item.title}/>
-                                <$Image stretch={'aspectFill'}
+                                <$ImageCacheIt stretch={'aspectFill'}
                                         src={item.image}/>
                             </$StackLayout>
                         );
                     }
                 }/>
-            </$StackLayout>
+                <$ScrollView row={1}>
+                <$StackLayout >
+                <$Label text={this.selectedIndex + ""}/>
+                <$Button text={"Pager With List"} onTap={this.goToPagerWithLists.bind(this)}/>
+                <$Button text={"Static Pager"} onTap={this.goToStatic.bind(this)} />
+                <$Button text={"Api Demo"} onTap={this.goToApi.bind(this)} />
+                <$Button text={"Pager Regular Array"} onTap={this.goToRegular.bind(this)}/>
+                <$Button text={"Toggle Swipe"} onTap={this.toggleSwipe.bind(this)}/>
+                <$StackLayout>
+                    <$Button text={"Prev"} onTap={this.prevPage.bind(this)}/>
+                    <$Button text={"Next"} onTap={this.nextPage.bind(this)}/>
+                    <$Button text={"First"} onTap={this.firstPage.bind(this)}/>
+                    <$Button text={"Last"} onTap={this.lastPage.bind(this)}/>
+                    <$Button text={"Remove Items"} onTap={this.removeNextItems.bind(this)}/>
+                    <$Button text={"Reset Items"} onTap={this.resetItems.bind(this)}/>
+                </$StackLayout>
+
+                {/* <$Button text="Nav" tap="navigate"/> */}
+                </$StackLayout>
+                </$ScrollView>
+            </$GridLayout>
         );
     }
 }
