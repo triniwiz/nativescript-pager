@@ -46,6 +46,7 @@ function notifyForItemAtIndex(
 
 declare var java, android;
 export { Transformer } from './pager.common';
+const PLACEHOLDER = 'PLACEHOLDER';
 
 export class Pager extends PagerBase {
     nativeViewProtected: any; /* androidx.viewpager2.widget.ViewPager2 */
@@ -646,9 +647,13 @@ function initPagerRecyclerAdapter() {
             const template = owner._itemTemplatesInternal[type];
 
             let view: View =
-                template.createView() || owner._getDefaultItemContent(type);
+                template.createView();
             let sp = new StackLayout();
-            sp.addChild(view);
+            if (view) {
+                sp.addChild(view);
+            } else {
+                sp[PLACEHOLDER] = true;
+            }
             owner._addView(sp);
             sp.nativeView.setLayoutParams(
                 new android.view.ViewGroup.LayoutParams(
@@ -677,10 +682,18 @@ function initPagerRecyclerAdapter() {
                     android: holder,
                     ios: undefined,
                     index,
-                    view: holder.view
+                    view: holder.view[PLACEHOLDER] ? null : holder.view
                 };
 
                 owner.notify(args);
+                if (holder.view[PLACEHOLDER]) {
+                    if (args.view) {
+                        holder.view.addChild(args.view);
+                    } else {
+                        holder.view.addChild(owner._getDefaultItemContent(index));
+                    }
+                    holder.view[PLACEHOLDER] = false;
+                }
                 owner._prepareItem(holder.view, index);
             }
         }
@@ -746,10 +759,12 @@ function initStaticPagerStateAdapter() {
 
             const view = owner._childrenViews.get(type);
             let sp = new StackLayout(); // Pager2 requires match_parent so add a parent with to fill
-            if (!view.parent) {
+            if (view && !view.parent) {
                 sp.addChild(view);
-                owner._addView(sp);
+            } else {
+                sp[PLACEHOLDER] = true;
             }
+            owner._addView(sp);
 
             sp.nativeView.setLayoutParams(
                 new android.view.ViewGroup.LayoutParams(
@@ -777,10 +792,16 @@ function initStaticPagerStateAdapter() {
                     android: holder,
                     ios: undefined,
                     index,
-                    view: holder.view
+                    view: holder.view[PLACEHOLDER] ? null : holder.view
                 };
 
                 owner.notify(args);
+                if (holder.view[PLACEHOLDER]) {
+                    if (args.view) {
+                        holder.view.addChild(args.view);
+                    }
+                    holder.view[PLACEHOLDER] = false;
+                }
             }
         }
 
