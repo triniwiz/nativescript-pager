@@ -7,6 +7,7 @@ import { PropsWithoutForwardedRef, ViewProps } from 'react-nativescript/dist/sha
 import { RCTView, ViewComponentProps, ViewComponentState } from 'react-nativescript/dist/components/View';
 import { updateListener } from 'react-nativescript/dist/client/EventHandling';
 import { elementMap } from 'react-nativescript/dist/client/ElementRegistry';
+import { ItemEventData } from '../pager.common';
 
 export type CellViewContainer = ContentView;
 type CellFactory = (item: any, ref: React.RefObject<any>) => React.ReactElement;
