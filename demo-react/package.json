@@ -1,0 +1,35 @@
+{
+  "nativescript": {
+    "id": "org.nativescript.demoreact",
+    "tns-android": {
+      "version": "6.0.0"
+    },
+    "tns-ios": {
+      "version": "6.0.1"
+    }
+  },
+  "main": "app.js",
+  "description": "NativeScript Application",
+  "license": "SEE LICENSE IN <your-license-filename>",
+  "repository": "<fill-your-repository-here>",
+  "dependencies": {
+    "nativescript-pager": "file:../src",
+    "nativescript-theme-core": "~1.0.6",
+    "react": "^16.8.6",
+    "react-nativescript": "^0.10.0",
+    "tns-core-modules": "~6.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@types/react": "^16.8.24",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.6",
+    "fork-ts-checker-webpack-plugin": "^1.4.3",
+    "nativescript-dev-webpack": "~1.0.0",
+    "typescript": "~3.4.0"
+  },
+  "gitHead": "f28dbc60d74dd2cef4b645afd8fdd63bbb12c73e",
+  "readme": "NativeScript Application"
+}

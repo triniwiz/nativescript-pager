@@ -22,7 +22,7 @@ import {
 import { profile } from 'tns-core-modules/profiling';
 import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 
-export { Transformer } from './pager.common';
+export { Transformer, EventData, ItemsSource } from './pager.common';
 
 function notifyForItemAtIndex(
     owner,

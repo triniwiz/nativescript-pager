@@ -93,7 +93,6 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public itemTemplates: string | Array<KeyedTemplate>;
     public canGoRight = true;
     public canGoLeft = true;
-    public cache = true;
     public spacing: PercentLength;
     public peaking: PercentLength;
     public perPage: number;
@@ -105,6 +104,8 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public static swipeStartEvent = 'swipeStart';
     public static swipeOverEvent = 'swipeOver';
     public static swipeEndEvent = 'swipeEnd';
+    public static loadMoreItemsEvent = LOADMOREITEMS;
+    public static itemLoadingEvent = ITEMLOADING;
     public orientation: Orientation;
     public _innerWidth: number = 0;
     public _innerHeight: number = 0;
@@ -405,13 +406,6 @@ export const itemTemplatesProperty = new Property<PagerBase,
     }
 });
 itemTemplatesProperty.register(PagerBase);
-
-export const cacheProperty = new Property<PagerBase, boolean>({
-    name: 'cache',
-    defaultValue: true,
-    valueConverter: booleanConverter
-});
-cacheProperty.register(PagerBase);
 
 export const canGoRightProperty = new Property<PagerBase, boolean>({
     name: 'canGoRight',

@@ -45,7 +45,7 @@ function notifyForItemAtIndex(
 }
 
 declare var java, android;
-export { Transformer } from './pager.common';
+export { Transformer, EventData, ItemsSource } from './pager.common';
 const PLACEHOLDER = 'PLACEHOLDER';
 
 export class Pager extends PagerBase {

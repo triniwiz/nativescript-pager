@@ -1,6 +1,7 @@
 import { View } from 'tns-core-modules/ui/core/view';
-import { PagerBase } from './pager.common';
+import { EventData, ItemsSource, PagerBase } from './pager.common';
 
+export { EventData, ItemsSource };
 export type Orientation = 'horizontal' | 'vertical';
 
 export declare class Pager extends PagerBase {

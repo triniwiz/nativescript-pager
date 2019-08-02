@@ -29,7 +29,6 @@ demo/report/stats.json
 !demo-ng/karma.conf.js
 !demo-ng/app/tests/*.js
 demo-ng/*.d.ts
-!demo/references.d.ts
 demo-ng/lib
 demo-ng/platforms
 demo-ng/report/report.html
@@ -38,3 +37,6 @@ package-lock.json
 demo-vue/platforms
 !demo-vue/app/main.js
 **/.migration_backup
+demo-react/platforms
+demo-react/lib
+.awcache
