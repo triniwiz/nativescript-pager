@@ -266,6 +266,57 @@ _Angular v4+_
   </StackLayout>
 </Pager>
 ```
+### React
+
+```typescript jsx
+import {$Pager} from 'nativescript-pager/react';
+return (
+<$Pager
+                height={{ unit: "%", value: 100 }}
+                   selectedIndex={this.selectedIndex}
+                   selectedIndexChange={this.selectedIndexChange.bind(this)}
+                    items={this.items}
+                     cellFactory={
+                    (item, ref) => {
+                        return (
+                            <$StackLayout id={item.title} ref={ref}>
+                                <$Label text={item.title}/>
+                                <$ImageCacheIt stretch={'aspectFill'}
+                                        src={item.image}/>
+                            </$StackLayout>
+                        );
+                    }
+                }/>
+)
+```
+
+### Static Views
+
+```typescript jsx
+return(<$Pager row={0} col={0} selectedIndex={this.selectedIndex} height={{unit: '%', value: 100}}>
+                           <$PagerItem backgroundColor={'red'}>
+                               <$Label text={'First'}/>
+                           </$PagerItem>
+                           <$PagerItem backgroundColor={'white'}>
+                               <$Label text={'Second'}/>
+                           </$PagerItem>
+                           <$PagerItem backgroundColor={'black'}>
+                               <$Label text={'Third'} color={new Color('white')}/>
+                           </$PagerItem>
+                           <$PagerItem backgroundColor={'green'}>
+                               <$Label text={'Fourth'}/>
+                           </$PagerItem>
+                           <$PagerItem backgroundColor={'pink'}>
+                               <$Label text={'Fifth'}/>
+                           </$PagerItem>
+                       </$Pager>)
+
+```
+
+
+
+
+
 
 ## Config
 
