@@ -327,8 +327,6 @@ export class Pager extends PagerBase {
                     break;
             }
         }
-        selectedIndexProperty.coerce(this);
-        this._updateScrollPosition();
     }
 
     public disposeNativeView() {
