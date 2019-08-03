@@ -1045,4 +1045,17 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
     public shouldInvalidateLayoutForBoundsChange(newBounds: CGRect): boolean {
         return true;
     }
+
+    public initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath): UICollectionViewLayoutAttributes {
+        const attrs = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath);
+        attrs.alpha = 1;
+        return attrs;
+    }
+
+    public finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath): UICollectionViewLayoutAttributes {
+        const attrs = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath);
+        attrs.alpha = 1;
+        return attrs;
+    }
+
 }
