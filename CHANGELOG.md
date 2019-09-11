@@ -1,5 +1,54 @@
 # Change Log
 
+## [Unreleased](https://github.com/triniwiz/nativescript-pager/tree/HEAD)
+
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.10...HEAD)
+
+**Fixed bugs:**
+
+- NS 6.1 - IOS crashes on pager invocation [\#139](https://github.com/triniwiz/nativescript-pager/issues/139)
+- page.getViewById\(\<id\>\) returns undefined for view within pager since nativescript-pager 11.x [\#137](https://github.com/triniwiz/nativescript-pager/issues/137)
+
+**Closed issues:**
+
+- Pager does not know when to stop the current index number [\#133](https://github.com/triniwiz/nativescript-pager/issues/133)
+
+## [11.0.10](https://github.com/triniwiz/nativescript-pager/tree/11.0.10) (2019-09-11)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.8...11.0.10)
+
+**Fixed bugs:**
+
+- random Android crashes when setting markingMode to none [\#123](https://github.com/triniwiz/nativescript-pager/issues/123)
+
+**Closed issues:**
+
+- pager UI issue [\#128](https://github.com/triniwiz/nativescript-pager/issues/128)
+- iOS SafeArea margin [\#119](https://github.com/triniwiz/nativescript-pager/issues/119)
+- TextField focus keyboard screen overlay issue when using Pager [\#73](https://github.com/triniwiz/nativescript-pager/issues/73)
+- Can  we use component \(using selector name\) inside pager ?  [\#63](https://github.com/triniwiz/nativescript-pager/issues/63)
+
+## [11.0.8](https://github.com/triniwiz/nativescript-pager/tree/11.0.8) (2019-08-03)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.7...11.0.8)
+
+**Merged pull requests:**
+
+- fix\(items\): observablearray proper cleanup [\#132](https://github.com/triniwiz/nativescript-pager/pull/132) ([NathanWalker](https://github.com/NathanWalker))
+
+## [11.0.7](https://github.com/triniwiz/nativescript-pager/tree/11.0.7) (2019-08-02)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.6...11.0.7)
+
+## [11.0.6](https://github.com/triniwiz/nativescript-pager/tree/11.0.6) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v11.0.5...11.0.6)
+
+## [v11.0.5](https://github.com/triniwiz/nativescript-pager/tree/v11.0.5) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/v11.0.4...v11.0.5)
+
+## [v11.0.4](https://github.com/triniwiz/nativescript-pager/tree/v11.0.4) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.3...v11.0.4)
+
+## [11.0.3](https://github.com/triniwiz/nativescript-pager/tree/11.0.3) (2019-08-01)
+[Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.2...11.0.3)
+
 ## [11.0.2](https://github.com/triniwiz/nativescript-pager/tree/11.0.2) (2019-08-01)
 [Full Changelog](https://github.com/triniwiz/nativescript-pager/compare/11.0.1...11.0.2)
 
