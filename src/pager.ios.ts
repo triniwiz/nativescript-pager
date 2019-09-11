@@ -95,7 +95,6 @@ export class Pager extends PagerBase {
         this.pager.showsHorizontalScrollIndicator = false;
         this.pager.showsVerticalScrollIndicator = false;
         this.pager.decelerationRate = UIScrollViewDecelerationRateFast;
-        this.pager.alpha = 0;
         nativeView.addSubview(this.pager);
         return nativeView;
     }
@@ -346,7 +345,8 @@ export class Pager extends PagerBase {
 
     _scrollToIndexAnimated(index: number, animate: boolean) {
         if (!this._pager) return;
-        if (this._pager.contentSize.width === 0) {
+
+        if (this._childrenCount === 0) {
             return;
         }
         let maxMinIndex = -1;
@@ -363,7 +363,9 @@ export class Pager extends PagerBase {
             maxMinIndex = 0;
         }
 
-        this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+        dispatch_async(main_queue, () => {
+            this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+        });
     }
 
     public scrollToIndexAnimated(index: number, animate: boolean) {
@@ -374,22 +376,9 @@ export class Pager extends PagerBase {
         if (!this.pager) {
             return;
         }
-        this.pager.alpha = 0;
         this.pager.reloadData();
         this.pager.collectionViewLayout.invalidateLayout();
         this._updateScrollPosition();
-
-        UIView.animateWithDurationDelayUsingSpringWithDampingInitialSpringVelocityOptionsAnimationsCompletion(
-            1.0,
-            0,
-            1.0,
-            0.0,
-            UIViewAnimationOptions.AllowUserInteraction,
-            () => {
-                this.pager.alpha = 1;
-            },
-            null
-        );
     }
 
     private _refresh() {
@@ -519,7 +508,7 @@ export class Pager extends PagerBase {
     public onLayout(left: number, top: number, right: number, bottom: number) {
         super.onLayout(left, top, right, bottom);
         this.pager.frame = this.nativeView.bounds;
-        if (this.indicatorView) {
+        if (this.indicatorView && this.indicatorView.intrinsicContentSize) {
             this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
         }
         const size = this._getSize();
@@ -900,7 +889,13 @@ class UICollectionDelegateImpl extends NSObject
             next = -1;
         }
 
-        const nextIndex = this.indexOfCellBeforeDragging + next;
+        let nextIndex = this.indexOfCellBeforeDragging + next;
+
+        if (nextIndex === -1) {
+            nextIndex = 0;
+        } else if (nextIndex > (owner._childrenCount - 1)) {
+            next = (owner._childrenCount - 1);
+        }
         const attribute = collection.collectionViewLayout.layoutAttributesForItemAtIndexPath(NSIndexPath.indexPathForRowInSection(nextIndex, 0));
         const x = owner.orientation === 'vertical' ? target.x : attribute.frame.origin.x - (owner._getSpacing() + owner._getPeaking());
         const y = owner.orientation === 'vertical' ? attribute.frame.origin.y - (owner._getSpacing() + owner._getPeaking()) : target.y;
