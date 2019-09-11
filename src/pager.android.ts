@@ -65,7 +65,6 @@ export class Pager extends PagerBase {
     _pagerAdapter;
     private _views: Array<any>;
     private _pageListener: any;
-    _viewMap: Map<string, View>;
     public _realizedItems = new Map<any /*android.view.View*/,
         View>();
     public _realizedTemplates = new Map<string,
@@ -113,7 +112,6 @@ export class Pager extends PagerBase {
         this._pager = new androidx.viewpager2.widget.ViewPager2(
             this._context
         );
-        this._viewMap = new Map();
         if (this.orientation === 'vertical') {
             this.pager.setOrientation(
                 androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL
@@ -331,8 +329,9 @@ export class Pager extends PagerBase {
 
     public disposeNativeView() {
         this.off(View.layoutChangedEvent, this.onLayoutChange, this);
-        this._viewMap.clear();
         this._childrenViews.clear();
+        this._realizedItems.clear();
+        this._realizedTemplates.clear();
         this._pageListener = null;
         this._pagerAdapter = null;
         this._transformers = [];
@@ -464,8 +463,8 @@ export class Pager extends PagerBase {
     }
 
     eachChildView(callback: (child: View) => boolean): void {
-        if (this._viewMap && this._viewMap.size > 0) {
-            this._viewMap.forEach((view, key) => {
+        if (this._realizedItems && this._realizedItems.size > 0) {
+            this._realizedItems.forEach((view, key) => {
                 callback(view);
             });
         }
