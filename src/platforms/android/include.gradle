@@ -7,7 +7,7 @@ dependencies {
 
 	implementation "androidx.appcompat:appcompat:$androidxVersion"
 
-	implementation 'androidx.viewpager2:viewpager2:1.0.0-beta02'
+	implementation 'androidx.viewpager2:viewpager2:1.0.0-beta04'
 
 	implementation 'com.github.adrielcafe:PageIndicatorView:1.0.6'
 }
