@@ -894,7 +894,7 @@ class UICollectionDelegateImpl extends NSObject
         if (nextIndex === -1) {
             nextIndex = 0;
         } else if (nextIndex > (owner._childrenCount - 1)) {
-            next = (owner._childrenCount - 1);
+            nextIndex = (owner._childrenCount - 1);
         }
         const attribute = collection.collectionViewLayout.layoutAttributesForItemAtIndexPath(NSIndexPath.indexPathForRowInSection(nextIndex, 0));
         const x = owner.orientation === 'vertical' ? target.x : attribute.frame.origin.x - (owner._getSpacing() + owner._getPeaking());
