@@ -127,7 +127,7 @@ Vue.use(Pager);
 ### Static Views
 
 ```html
-<Pager height="100%" selectedIndex="1">
+<Pager height="100%" :selectedIndex="1">
   <PagerItem backgroundColor="red"> <label text="First"></label> </PagerItem>
   <PagerItem backgroundColor="white"> <label text="Second"></label> </PagerItem>
   <PagerItem backgroundColor="black">
