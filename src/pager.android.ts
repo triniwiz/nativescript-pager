@@ -1,29 +1,12 @@
+import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array';
+import { screen } from 'tns-core-modules/platform';
 import { KeyedTemplate, layout, Property, View } from 'tns-core-modules/ui/core/view';
 import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
-import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array';
 import * as types from 'tns-core-modules/utils/types';
-import { screen } from 'tns-core-modules/platform/platform';
-import {
-    disableSwipeProperty,
-    Indicator,
-    indicatorProperty,
-    ItemEventData,
-    ITEMLOADING,
-    itemsProperty,
-    itemTemplatesProperty,
-    LOADMOREITEMS,
-    Orientation,
-    orientationProperty,
-    PagerBase,
-    PagerItem,
-    peakingProperty,
-    selectedIndexProperty,
-    showIndicatorProperty,
-    spacingProperty,
-    Transformer
-} from './pager.common';
+import { disableSwipeProperty, Indicator, indicatorProperty, ItemEventData, ITEMLOADING, itemsProperty, itemTemplatesProperty, LOADMOREITEMS, Orientation, orientationProperty, PagerBase, PagerItem, peakingProperty, selectedIndexProperty, showIndicatorProperty, spacingProperty, Transformer } from './pager.common';
 
 export * from './pager.common';
+export { EventData, ItemsSource, Transformer } from './pager.common';
 
 function notifyForItemAtIndex(
     owner,
@@ -45,7 +28,6 @@ function notifyForItemAtIndex(
 }
 
 declare var java, android;
-export { Transformer, EventData, ItemsSource } from './pager.common';
 const PLACEHOLDER = 'PLACEHOLDER';
 
 export class Pager extends PagerBase {
@@ -112,15 +94,11 @@ export class Pager extends PagerBase {
         this._pager = new androidx.viewpager2.widget.ViewPager2(
             this._context
         );
+
         if (this.orientation === 'vertical') {
-            this.pager.setOrientation(
-                androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL
-            );
+            this._pager.setOrientation(androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL);
         } else {
-            this.pager.setOrientation(
-                androidx.viewpager2.widget.ViewPager2
-                    .ORIENTATION_HORIZONTAL
-            );
+            this._pager.setOrientation(androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL);
         }
 
         initPagerChangeCallback();
@@ -325,7 +303,7 @@ export class Pager extends PagerBase {
                     break;
             }
         }
-    }
+    };
 
     public disposeNativeView() {
         this.off(View.layoutChangedEvent, this.onLayoutChange, this);
@@ -386,7 +364,7 @@ export class Pager extends PagerBase {
                 const adapter = this.pagerAdapter;
                 if (!adapter) return;
                 selectedIndexProperty.coerce(this);
-                this._observableArrayInstance = value;
+                this._observableArrayInstance = value as any;
                 this._observableArrayInstance.on(ObservableArray.changeEvent, this._observableArrayHandler);
             } else {
                 this.refresh();
@@ -409,15 +387,17 @@ export class Pager extends PagerBase {
         super.onLoaded();
         if (!this.items && this._childrenCount > 0) {
             initStaticPagerStateAdapter();
-            this._pagerAdapter = new StaticPagerStateAdapter(new WeakRef(this));
-            this.pager.setAdapter(this._pagerAdapter);
-            selectedIndexProperty.coerce(this);
-            setTimeout(() => {
-                this.pager.setCurrentItem(
-                    this.selectedIndex,
-                    false
-                );
-            }, 0);
+            if (!(this._pagerAdapter instanceof StaticPagerStateAdapter)) {
+                this._pagerAdapter = new StaticPagerStateAdapter(new WeakRef(this));
+                this.pager.setAdapter(this._pagerAdapter);
+                selectedIndexProperty.coerce(this);
+                setTimeout(() => {
+                    this.pager.setCurrentItem(
+                        this.selectedIndex,
+                        false
+                    );
+                }, 0);
+            }
         }
     }
 
@@ -520,11 +500,11 @@ export class Pager extends PagerBase {
 
     public [orientationProperty.setNative](value: Orientation) {
         if (value === 'vertical') {
-            this.nativeViewProtected.setOrientation(
+            this._pager.setOrientation(
                 androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL
             );
         } else {
-            this.nativeViewProtected.setOrientation(
+            this._pager.setOrientation(
                 androidx.viewpager2.widget.ViewPager2
                     .ORIENTATION_HORIZONTAL
             );
@@ -894,6 +874,7 @@ function initZoomOutPageTransformer() {
     if (ZoomOutPageTransformer) {
         return;
     }
+
 
     @Interfaces([androidx.viewpager2.widget.ViewPager2.PageTransformer])
     class ZoomOutPageTransformerImpl extends java.lang.Object implements androidx.viewpager2.widget.ViewPager2.PageTransformer {
