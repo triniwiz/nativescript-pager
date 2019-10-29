@@ -3,11 +3,11 @@ repositories {
 	}
 
 dependencies {
-	def androidxVersion =  project.hasProperty("androidxVersion") ? project.androidxVersion : "1.0.0"
+	def androidxVersion =  project.hasProperty("androidxVersion") ? project.androidxVersion : "1.1.0"
 
 	implementation "androidx.appcompat:appcompat:$androidxVersion"
 
-	implementation 'androidx.viewpager2:viewpager2:1.0.0-beta04'
+	implementation 'androidx.viewpager2:viewpager2:1.0.0-rc01'
 
 	implementation 'com.github.adrielcafe:PageIndicatorView:1.0.6'
 }
