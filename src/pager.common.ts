@@ -13,7 +13,7 @@ import {
     View
 } from 'tns-core-modules/ui/core/view';
 import { isIOS } from 'tns-core-modules/platform';
-import { parse, parseMultipleTemplates } from 'tns-core-modules/ui/builder';
+import { Builder } from 'tns-core-modules/ui/builder';
 import { Label } from 'tns-core-modules/ui/label';
 import { messageType, write } from 'tns-core-modules/trace';
 import { Observable } from 'tns-core-modules/data/observable';
@@ -132,7 +132,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         key: 'default',
         createView: () => {
             if (this.itemTemplate) {
-                return parse(this.itemTemplate, this);
+                return Builder.parse(this.itemTemplate, this);
             }
             return undefined;
         }
@@ -400,7 +400,7 @@ export const itemTemplatesProperty = new Property<PagerBase,
     affectsLayout: true,
     valueConverter: value => {
         if (typeof value === 'string') {
-            return parseMultipleTemplates(value);
+            return Builder.parseMultipleTemplates(value);
         }
         return value;
     }
