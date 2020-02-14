@@ -53,7 +53,7 @@ export class HelloWorldModel extends Observable {
     _originalItems = [
         {
             title: 'Slide 1',
-            image: '~/images/Hulk_(comics_character).png',
+            image: 'https://images.unsplash.com/photo-1581538398499-ae6e89710b14',
             items: this._items,
             text: ''
         },
@@ -112,6 +112,8 @@ export class HelloWorldModel extends Observable {
         }
     ];
 
+    circularMode: boolean;
+    showIndicator: boolean;
     get toSlice() {
         const now = Date.now();
         return [
@@ -128,6 +130,8 @@ export class HelloWorldModel extends Observable {
     constructor() {
         super();
         this.items = new ObservableArray(this._originalItems);
+        this.circularMode = false;
+        this.showIndicator = false;
     }
 
     public resetItems() {

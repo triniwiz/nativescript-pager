@@ -127,6 +127,45 @@ export class Pager extends PagerBase {
         this._setNativeClipToBounds();
     }
 
+    getPosition(index: number): number {
+        let position = index;
+        if (this.circularMode) {
+            if (position === 0) {
+                position = this.lastDummy;
+            } else if (position === this.firstDummy) {
+                position = 0;
+            } else {
+                position = position - 1;
+            }
+        }
+        return position;
+    }
+
+    get itemCount(): number {
+        return this.items && this.items.length
+            ? this.items.length + (this.circularMode ? 2 : 0)
+            : 0;
+    }
+
+    get lastIndex(): number {
+        if (this.items.length === 0) {
+            return 0;
+        }
+        return this.circularMode ? this.itemCount - 3 : this.itemCount - 1;
+    }
+
+    get firstDummy(): number {
+        const count = this.itemCount;
+        if (count === 0) {
+            return 0;
+        }
+        return this.itemCount - 1;
+    }
+
+    get lastDummy():number {
+        return this.lastIndex;
+    }
+
     get ios(): any /*UIView*/ {
         return this.nativeView;
     }
@@ -163,7 +202,8 @@ export class Pager extends PagerBase {
     }
 
     public get _childrenCount() {
-        return this.items ? this.items.length : this._childrenViews ? this._childrenViews.size : 0;
+        const count = this.items ? this.items.length : this._childrenViews ? this._childrenViews.size : 0;
+        return (count > 0 && this.circularMode) ? count + 2: count;
     }
 
     public itemTemplateUpdated(oldData: any, newData: any): void {
@@ -274,11 +314,12 @@ export class Pager extends PagerBase {
             }
         } else {
             if (hasParent) {
-                this.nativeView.removeFromSuperview();
+                this.indicatorView.removeFromSuperview();
             }
         }
     }
 
+    private updateUIQueue = NSOperationQueue.new();
     private _observableArrayHandler = (args) => {
         if (!this.pager) {
             return;
@@ -286,7 +327,62 @@ export class Pager extends PagerBase {
         if (this.indicatorView && this._observableArrayInstance && this._observableArrayInstance.length) {
             this.indicatorView.numberOfPages = this._observableArrayInstance.length;
         }
-        dispatch_async(main_queue, () => {
+        this.updateUIQueue.addOperationWithBlock(()=>{
+            dispatch_async(main_queue, ()=>{
+                const collectionView = this.pager as UICollectionView;
+                this._isRefreshing = true;
+                const array = [];
+                let count = 0;
+                switch (args.action) {
+                    case ChangeType.Add:
+                        count = args.index + args.addedCount;
+                        for (let i = args.index; i < count; i++) {
+                            array.push(NSIndexPath.indexPathForRowInSection(i, 0));
+                        }
+                        console.log(array)
+                        collectionView.insertItemsAtIndexPaths(array);
+                        break;
+                    case ChangeType.Delete:
+                        args.removed.forEach(item => {
+                            const index = (this.items as Array<any>).indexOf(item);
+                            console.log('index', index);
+                            if (index > -1) {
+                                array.push(NSIndexPath.indexPathForItemInSection(index, 0));
+                            }
+                        });
+                        if (array.length > 0) {
+                            collectionView.deleteItemsAtIndexPaths(array);
+                        }
+                        break;
+                    case  ChangeType.Splice:
+                        if (args.removed && args.removed.length > 0) {
+                            count = args.index + args.removed.length;
+                            for (let i = args.index; i < count; i++) {
+                                array.push(NSIndexPath.indexPathForRowInSection(i, 0));
+                            }
+                            console.log('index',args.index,'removed', args.removed,args.addedCount)
+                            if (array.length > 0) {
+                                collectionView.deleteItemsAtIndexPaths(array);
+                            }
+                        }
+                        if (args.addedCount > 0) {
+                            const addedArray = [];
+                            count = args.index + args.addedCount;
+                            for (let i = args.index; i < count; i++) {
+                                addedArray.push(NSIndexPath.indexPathForRowInSection(i, 0));
+                            }
+                            collectionView.insertItemsAtIndexPaths(addedArray);
+                        }
+                        break;
+                    case ChangeType.Update:
+                        collectionView.reloadItemsAtIndexPaths([NSIndexPath.indexPathForRowInSection(args.index, 0)]);
+                        break;
+                    default:
+                        break;
+                }
+            })
+        });
+        /*dispatch_async(main_queue, () => {
             const collectionView = this.pager as UICollectionView;
             collectionView.performBatchUpdatesCompletion(() => {
                 this._isRefreshing = true;
@@ -303,6 +399,7 @@ export class Pager extends PagerBase {
                     case ChangeType.Delete:
                         args.removed.forEach(item => {
                             const index = (this.items as Array<any>).indexOf(item);
+                            console.log('index', index);
                             if (index > -1) {
                                 array.push(NSIndexPath.indexPathForItemInSection(index, 0));
                             }
@@ -337,8 +434,8 @@ export class Pager extends PagerBase {
                         break;
                 }
             }, null);
-        });
-    }
+        });*/
+    };
 
     _onItemsChanged(oldValue: any, newValue: any): void {
     }
@@ -748,7 +845,7 @@ class UICollectionDelegateImpl extends NSObject
                                                            indexPath: NSIndexPath) {
         const owner = this._owner ? this._owner.get() : null;
         if (owner) {
-            if (owner.items && indexPath.row === owner.items.length - owner.loadMoreCount) {
+            if (owner.items && indexPath.row === owner.lastIndex - owner.loadMoreCount) {
                 owner.notify<EventData>({
                     eventName: LOADMOREITEMS,
                     object: owner
@@ -920,6 +1017,10 @@ class UICollectionViewDataSourceImpl extends NSObject
                                                 indexPath: NSIndexPath): UICollectionViewCell {
         const owner = this._owner ? this._owner.get() : null;
         let cell;
+        if(owner){
+            console.log('row', indexPath.row % owner._childrenCount, owner._childrenCount)
+            indexPath = NSIndexPath.indexPathForRowInSection(indexPath.row % owner._childrenCount ,0);
+        }
         if (owner && !owner.items && owner._childrenCount > 0) {
             owner._preparingCell = true;
             const size = owner._getSize();
@@ -993,7 +1094,7 @@ class UICollectionViewDataSourceImpl extends NSObject
                                                 section: number): number {
         const owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
-        return owner._childrenCount;
+        return owner._childrenCount * 2;
     }
 
     public numberOfSectionsInCollectionView(collectionView: UICollectionView): number {

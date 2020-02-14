@@ -9,6 +9,7 @@
     }
   },
   "dependencies": {
+    "nativescript-carousel": "^6.1.1",
     "nativescript-image-cache-it": "^5.0.0-alpha.3",
     "nativescript-nested-scrollview": "^1.1.0",
     "nativescript-pager": "file:../src",
@@ -29,7 +30,7 @@
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.1",
     "nativescript-dev-webpack": "^1.0.1",
-    "tns-platform-declarations": "6.0.1",
+    "tns-platform-declarations": "file:../src/node_modules/tns-platform-declarations",
     "tslint": "~5.18.0",
     "typescript": "~3.4.5"
   },

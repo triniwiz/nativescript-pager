@@ -112,7 +112,7 @@ export function selectedIndexChange(event) {
 export function loadMoreItems(event) {
     const selectedIndex = event.object.get('selectedIndex');
     vm.set('index', selectedIndex);
-    vm.items.push({
+    /*vm.items.push({
         title: 'Slide ' + (vm.items.length + 1),
         image: `https://robohash.org/${vm.items.length + 1}.png`,
         items: vm._items
@@ -152,9 +152,22 @@ export function loadMoreItems(event) {
         title: 'Slide ' + (vm.items.length + 10),
         image: `https://robohash.org/${vm.items.length + 10}.png`,
         items: vm._items
-    });
+    });*/
 }
 
 export function navigate() {
     topmost().navigate('dummy-page');
+}
+
+export function toggleIndicator(event){
+    const state = vm.get('showIndicator');
+    vm.set('showIndicator', !state);
+    console.log('toggleIndicator', state, vm.get('showIndicator'));
+}
+
+export function toggleCircularMode(event){
+    const state = vm.get('circularMode');
+    console.log('circularMode', state);
+    vm.set('circularMode', !state);
+    console.log('circularMode', state, vm.get('circularMode'));
 }

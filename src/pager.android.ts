@@ -3,7 +3,28 @@ import { screen } from 'tns-core-modules/platform';
 import { KeyedTemplate, layout, Property, View } from 'tns-core-modules/ui/core/view';
 import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 import * as types from 'tns-core-modules/utils/types';
-import { disableSwipeProperty, Indicator, indicatorProperty, ItemEventData, ITEMLOADING, itemsProperty, itemTemplatesProperty, LOADMOREITEMS, Orientation, orientationProperty, PagerBase, PagerItem, peakingProperty, selectedIndexProperty, showIndicatorProperty, spacingProperty, Transformer } from './pager.common';
+import {
+    disableSwipeProperty,
+    Indicator,
+    indicatorColorProperty,
+    indicatorProperty,
+    indicatorSelectedColorProperty,
+    ItemEventData,
+    ITEMLOADING,
+    itemsProperty,
+    itemTemplatesProperty,
+    LOADMOREITEMS,
+    Orientation,
+    orientationProperty,
+    PagerBase,
+    PagerItem,
+    peakingProperty,
+    selectedIndexProperty,
+    showIndicatorProperty,
+    spacingProperty,
+    Transformer
+} from './pager.common';
+import { Color } from 'tns-core-modules/color';
 
 export * from './pager.common';
 export { EventData, ItemsSource, Transformer } from './pager.common';
@@ -27,7 +48,7 @@ function notifyForItemAtIndex(
     return args;
 }
 
-declare var java, android;
+declare var java, android, androidx;
 const PLACEHOLDER = 'PLACEHOLDER';
 
 export class Pager extends PagerBase {
@@ -126,7 +147,9 @@ export class Pager extends PagerBase {
         params.addRule(android.widget.RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(0, 0, 0, 10 * screen.mainScreen.scale);
         (this._indicatorView as android.widget.RelativeLayout).setLayoutParams(params);
-        this._indicatorView.setViewPager(this.pager);
+        // this._indicatorView.setViewPager(this.pager);
+        this._indicatorView.setDynamicCount(true);
+        this._indicatorView.setInteractiveAnimation(true);
 
         if (this.showIndicator) {
             nativeView.addView(this._indicatorView);
@@ -340,6 +363,26 @@ export class Pager extends PagerBase {
                 : 0;
     }
 
+    [indicatorColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.setUnselectedColor(value.android);
+            } else if (types.isString(value)) {
+                this.indicatorView.setUnselectedColor(new Color(value).android);
+            }
+        }
+    }
+
+    [indicatorSelectedColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.setSelectedColor(value.android);
+            } else if (types.isString(value)) {
+                this.indicatorView.setSelectedColor(new Color(value).android);
+            }
+        }
+    }
+
     [disableSwipeProperty.setNative](value: boolean) {
         if (this.pager) {
             this.pager.setUserInputEnabled(!value);
@@ -374,12 +417,14 @@ export class Pager extends PagerBase {
     }
 
     private _updateScrollPosition() {
-        if (this.pager.getCurrentItem() !== this.selectedIndex) {
+        const index = this.circularMode ? this.selectedIndex + 1 : this.selectedIndex;
+        if (this.pager.getCurrentItem() !== index) {
+            this.indicatorView.setInteractiveAnimation(false);
             this.pager.setCurrentItem(
-                this.selectedIndex,
+                index,
                 false
             );
-            this._indicatorView.setSelection(this.selectedIndex);
+            this._indicatorView.setSelected(this.selectedIndex);
         }
     }
 
@@ -396,6 +441,9 @@ export class Pager extends PagerBase {
                         this.selectedIndex,
                         false
                     );
+                    if (this.indicatorView) {
+                        this.indicatorView.setSelection(this.selectedIndex);
+                    }
                 }, 0);
             }
         }
@@ -403,11 +451,16 @@ export class Pager extends PagerBase {
 
     [selectedIndexProperty.setNative](value: number) {
         if (this.isLoaded && this.isLayoutValid && this.pager) {
-            if (this.pager.getCurrentItem() !== value) {
+            const index = this.circularMode ? value + 1 : value;
+            if (this.pager.getCurrentItem() !== index) {
+                this.indicatorView.setInteractiveAnimation(!this.disableAnimation);
                 this.pager.setCurrentItem(
-                    value,
+                    index,
                     !this.disableAnimation
                 );
+                if (this.indicatorView) {
+                    this.indicatorView.setSelection(value);
+                }
             }
         }
     }
@@ -423,6 +476,7 @@ export class Pager extends PagerBase {
 
     refresh() {
         if (this.pager && this._pagerAdapter) {
+            console.log('refresh');
             this.pager.requestLayout();
             // @ts-ignore
             this.pager.getAdapter()
@@ -520,6 +574,58 @@ export class Pager extends PagerBase {
     get verticalOffset(): number {
         return this._verticalOffset / layout.getDisplayDensity();
     }
+
+    static getProgress(indicator, position, positionOffset, isRtl) {
+        const count = indicator.getCount();
+        let selectedPosition = indicator.getSelection();
+
+        if (isRtl) {
+            position = (count - 1) - position;
+        }
+
+        if (position < 0) {
+            position = 0;
+
+        } else if (position > count - 1) {
+            position = count - 1;
+        }
+
+        let isRightOverScrolled = position > selectedPosition;
+        let isLeftOverScrolled;
+
+        if (isRtl) {
+            isLeftOverScrolled = position - 1 < selectedPosition;
+        } else {
+            isLeftOverScrolled = position + 1 < selectedPosition;
+        }
+
+        if (isRightOverScrolled || isLeftOverScrolled) {
+            selectedPosition = position;
+            indicator.setSelection(selectedPosition);
+        }
+
+        let slideToRightSide = selectedPosition == position && positionOffset != 0;
+        let selectingPosition;
+        let selectingProgress;
+
+        if (slideToRightSide) {
+            selectingPosition = isRtl ? position - 1 : position + 1;
+            selectingProgress = positionOffset;
+
+        } else {
+            selectingPosition = position;
+            selectingProgress = 1 - positionOffset;
+        }
+
+        if (selectingProgress > 1) {
+            selectingProgress = 1;
+
+        } else if (selectingProgress < 0) {
+            selectingProgress = 0;
+        }
+
+        return [selectingPosition, selectingProgress];
+    }
 }
 
 export const pagesCountProperty = new Property<Pager, number>({
@@ -551,10 +657,6 @@ function initPagerChangeCallback() {
         onPageSelected(position: number) {
             const owner = this.owner && this.owner.get();
             if (owner) {
-                if (owner.isLayoutValid && owner.selectedIndex !== position) {
-                    owner.indicatorView.setSelection(position);
-                    selectedIndexProperty.nativeValueChange(owner, position);
-                }
                 owner.notify({
                     eventName: Pager.swipeEvent,
                     object: owner
@@ -563,9 +665,12 @@ function initPagerChangeCallback() {
         }
 
         onPageScrolled(position, positionOffset, positionOffsetPixels) {
-            const offset = position * positionOffsetPixels;
             const owner = this.owner && this.owner.get();
-            if (owner) {
+            if (owner && owner.isLayoutValid) {
+                if (owner.circularMode) {
+                    position = owner.pagerAdapter.getPosition(position);
+                }
+                const offset = position * positionOffsetPixels;
                 if (owner.orientation === 'vertical') {
                     owner._horizontalOffset = 0;
                     owner._verticalOffset = offset;
@@ -580,8 +685,16 @@ function initPagerChangeCallback() {
                     scrollX: owner.horizontalOffset,
                     scrollY: owner.verticalOffset
                 });
-                if (owner.items && position === (owner.items.length - 1) - owner.loadMoreCount) {
+                if (owner.items && position === (owner.pagerAdapter.lastIndex()) - owner.loadMoreCount) {
                     owner.notify({eventName: LOADMOREITEMS, object: owner});
+                }
+
+                if (owner.showIndicator && owner.indicatorView) {
+                    const progress = Pager.getProgress(owner.indicatorView, position, positionOffset, false);
+                    const selectingPosition = progress[0];
+                    const selectingProgress = progress[1];
+                    owner.indicatorView.setInteractiveAnimation(true);
+                    owner.indicatorView.setProgress(selectingPosition, selectingProgress);
                 }
             }
         }
@@ -609,6 +722,34 @@ function initPagerChangeCallback() {
                     owner.lastEvent = 2;
                 } else {
                     owner.lastEvent = 0;
+                }
+                if (owner.isLayoutValid && state === androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE) {
+                    // ts-ignore
+                    let count = owner.pagerAdapter.getItemCount();
+                    let index = owner.pager.getCurrentItem();
+                    if (owner.circularMode) {
+                        if (index === 0) {
+                            // last item
+                            owner.indicatorView.setInteractiveAnimation(false);
+                            owner.pager.setCurrentItem(count - 2, false);
+                            selectedIndexProperty.nativeValueChange(owner, count - 3);
+                            owner.indicatorView.setSelected(count - 3);
+                            owner.indicatorView.setInteractiveAnimation(true);
+                        } else if (index === count - 1) {
+                            // first item
+                            owner.indicatorView.setInteractiveAnimation(false);
+                            owner.indicatorView.setSelected(0);
+                            owner.pager.setCurrentItem(1, false);
+                            selectedIndexProperty.nativeValueChange(owner, 0);
+                            owner.indicatorView.setInteractiveAnimation(true);
+                        }else {
+                            selectedIndexProperty.nativeValueChange(owner, index - 1)
+                        }
+                    } else {
+                        selectedIndexProperty.nativeValueChange(owner, index);
+                        owner.indicatorView.setSelected(index);
+                    }
+
                 }
             }
         }
@@ -666,10 +807,33 @@ function initPagerRecyclerAdapter() {
             );
         }
 
+        getPosition(index: number): number {
+            const owner = this.owner && this.owner.get();
+            let position = index;
+            if (owner && owner.circularMode) {
+                if (position === 0) {
+                    position = this.lastDummy();
+                } else if (position === this.firstDummy()) {
+                    position = 0;
+                } else {
+                    position = position - 1;
+                }
+            }
+            return position;
+        }
 
         onBindViewHolder(holder: any, index: number): void {
             const owner = this.owner ? this.owner.get() : null;
             if (owner) {
+                if (owner.circularMode) {
+                    if (index === 0) {
+                        index = this.lastDummy();
+                    } else if (index === this.firstDummy()) {
+                        index = 0;
+                    } else {
+                        index = index - 1;
+                    }
+                }
                 let args = <ItemEventData>{
                     eventName: ITEMLOADING,
                     object: owner,
@@ -707,7 +871,7 @@ function initPagerRecyclerAdapter() {
         public getItemCount(): number {
             const owner = this.owner ? this.owner.get() : null;
             return owner && owner.items && owner.items.length
-                ? owner.items.length
+                ? owner.items.length + (owner.circularMode ? 2 : 0)
                 : 0;
         }
 
@@ -718,6 +882,29 @@ function initPagerRecyclerAdapter() {
                 return owner._itemTemplatesInternal.indexOf(template);
             }
             return 0;
+        }
+
+        lastIndex(): number {
+            const owner = this.owner && this.owner.get();
+            if (owner) {
+                if (owner.items.length === 0) {
+                    return 0;
+                }
+                return owner.circularMode ? this.getItemCount() - 3 : this.getItemCount() - 1;
+            }
+            return 0;
+        }
+
+        firstDummy() {
+            const count = this.getItemCount();
+            if (count === 0) {
+                return 0;
+            }
+            return this.getItemCount() - 1;
+        }
+
+        lastDummy() {
+            return this.lastIndex();
         }
 
         hasStableIds(): boolean {
