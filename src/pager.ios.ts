@@ -68,6 +68,7 @@ export class Pager extends PagerBase {
     private _pager: any; /*UICollectionView*/
     private _indicatorView: any;
     private _observableArrayInstance: ObservableArray<any>;
+    _isInit: boolean = false;
 
     constructor() {
         super();
@@ -259,9 +260,9 @@ export class Pager extends PagerBase {
         });
     }
 
-    private _updateScrollPosition() {
+    _updateScrollPosition() {
         const view = (this.pager as UICollectionView);
-        const size = this.orientation === 'vertical' ? view.contentSize.height: view.contentSize.width;
+        const size = this.orientation === 'vertical' ? view.contentSize.height : view.contentSize.width;
         if (!view || size === 0) {
             return;
         }
@@ -308,6 +309,10 @@ export class Pager extends PagerBase {
             this._observableArrayInstance.on(ObservableArray.changeEvent, this._observableArrayHandler);
         } else {
             this.refresh();
+        }
+
+        if (!value) {
+            this._isInit = false;
         }
         selectedIndexProperty.coerce(this);
     }
@@ -394,6 +399,9 @@ export class Pager extends PagerBase {
                     break;
             }
             this._initAutoPlay(this.autoPlay);
+            if (this.itemCount === 0) {
+                this._isInit = false;
+            }
         }, null);
     };
 
@@ -793,6 +801,10 @@ class UICollectionDelegateImpl extends NSObject
                                                            indexPath: NSIndexPath) {
         const owner = this._owner && this._owner.get();
         if (owner) {
+            if (!owner._isInit) {
+                owner._updateScrollPosition();
+                owner._isInit = true;
+            }
             if (owner.items && indexPath.row === owner.lastIndex - owner.loadMoreCount) {
                 owner.notify<EventData>({
                     eventName: LOADMOREITEMS,
