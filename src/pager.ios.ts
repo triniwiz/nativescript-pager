@@ -48,7 +48,6 @@ function notifyForItemAtIndex(
 declare var CHIPageControlAji, CHIPageControlAleppo, CHIPageControlChimayo, CHIPageControlFresno,
     CHIPageControlJalapeno, CHIPageControlJaloro, CHIPageControlPuya, FancyPager, FancyPagerDelegate;
 
-const main_queue = dispatch_get_current_queue();
 export * from './pager.common';
 
 export class Pager extends PagerBase {
@@ -451,7 +450,7 @@ export class Pager extends PagerBase {
     }
 
     refresh() {
-        dispatch_async(main_queue, () => {
+        NSOperationQueue.mainQueue.addOperationWithBlock(()=>{
             this._refresh();
         });
     }
@@ -544,7 +543,7 @@ export class Pager extends PagerBase {
         );
         super.measure(widthMeasureSpec, heightMeasureSpec);
         if (changed) {
-            dispatch_async(main_queue, () => {
+            NSOperationQueue.mainQueue.addOperationWithBlock(()=>{
                 if (!this.pager) {
                     return;
                 }
