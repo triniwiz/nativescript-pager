@@ -4,18 +4,27 @@
       title="Pager Demo"
 >
     <Page.actionBar>
-        <ActionBar title="Pager Demo"/>
+        <ActionBar title="Pager Nested Demo"/>
     </Page.actionBar>
     <GridLayout iosOverflowSafeArea="false"  height="100%" width="100%" rows="*,*">
         <c:Pager scroll="onScroll" selectedIndex="2"
                  selectedIndexChange="selectedIndexChange"
-                 items="{{items}}" id="pager" showNativePageIndicator="false"
+                 items="{{items}}" id="pager"
                  backgroundColor="lightsteelblue">
             <c:Pager.itemTemplate>
-                <GridLayout id="{{ title }}" loaded="loaded" rows="auto,*" columns="*">
+                <GridLayout id="{{ title }}" loaded="loaded" rows="auto,*,*" columns="*">
                     <Label row="0" text="{{title}}"/>
-                    <i:ImageCacheIt width="300" height="300" stretch="aspectFill" loaded="loadedImage" row="1"
+                    <i:ImageCacheIt width="150" height="150" stretch="aspectFill" loaded="loadedImage" row="1"
                                     src="{{ image }}"/>
+                    <c:Pager row="2" items="{{ inner }}" orientation="vertical">
+                        <c:Pager.itemTemplate>
+                            <GridLayout rows="auto,*" columns="*">
+                                <Label row="0" text="{{title}}"/>
+                                <i:ImageCacheIt width="150" height="150" stretch="aspectFill" loaded="loadedImage" row="1"
+                                                src="{{ image }}"/>
+                            </GridLayout>
+                        </c:Pager.itemTemplate>
+                    </c:Pager>
                 </GridLayout>
             </c:Pager.itemTemplate>
         </c:Pager>
@@ -23,15 +32,6 @@
             <StackLayout >
                 <Label row="1" text="{{index}}"/>
                 <Button text="goBack" row="1" tap="goBack"/>
-                <Button row="4" text="Toggle Swipe" tap="toggleSwipe"/>
-                <StackLayout row="5">
-                    <Button text="Prev" tap="prevPage"/>
-                    <Button text="Next" tap="nextPage"/>
-                    <Button text="First" tap="firstPage"/>
-                    <Button text="Last" tap="lastPage"/>
-                    <Button text="Remove Items" tap="removeNextItems"/>
-                    <Button text="Reset Items" tap="resetItems"/>
-                </StackLayout>
             </StackLayout>
         </ScrollView>
     </GridLayout>

@@ -25,13 +25,12 @@ export class _PagerItem<P extends PagerItemComponentProps<E>,
 
     componentDidMount(): void {
         const view = this.myRef.current;
-        const parent = view && view.parent ? view.parent : null;
+        const parent: any = view && view.parent ? view.parent : null;
         if (parent) {
             // remove parent
             parent._removeView(view);
             // add to item;
             this.item.addChild(view);
-            console.log(this.item.getChildAt(0));
             // @ts-ignore
             parent._addChildFromBuilder('PagerItem', this.item);
         }

@@ -1,0 +1,8 @@
+{
+  "whitelist-plugins-usages": true,
+  "whitelist": [
+    "com.github.triniwiz*:*"
+  ],
+  "blacklist": []
+}
+

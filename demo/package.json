@@ -2,19 +2,20 @@
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-android": {
-      "version": "6.0.0"
+      "version": "6.4.1"
     },
     "tns-ios": {
-      "version": "6.0.1"
+      "version": "6.4.0"
     }
   },
   "dependencies": {
+    "nativescript-carousel": "^6.1.1",
     "nativescript-image-cache-it": "^5.0.0-alpha.3",
     "nativescript-nested-scrollview": "^1.1.0",
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "^2.0.2",
     "nativescript-unit-test-runner": "0.7.0",
-    "tns-core-modules": "6.0.1"
+    "tns-core-modules": "~6.4.0"
   },
   "devDependencies": {
     "babel-traverse": "6.12.0",
@@ -29,7 +30,7 @@
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.1",
     "nativescript-dev-webpack": "^1.0.1",
-    "tns-platform-declarations": "6.0.1",
+    "tns-platform-declarations": "file:../src/node_modules/tns-platform-declarations",
     "tslint": "~5.18.0",
     "typescript": "~3.4.5"
   },

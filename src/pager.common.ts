@@ -22,6 +22,7 @@ import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 import { layout } from 'tns-core-modules/utils/utils';
+import { Color } from 'tns-core-modules/color';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -84,6 +85,9 @@ export enum Indicator {
     Flat = 'flat',
 }
 
+const booleanConverter = (v: any): boolean => {
+    return String(v) === 'true';
+};
 
 @CSSType('Pager')
 export abstract class PagerBase extends ContainerView implements AddChildFromBuilder {
@@ -97,6 +101,9 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public peaking: PercentLength;
     public perPage: number;
     public indicator: Indicator;
+    public circularMode: boolean;
+    public autoPlayDelay: number;
+    public autoPlay: boolean;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
     public static scrollEvent = 'scroll';
@@ -117,6 +124,8 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     readonly _childrenCount: number;
     public disableSwipe: boolean = false;
     public showIndicator: boolean;
+    public indicatorColor: Color | string;
+    public indicatorSelectedColor: Color | string;
     // TODO: get rid of such hacks.
     public static knownFunctions = ['itemTemplateSelector', 'itemIdGenerator']; // See component-builder.ts isKnownFunction
 
@@ -144,7 +153,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
 
     private _itemIdGenerator: (item: any, index: number, items: any) => number = (_item: any,
-                                                                                  index: number) => index
+                                                                                  index: number) => index;
 
     get itemIdGenerator(): (item: any, index: number, items: any) => number {
         return this._itemIdGenerator;
@@ -189,8 +198,9 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
             templateKey = this._itemTemplateSelector(dataItem, index, this.items);
         }
 
+        const length = this._itemTemplatesInternal.length;
         for (
-            let i = 0, length = this._itemTemplatesInternal.length;
+            let i = 0;
             i < length;
             i++
         ) {
@@ -238,19 +248,19 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         this._innerHeight =
             bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
         // @ts-ignore
-        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
+        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
         // @ts-ignore
-        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
+        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
     }
 
     public convertToSize(length): number {
         let size = 0;
         if (this.orientation === 'horizontal') {
             // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
+            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
         } else {
             // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
+            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
         }
 
         let converted = 0;
@@ -325,6 +335,27 @@ function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
     pager.itemTemplateUpdated(oldValue, newValue);
 }
 
+export const indicatorColorProperty = new Property<PagerBase, Color | string>({
+    name: 'indicatorColor'
+});
+
+indicatorColorProperty.register(PagerBase);
+
+
+export const indicatorSelectedColorProperty = new Property<PagerBase, Color | string>({
+    name: 'indicatorSelectedColor'
+});
+
+indicatorSelectedColorProperty.register(PagerBase);
+
+export const circularModeProperty = new Property<PagerBase, boolean>({
+    name: 'circularMode',
+    defaultValue: false,
+    valueConverter: booleanConverter
+});
+
+circularModeProperty.register(PagerBase);
+
 export const indicatorProperty = new Property<PagerBase, Indicator>({
     name: 'indicator',
     defaultValue: Indicator.None
@@ -379,11 +410,6 @@ export const itemsProperty = new Property<PagerBase, any>({
     valueChanged: onItemsChanged
 });
 itemsProperty.register(PagerBase);
-
-
-const booleanConverter = (v: any): boolean => {
-    return String(v) === 'true';
-};
 
 export const itemTemplateProperty = new Property<PagerBase, string | Template>({
     name: 'itemTemplate',
@@ -466,6 +492,20 @@ transformersProperty.register(PagerBase);
 
 export const showIndicatorProperty = new Property<PagerBase, boolean>({
     name: 'showIndicator',
-    defaultValue: false
+    defaultValue: false,
+    valueConverter: booleanConverter
 });
 showIndicatorProperty.register(PagerBase);
+
+export const autoPlayProperty = new Property<PagerBase, boolean>({
+    name: 'autoPlay',
+    defaultValue: false,
+    valueConverter: booleanConverter
+});
+autoPlayProperty.register(PagerBase);
+
+export const autoplayDelayProperty = new Property<PagerBase, number>({
+    name: 'autoPlayDelay',
+    defaultValue: 3000,
+});
+autoplayDelayProperty.register(PagerBase);

@@ -7,13 +7,19 @@
         <ActionBar title="Pager Demo"/>
     </Page.actionBar>
     <GridLayout rows="*,*">
-        <c:Pager scroll="onScroll" selectedIndex="2"
+        <c:Pager scroll="onScroll" selectedIndex="4"
                  peaking="10%"
                  spacing="5%"
                  selectedIndexChange="selectedIndexChange"
                  items="{{items}}" id="pager"
                  backgroundColor="lightsteelblue"
-                 indicator="flat"
+                 showIndicator="{{ showIndicator }}"
+                 indicator="worm"
+                 circularMode="false"
+                 indicatorColor="red"
+                 indicatorSelectedColor="blue"
+                 loadMore="loadMoreItems"
+                 autoPlay="{{ autoPlay }}"
                  >
             <c:Pager.itemTemplate>
                 <GridLayout iosOverflowSafeArea="false"  id="{{ title }}" loaded="loaded" rows="auto,*" columns="*">
@@ -28,11 +34,16 @@
             <StackLayout>
                 <Label text="Look Ma No Fragments"/>
                 <Label text="{{index}}"/>
+                <Label text="{{'Items Count ' + itemsCount}}"/>
+                <Button text="Nested Pager" tap="goToNested"/>
                 <Button text="Pager With List" tap="goToPagerWithLists"/>
                 <Button text="Static Pager" tap="goToStatic"/>
                 <Button text="Api Demo" tap="goToApi"/>
                 <Button text="Pager Regular Array" tap="goToRegular"/>
                 <Button text="Toggle Swipe" tap="toggleSwipe"/>
+                <Button text="Toggle Indicator" tap="toggleIndicator"/>
+                <Button text="Toggle circularMode" tap="toggleCircularMode"/>
+                <Button text="Toggle AutoPlay" tap="toggleAutoPlay"/>
                 <StackLayout row="5">
                     <Button text="Prev" tap="prevPage"/>
                     <Button text="Next" tap="nextPage"/>
