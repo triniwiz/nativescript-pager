@@ -1,11 +1,10 @@
 import { Page } from 'tns-core-modules/ui/page';
-import { HelloWorldModel } from './main-view-model';
+import { NestedPageViewModel } from './nested-page-view-model';
 import { Pager } from 'nativescript-pager';
-import { Image } from 'tns-core-modules/ui/image';
 import { Frame } from 'tns-core-modules/ui/frame';
 
 let page: Page;
-let vm = new HelloWorldModel();
+let vm = new NestedPageViewModel();
 
 
 export function pageLoaded(args) {
@@ -19,11 +18,6 @@ export function pageLoaded(args) {
     }
 }
 
-export function toggleAutoPlay() {
-    let autoPlay = vm.get('autoPlay');
-    vm.set('autoPlay', !autoPlay);
-}
-
 export function toggleSwipe() {
     const pager: Pager = <Pager>page.getViewById('pager');
     pager.disableSwipe = !pager.disableSwipe;
@@ -34,48 +28,39 @@ export function onScroll(event) {
 }
 
 export function textChange(event) {
-    const item = vm.items.getItem(0);
+    const item = vm.items[0];
     item['text'] = event.value;
-    vm.items.setItem(0, item);
+    vm.items[0] = item;
 }
 
 export function removeNextItems() {
     const pager: Pager = <Pager>page.getViewById('pager');
     const selectedIndex = pager.selectedIndex;
     const count = (pager.items.length) - (selectedIndex + 1);
-    vm.items.splice(selectedIndex + 1, count);
-    const item = vm.items.getItem(selectedIndex);
+    const old = vm.items.slice(0);
+    old.splice(selectedIndex + 1, count);
+    vm.set('items', old);
+    const item = vm.items[selectedIndex];
     item['title'] = `After Reset ${selectedIndex + 1}`;
-    vm.items.setItem(selectedIndex, item);
-
+    vm.items[selectedIndex] = item;
 }
 
 export function resetItems() {
-    vm.resetItems();
+    vm.set('items', vm._originalItems);
 }
 
 export function loaded(event) {
 }
 
-export function goToApi(event) {
-    Frame.topmost().navigate('api/api-page');
+export function goBack(event) {
+    Frame.topmost().goBack();
 }
-
-
 export function goToPagerWithLists(event) {
     Frame.topmost().navigate('list-page');
 }
 
 export function goToStatic(event) {
     Frame.topmost().navigate('static/static-page');
-}
-
-export function goToRegular(event) {
-    Frame.topmost().navigate('regular/regular-page');
-}
-
-export function goToNested(event) {
-    Frame.topmost().navigate('nested/nested-page');
 }
 
 export function prevPage() {
@@ -99,7 +84,7 @@ export function lastPage() {
 }
 
 export function loadedImage($event: any) {
-    const image: Image = $event.object;
+    const image = $event.object;
     // console.log(
     //   `onLoaded: ${image}, size: ${JSON.stringify(image.getActualSize())}}`
     // );
@@ -166,17 +151,4 @@ export function loadMoreItems(event) {
 
 export function navigate() {
     Frame.topmost().navigate('dummy-page');
-}
-
-export function toggleIndicator(event){
-    const state = vm.get('showIndicator');
-    vm.set('showIndicator', !state);
-    console.log('toggleIndicator', state, vm.get('showIndicator'));
-}
-
-export function toggleCircularMode(event){
-    const state = vm.get('circularMode');
-    console.log('circularMode', state);
-    vm.set('circularMode', !state);
-    console.log('circularMode', state, vm.get('circularMode'));
 }

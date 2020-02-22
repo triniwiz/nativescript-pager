@@ -102,6 +102,8 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public perPage: number;
     public indicator: Indicator;
     public circularMode: boolean;
+    public autoPlayDelay: number;
+    public autoPlay: boolean;
     public static selectedIndexChangedEvent = 'selectedIndexChanged';
     public static selectedIndexChangeEvent = 'selectedIndexChange';
     public static scrollEvent = 'scroll';
@@ -196,8 +198,9 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
             templateKey = this._itemTemplateSelector(dataItem, index, this.items);
         }
 
+        const length = this._itemTemplatesInternal.length;
         for (
-            let i = 0, length = this._itemTemplatesInternal.length;
+            let i = 0;
             i < length;
             i++
         ) {
@@ -245,19 +248,19 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         this._innerHeight =
             bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
         // @ts-ignore
-        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
+        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
         // @ts-ignore
-        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
+        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
     }
 
     public convertToSize(length): number {
         let size = 0;
         if (this.orientation === 'horizontal') {
             // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize(this._currentWidthMeasureSpec) : this.getMeasuredWidth();
+            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
         } else {
             // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize(this._currentHeightMeasureSpec) : this.getMeasuredHeight();
+            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
         }
 
         let converted = 0;
@@ -493,3 +496,16 @@ export const showIndicatorProperty = new Property<PagerBase, boolean>({
     valueConverter: booleanConverter
 });
 showIndicatorProperty.register(PagerBase);
+
+export const autoPlayProperty = new Property<PagerBase, boolean>({
+    name: 'autoPlay',
+    defaultValue: false,
+    valueConverter: booleanConverter
+});
+autoPlayProperty.register(PagerBase);
+
+export const autoplayDelayProperty = new Property<PagerBase, number>({
+    name: 'autoPlayDelay',
+    defaultValue: 3000,
+});
+autoplayDelayProperty.register(PagerBase);

@@ -15,9 +15,11 @@
                  backgroundColor="lightsteelblue"
                  showIndicator="{{ showIndicator }}"
                  indicator="worm"
-                 circularMode="true"
+                 circularMode="false"
                  indicatorColor="red"
                  indicatorSelectedColor="blue"
+                 loadMore="loadMoreItems"
+                 autoPlay="{{ autoPlay }}"
                  >
             <c:Pager.itemTemplate>
                 <GridLayout iosOverflowSafeArea="false"  id="{{ title }}" loaded="loaded" rows="auto,*" columns="*">
@@ -32,6 +34,8 @@
             <StackLayout>
                 <Label text="Look Ma No Fragments"/>
                 <Label text="{{index}}"/>
+                <Label text="{{'Items Count ' + itemsCount}}"/>
+                <Button text="Nested Pager" tap="goToNested"/>
                 <Button text="Pager With List" tap="goToPagerWithLists"/>
                 <Button text="Static Pager" tap="goToStatic"/>
                 <Button text="Api Demo" tap="goToApi"/>
@@ -39,6 +43,7 @@
                 <Button text="Toggle Swipe" tap="toggleSwipe"/>
                 <Button text="Toggle Indicator" tap="toggleIndicator"/>
                 <Button text="Toggle circularMode" tap="toggleCircularMode"/>
+                <Button text="Toggle AutoPlay" tap="toggleAutoPlay"/>
                 <StackLayout row="5">
                     <Button text="Prev" tap="prevPage"/>
                     <Button text="Next" tap="nextPage"/>

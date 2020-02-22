@@ -2,7 +2,7 @@ import { Page } from 'tns-core-modules/ui/page';
 import { RegularPageViewModel } from './regular-page-view-model';
 import { Pager } from 'nativescript-pager';
 import { Image } from 'tns-core-modules/ui/image';
-import { topmost } from 'tns-core-modules/ui/frame';
+import { Frame } from 'tns-core-modules/ui/frame';
 
 let page: Page;
 let vm = new RegularPageViewModel();
@@ -54,14 +54,15 @@ export function loaded(event) {
 }
 
 export function goBack(event) {
-    topmost().goBack();
+    Frame.topmost().goBack();
 }
+
 export function goToPagerWithLists(event) {
-    topmost().navigate('list-page');
+    Frame.topmost().navigate('list-page');
 }
 
 export function goToStatic(event) {
-    topmost().navigate('static/static-page');
+    Frame.topmost().navigate('static/static-page');
 }
 
 export function prevPage() {
@@ -151,5 +152,5 @@ export function loadMoreItems(event) {
 }
 
 export function navigate() {
-    topmost().navigate('dummy-page');
+    Frame.topmost().navigate('dummy-page');
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { $Pager } from 'nativescript-pager/react';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { $Label, $StackLayout, $GridLayout, $Button, $ScrollView, render, $Frame } from 'react-nativescript';
+import { $Image, $Label, $StackLayout, $GridLayout, $Button, $ScrollView, render, $Frame } from 'react-nativescript';
 import { $ImageCacheIt } from './nativescript-image-cache-it';
 import { ItemSpec } from 'tns-core-modules/ui/layouts/grid-layout/grid-layout';
 import { Page } from 'react-nativescript/dist/client/ElementRegistry';
@@ -269,7 +269,7 @@ export class AppContainer extends React.Component<{ forwardedRef: React.RefObjec
                         return (
                             <$StackLayout id={item.title} ref={ref}>
                                 <$Label text={item.title}/>
-                                <$ImageCacheIt stretch={'aspectFill'}
+                                <$ImageCacheIt width={300} height={300} stretch={'aspectFill'}
                                         src={item.image}/>
                             </$StackLayout>
                         );

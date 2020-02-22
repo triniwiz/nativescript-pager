@@ -1,9 +1,11 @@
 import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array';
-import { screen } from 'tns-core-modules/platform';
 import { KeyedTemplate, layout, Property, View } from 'tns-core-modules/ui/core/view';
 import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 import * as types from 'tns-core-modules/utils/types';
+import { screen } from 'tns-core-modules/platform';
 import {
+    autoplayDelayProperty,
+    autoPlayProperty,
     disableSwipeProperty,
     Indicator,
     indicatorColorProperty,
@@ -25,6 +27,8 @@ import {
     Transformer
 } from './pager.common';
 import { Color } from 'tns-core-modules/color';
+import * as tracing from 'tns-core-modules/trace';
+import { profile } from 'tns-core-modules/profiling';
 
 export * from './pager.common';
 export { EventData, ItemsSource, Transformer } from './pager.common';
@@ -50,6 +54,8 @@ function notifyForItemAtIndex(
 
 declare var java, android, androidx;
 const PLACEHOLDER = 'PLACEHOLDER';
+
+tracing.enable();
 
 export class Pager extends PagerBase {
     nativeViewProtected: any; /* androidx.viewpager2.widget.ViewPager2 */
@@ -108,14 +114,14 @@ export class Pager extends PagerBase {
         return this._indicatorView;
     }
 
+    @profile()
     public createNativeView() {
         const that = new WeakRef(this);
-
         const nativeView = new android.widget.RelativeLayout(this._context);
         this._pager = new androidx.viewpager2.widget.ViewPager2(
             this._context
         );
-
+        this._pager.setNestedScrollingEnabled(true);
         if (this.orientation === 'vertical') {
             this._pager.setOrientation(androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL);
         } else {
@@ -129,11 +135,6 @@ export class Pager extends PagerBase {
         initPagerRecyclerAdapter();
         this._pagerAdapter = new PagerRecyclerAdapter(new WeakRef(this));
         this.compositeTransformer = new androidx.viewpager2.widget.CompositePageTransformer();
-        if (this.pagesCount > 0) {
-            this.pager.setOffscreenPageLimit(this.pagesCount);
-        } else {
-            this.pager.setOffscreenPageLimit(3);
-        }
         this.pager.setUserInputEnabled(!this.disableSwipe);
         this.on(View.layoutChangedEvent, this.onLayoutChange, this);
         nativeView.addView(this.pager);
@@ -146,15 +147,12 @@ export class Pager extends PagerBase {
         params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
         params.addRule(android.widget.RelativeLayout.CENTER_HORIZONTAL);
         params.setMargins(0, 0, 0, 10 * screen.mainScreen.scale);
-        (this._indicatorView as android.widget.RelativeLayout).setLayoutParams(params);
+        this._indicatorView.setLayoutParams(params);
+
         // this._indicatorView.setViewPager(this.pager);
         this._indicatorView.setDynamicCount(true);
         this._indicatorView.setInteractiveAnimation(true);
-
-        if (this.showIndicator) {
-            nativeView.addView(this._indicatorView);
-        }
-
+        nativeView.addView(this._indicatorView);
         return nativeView;
     }
 
@@ -171,16 +169,24 @@ export class Pager extends PagerBase {
         if (this._androidViewId < 0) {
             this._androidViewId = android.view.View.generateViewId();
         }
+
         if (this.pagesCount > 0) {
-            this.pager.setOffscreenPageLimit(
-                this.pagesCount
-            );
+            this.pager.setOffscreenPageLimit(this.pagesCount);
+        } else {
+            this.pager.setOffscreenPageLimit(3);
         }
+
         this._setIndicator(this.indicator);
-        this.nativeView.setId(this._androidViewId);
+        // this.nativeView.setId(this._androidViewId);
         this._setPeaking(this.peaking);
         this._setSpacing(this.spacing);
         this._setTransformers(this.transformers ? this.transformers : '');
+
+        if (this.showIndicator) {
+            this._indicatorView.setCount(this.items ? this.items.length : 0);
+        } else {
+            this._indicatorView.setCount(0);
+        }
     }
 
     onLayoutChange(args: any) {
@@ -300,7 +306,7 @@ export class Pager extends PagerBase {
     }
 
     private _observableArrayHandler = (args) => {
-        if (this.indicatorView) {
+        if (this.indicatorView && this.showIndicator) {
             this.indicatorView.setCount(this._childrenCount);
         }
         if (this.pagerAdapter) {
@@ -325,6 +331,7 @@ export class Pager extends PagerBase {
                 default:
                     break;
             }
+            this._initAutoPlay(this.autoPlay);
         }
     };
 
@@ -394,7 +401,7 @@ export class Pager extends PagerBase {
     }
 
     [itemsProperty.setNative](value: any) {
-        if (value && value.length) {
+        if (value && value.length && this.showIndicator) {
             this.indicatorView.setCount(this._childrenCount);
         }
         if (this._observableArrayInstance) {
@@ -413,6 +420,7 @@ export class Pager extends PagerBase {
                 this.refresh();
                 selectedIndexProperty.coerce(this);
             }
+
         }
     }
 
@@ -426,6 +434,9 @@ export class Pager extends PagerBase {
             );
             this._indicatorView.setSelected(this.selectedIndex);
         }
+        setTimeout(() => {
+            this._initAutoPlay(this.autoPlay);
+        });
     }
 
     onLoaded(): void {
@@ -453,13 +464,13 @@ export class Pager extends PagerBase {
         if (this.isLoaded && this.isLayoutValid && this.pager) {
             const index = this.circularMode ? value + 1 : value;
             if (this.pager.getCurrentItem() !== index) {
-                this.indicatorView.setInteractiveAnimation(!this.disableAnimation);
+                //   this.indicatorView.setInteractiveAnimation(!this.disableAnimation);
                 this.pager.setCurrentItem(
                     index,
                     !this.disableAnimation
                 );
                 if (this.indicatorView) {
-                    this.indicatorView.setSelection(value);
+                    // this.indicatorView.setSelection(value);
                 }
             }
         }
@@ -476,7 +487,6 @@ export class Pager extends PagerBase {
 
     refresh() {
         if (this.pager && this._pagerAdapter) {
-            console.log('refresh');
             this.pager.requestLayout();
             // @ts-ignore
             this.pager.getAdapter()
@@ -532,15 +542,23 @@ export class Pager extends PagerBase {
     }
 
     [showIndicatorProperty.setNative](value: boolean) {
-        const hasParent = this.indicatorView.getParent();
+        //const hasParent = this.indicatorView.getParent();
+        if (!this.indicatorView) {
+            return;
+        }
         if (value) {
-            if (!hasParent) {
-                this.nativeView.addView(this.indicatorView);
-            }
+            // if (!hasParent) {
+            //     this.nativeView.addView(this.indicatorView);
+            // }
+            //this._indicatorView.setVisibility(android.view.View.VISIBLE);
+            this.indicatorView.setCount(this.items ? this.items.length : 0);
+            this.indicatorView.setSelected(this.selectedIndex);
         } else {
-            if (hasParent) {
-                this.nativeView.removeView(this.indicatorView);
-            }
+            this.indicatorView.setCount(0);
+            // this._indicatorView.setVisibility(android.view.View.GONE);
+            // if (hasParent) {
+            //     this.nativeView.removeView(this.indicatorView);
+            // }
         }
     }
 
@@ -625,6 +643,59 @@ export class Pager extends PagerBase {
         }
 
         return [selectingPosition, selectingProgress];
+    }
+
+    [autoPlayProperty.setNative](value: boolean) {
+        this._initAutoPlay(value);
+    }
+
+    private _autoPlayInterval: any;
+
+    [autoplayDelayProperty.setNative](value: number) {
+        if (this._autoPlayInterval) {
+            clearInterval(this._autoPlayInterval);
+            this._autoPlayInterval = undefined;
+            this._initAutoPlay(this.autoPlay);
+        }
+    }
+
+    _nextIndex(): number {
+        let next = this.selectedIndex + 1;
+        if (next > this.lastIndex) {
+            return 0;
+        }
+        return next;
+    }
+
+    _initAutoPlay(value: boolean) {
+        if (!this.items || this.items.length === 0) {
+            return;
+        }
+        if (!value) {
+            if (this._autoPlayInterval) {
+                clearInterval(this._autoPlayInterval);
+                this._autoPlayInterval = undefined;
+            }
+        } else {
+            if (this.isLayoutValid && !this._autoPlayInterval) {
+                this._autoPlayInterval = setInterval(() => {
+                    this.selectedIndex = this._nextIndex();
+                }, this.autoPlayDelay);
+            }
+        }
+    }
+
+    get itemCount(): number {
+        return this._childrenCount
+            ? this._childrenCount + (this.circularMode ? 2 : 0)
+            : 0;
+    }
+
+    get lastIndex(): number {
+        if (this.items && this.items.length === 0) {
+            return 0;
+        }
+        return this.circularMode ? this.itemCount - 3 : this.itemCount - 1;
     }
 }
 
@@ -742,8 +813,8 @@ function initPagerChangeCallback() {
                             owner.pager.setCurrentItem(1, false);
                             selectedIndexProperty.nativeValueChange(owner, 0);
                             owner.indicatorView.setInteractiveAnimation(true);
-                        }else {
-                            selectedIndexProperty.nativeValueChange(owner, index - 1)
+                        } else {
+                            selectedIndexProperty.nativeValueChange(owner, index - 1);
                         }
                     } else {
                         selectedIndexProperty.nativeValueChange(owner, index);

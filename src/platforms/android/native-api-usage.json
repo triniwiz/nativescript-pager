@@ -1,0 +1,8 @@
+{
+  "uses": [
+	"androidx.viewpager2.widget:*",
+	"androidx.recyclerview.widget:RecyclerView*",
+	"com.rd*:*"
+  ]
+}
+

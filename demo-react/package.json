@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.demoreact",
     "tns-android": {
-      "version": "6.0.0"
+      "version": "6.4.1"
     },
     "tns-ios": {
-      "version": "6.0.1"
+      "version": "6.4.0"
     }
   },
   "main": "app.js",
@@ -18,7 +18,7 @@
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",
     "react-nativescript": "^0.10.0",
-    "tns-core-modules": "~6.0.0"
+    "tns-core-modules": "~6.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -28,7 +28,7 @@
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.6",
     "fork-ts-checker-webpack-plugin": "^1.4.3",
-    "nativescript-dev-webpack": "~1.0.0",
+    "nativescript-dev-webpack": "~1.5.0",
     "typescript": "~3.4.0"
   },
   "gitHead": "f28dbc60d74dd2cef4b645afd8fdd63bbb12c73e",
