@@ -261,7 +261,8 @@ export class Pager extends PagerBase {
 
     private _updateScrollPosition() {
         const view = (this.pager as UICollectionView);
-        if (!view || view.contentSize.width === 0) {
+        const size = this.orientation === 'vertical' ? view.contentSize.height: view.contentSize.width;
+        if (!view || size === 0) {
             return;
         }
         this._scrollToIndexAnimated(this.selectedIndex, false);
@@ -401,7 +402,11 @@ export class Pager extends PagerBase {
 
     _scrollToIndexAnimated(index: number, animate: boolean) {
         if (!this.pager) return;
-
+        const contentSize = this.pager.contentSize;
+        const size = this.orientation === 'vertical' ? contentSize.height : contentSize.width;
+        if (size === 0) {
+            return;
+        }
         if (this._childrenCount === 0) {
             return;
         }
@@ -450,7 +455,7 @@ export class Pager extends PagerBase {
     }
 
     refresh() {
-        NSOperationQueue.mainQueue.addOperationWithBlock(()=>{
+        NSOperationQueue.mainQueue.addOperationWithBlock(() => {
             this._refresh();
         });
     }
@@ -543,7 +548,7 @@ export class Pager extends PagerBase {
         );
         super.measure(widthMeasureSpec, heightMeasureSpec);
         if (changed) {
-            NSOperationQueue.mainQueue.addOperationWithBlock(()=>{
+            NSOperationQueue.mainQueue.addOperationWithBlock(() => {
                 if (!this.pager) {
                     return;
                 }

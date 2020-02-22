@@ -10,8 +10,8 @@ import { updateListener } from 'react-nativescript/dist/client/EventHandling';
 import { register } from 'react-nativescript/dist/client/ElementRegistry';
 import { ItemEventData } from '../pager.common';
 
-register('pager', NativeScriptPager);
-register('pagerItem', NativeScriptPagerItem);
+register('pager', NativeScriptPager as any);
+register('pagerItem', NativeScriptPagerItem as any);
 
 export type CellViewContainer = ContentView;
 type CellFactory = (item: any, ref: React.RefObject<any>) => React.ReactElement;
