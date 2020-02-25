@@ -121,7 +121,9 @@ export class Pager extends PagerBase {
         this._pager = new androidx.viewpager2.widget.ViewPager2(
             this._context
         );
-        this._pager.setNestedScrollingEnabled(true);
+        if (typeof this._pager.setNestedScrollingEnabled === 'function') {
+            this._pager.setNestedScrollingEnabled(true);
+        }
         if (this.orientation === 'vertical') {
             this._pager.setOrientation(androidx.viewpager2.widget.ViewPager2.ORIENTATION_VERTICAL);
         } else {
