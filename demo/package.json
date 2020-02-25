@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "nativescript-carousel": "^6.1.1",
-    "nativescript-image-cache-it": "^5.0.0-beta.9",
+    "nativescript-image-cache-it": "^5.0.0-beta.10",
     "nativescript-nested-scrollview": "^1.1.0",
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "^2.0.2",

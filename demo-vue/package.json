@@ -14,10 +14,10 @@
     }
   },
   "dependencies": {
+    "@nativescript/core": "^6.4.1",
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "^2.0.2",
-    "nativescript-vue": "2.3.0",
-    "tns-core-modules": "~6.4.0"
+    "nativescript-vue": "2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
