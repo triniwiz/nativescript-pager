@@ -1,13 +1,13 @@
 {
   "name": "nativescript-pager",
-  "version": "12.0.0-alpha.4",
+  "version": "12.0.0-alpha.5",
   "description": "A Carousel/Pager plugin for NativeScript",
   "main": "pager",
   "typings": "pager.d.ts",
   "nativescript": {
     "platforms": {
-      "android": "6.0.0",
-      "ios": "6.0.1"
+      "android": "6.2.0",
+      "ios": "6.2.0"
     }
   },
   "scripts": {
@@ -27,8 +27,10 @@
     "demo.ng.ios.aot": "npm i && npm run tsc && cd ../demo-ng && tns run ios  --env.aot --env.uglify",
     "demo.ng.android": "npm i && npm run tsc && cd ../demo-ng && tns run android",
     "demo.ng.android.aot": "npm i && npm run tsc && cd ../demo-ng && tns run android  --env.aot --env.uglify",
-    "demo.vue.ios": "npm i && npm run tsc && cd ../demo-vue && tns run ios ",
-    "demo.vue.android": "npm i && npm run tsc && cd ../demo-vue && tns run android ",
+    "demo.vue.ios": "npm i && npm run tsc && cd ../demo-vue && tns run ios",
+    "demo.vue.android": "npm i && npm run tsc && cd ../demo-vue && tns run android",
+    "demo.react.ios": "npm i && npm run tsc && cd ../demo-react && tns run ios --no-hmr",
+    "demo.react.android": "npm i && npm run tsc && cd ../demo-react && tns run android --no-hmr",
     "demo.reset": "cd ../demo && rimraf platforms && cd ../demo-ng && rimraf platforms && cd ../demo-vue && npm run clean",
     "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-pager && tns plugin add ../src && cd ../demo-ng && tns plugin remove nativescript-pager && tns plugin add ../src",
     "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../demo-ng && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
@@ -70,30 +72,30 @@
   "homepage": "https://github.com/triniwiz/nativescript-pager",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@angular/common": "~8.1.2",
-    "@angular/compiler": "~8.1.2",
-    "@angular/compiler-cli": "~8.1.2",
-    "@angular/core": "~8.1.2",
-    "@angular/forms": "~8.1.2",
-    "@angular/platform-browser": "~8.1.2",
-    "@angular/platform-browser-dynamic": "~8.1.2",
-    "@angular/router": "~8.1.2",
+    "@angular/common": "~8.2.0",
+    "@angular/compiler": "~8.2.0",
+    "@angular/compiler-cli": "~8.2.0",
+    "@angular/core": "~8.2.0",
+    "@angular/forms": "~8.2.0",
+    "@angular/platform-browser": "~8.2.0",
+    "@angular/platform-browser-dynamic": "~8.2.0",
+    "@angular/router": "~8.2.0",
+    "@nativescript/angular": "^8.21.0",
+    "@nativescript/core": "^6.2.3",
     "@types/react": "^16.8.24",
     "@types/react-reconciler": "^0.18.0",
-    "nativescript-angular": "~8.0.2",
     "nativescript-vue": "~2.3.0",
     "prompt": "^1.0.0",
     "react": "^16.8.6",
     "react-nativescript": "^0.18.0",
     "rimraf": "^2.6.3",
-    "rxjs": "^6.5.2",
-    "tns-core-modules": "^6.0.1",
+    "rxjs": "^6.4.0",
     "tns-platform-declarations": "^6.0.1",
     "tslint": "^5.18.0",
-    "typescript": "~3.4.5",
+    "typescript": "~3.5.3",
     "vue": "^2.6.10",
     "zone.js": "^0.9.1"
   },
-  "dependencies": {},
-  "bootstrapper": "nativescript-plugin-seed"
+  "bootstrapper": "nativescript-plugin-seed",
+  "dependencies": {}
 }

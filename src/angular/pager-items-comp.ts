@@ -20,21 +20,21 @@ import {
   ViewContainerRef,
   ɵisListLikeIterable as isListLikeIterable
 } from '@angular/core';
-import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
-import { isIOS, KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
-import { EventData, LayoutBase, Template } from 'tns-core-modules/ui/layouts/layout-base';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { profile } from 'tns-core-modules/profiling';
+import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
+import { isIOS, KeyedTemplate, View } from '@nativescript/core/ui/core/view';
+import { EventData, LayoutBase, Template } from '@nativescript/core/ui/layouts/layout-base';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
+import { profile } from '@nativescript/core/profiling';
 
 import {
   getSingleViewRecursive,
   InvisibleNode,
   registerElement
-} from 'nativescript-angular/element-registry';
-import { isEnabled as isLogEnabled } from 'tns-core-modules/trace';
+} from '@nativescript/angular/element-registry';
+import { isEnabled as isLogEnabled } from '@nativescript/core/trace';
 import { PagerError, PagerItem, PagerLog } from '../pager.common';
 import { Pager } from '../pager';
-import { isBlank } from 'nativescript-angular/lang-facade';
+import { isBlank } from '@nativescript/angular/lang-facade';
 
 registerElement('Pager', () => Pager);
 registerElement('PagerItem', () => PagerItem);
@@ -328,7 +328,7 @@ export type RootLocator = (nodes: Array<any>, nestLevel: number) => View;
 
 export function getItemViewRoot(
   viewRef: ComponentView,
-  rootLocator: RootLocator = getSingleViewRecursive
+  rootLocator: RootLocator = getSingleViewRecursive as any
 ): View {
   return rootLocator(viewRef.rootNodes, 0);
 }

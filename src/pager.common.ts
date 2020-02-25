@@ -11,18 +11,18 @@ import {
     Property,
     Template,
     View
-} from 'tns-core-modules/ui/core/view';
-import { isIOS } from 'tns-core-modules/platform';
-import { Builder } from 'tns-core-modules/ui/builder';
-import { Label } from 'tns-core-modules/ui/label';
-import { messageType, write } from 'tns-core-modules/trace';
-import { Observable } from 'tns-core-modules/data/observable';
-import { addWeakEventListener, removeWeakEventListener } from 'tns-core-modules/ui/core/weak-event-listener';
-import { ItemsSource } from 'tns-core-modules/ui/list-view/list-view';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
-import { layout } from 'tns-core-modules/utils/utils';
-import { Color } from 'tns-core-modules/color';
+} from '@nativescript/core/ui/core/view';
+import { isIOS } from '@nativescript/core/platform';
+import { Builder } from '@nativescript/core/ui/builder';
+import { Label } from '@nativescript/core/ui/label';
+import { messageType, write } from '@nativescript/core/trace';
+import { Observable } from '@nativescript/core/data/observable';
+import { addWeakEventListener, removeWeakEventListener } from '@nativescript/core/ui/core/weak-event-listener';
+import { ItemsSource } from '@nativescript/core/ui/list-view/list-view';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
+import { GridLayout } from '@nativescript/core/ui/layouts/grid-layout';
+import { layout } from '@nativescript/core/utils/utils';
+import { Color } from '@nativescript/core/color';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -51,7 +51,7 @@ export function PagerError(message: string): void {
     write(message, pagerTraceCategory, messageType.error);
 }
 
-export * from 'tns-core-modules/ui/core/view';
+export * from '@nativescript/core/ui/core/view';
 
 export interface ItemEventData {
     eventName: string;

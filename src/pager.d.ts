@@ -1,4 +1,4 @@
-import { View } from 'tns-core-modules/ui/core/view';
+import { View } from '@nativescript/core/ui/core/view';
 import { EventData, ItemsSource, PagerBase, PagerItem } from './pager.common';
 
 export { EventData, ItemsSource, PagerItem };

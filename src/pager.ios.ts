@@ -1,6 +1,6 @@
-import { EventData, KeyedTemplate, layout, View } from 'tns-core-modules/ui/core/view';
-import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
-import { ProxyViewContainer } from 'tns-core-modules/ui/proxy-view-container';
+import { EventData, KeyedTemplate, layout, View } from '@nativescript/core/ui/core/view';
+import { StackLayout } from '@nativescript/core/ui/layouts/stack-layout';
+import { ProxyViewContainer } from '@nativescript/core/ui/proxy-view-container';
 import * as common from './pager.common';
 import {
     autoplayDelayProperty,
@@ -21,8 +21,8 @@ import {
     showIndicatorProperty,
     Transformer
 } from './pager.common';
-import { profile } from 'tns-core-modules/profiling';
-import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { profile } from '@nativescript/core/profiling';
+import { ChangeType, ObservableArray } from '@nativescript/core/data/observable-array/observable-array';
 
 export { Transformer, EventData, ItemsSource } from './pager.common';
 
@@ -49,6 +49,7 @@ declare var CHIPageControlAji, CHIPageControlAleppo, CHIPageControlChimayo, CHIP
     CHIPageControlJalapeno, CHIPageControlJaloro, CHIPageControlPuya, FancyPager, FancyPagerDelegate;
 
 export * from './pager.common';
+const main_queue = dispatch_get_current_queue();
 
 export class Pager extends PagerBase {
     lastEvent: number = 0;
@@ -432,8 +433,10 @@ export class Pager extends PagerBase {
             maxMinIndex = 0;
         }
 
-        this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
-        selectedIndexProperty.nativeValueChange(this, maxMinIndex);
+        dispatch_async(main_queue, () => {
+            this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+            selectedIndexProperty.nativeValueChange(this, maxMinIndex);
+        });
     }
 
     public scrollToIndexAnimated(index: number, animate: boolean) {
@@ -463,7 +466,7 @@ export class Pager extends PagerBase {
     }
 
     refresh() {
-        NSOperationQueue.mainQueue.addOperationWithBlock(() => {
+        dispatch_async(main_queue, () => {
             this._refresh();
         });
     }
@@ -556,7 +559,7 @@ export class Pager extends PagerBase {
         );
         super.measure(widthMeasureSpec, heightMeasureSpec);
         if (changed) {
-            NSOperationQueue.mainQueue.addOperationWithBlock(() => {
+            dispatch_async(main_queue, () => {
                 if (!this.pager) {
                     return;
                 }
@@ -871,7 +874,7 @@ class UICollectionDelegateImpl extends NSObject
             }
             percent = (offset / total);
             let progress = percent * (owner.itemCount - 1);
-            if (owner.indicatorView && owner.indicatorView.setWithProgressAnimated) {
+            if (owner.indicatorView && owner.indicatorView.setWithProgressAnimated && !Number.isNaN(progress)) {
                 owner.indicatorView.progress = progress;
             }
             const index = parseInt(progress.toFixed(0), 10);
@@ -1217,10 +1220,12 @@ class UICollectionViewDataSourceImpl extends NSObject
 
 class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
     _owner: WeakRef<Pager>;
+    _curl: CATransition;
 
     public static initWithOwner(owner: WeakRef<Pager>): UICollectionViewFlowLinearLayoutImpl {
         const layout = UICollectionViewFlowLinearLayoutImpl.new() as UICollectionViewFlowLinearLayoutImpl;
         layout._owner = owner;
+        layout._curl = CATransition.animation();
         return layout;
     }
 

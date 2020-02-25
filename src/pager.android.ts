@@ -1,8 +1,8 @@
-import { ChangeType, ObservableArray } from 'tns-core-modules/data/observable-array';
-import { KeyedTemplate, layout, Property, View } from 'tns-core-modules/ui/core/view';
-import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
-import * as types from 'tns-core-modules/utils/types';
-import { screen } from 'tns-core-modules/platform';
+import { ChangeType, ObservableArray } from '@nativescript/core/data/observable-array';
+import { KeyedTemplate, layout, Property, View } from '@nativescript/core/ui/core/view';
+import { StackLayout } from '@nativescript/core/ui/layouts/stack-layout';
+import * as types from '@nativescript/core/utils/types';
+import { device, screen } from '@nativescript/core/platform';
 import {
     autoplayDelayProperty,
     autoPlayProperty,
@@ -26,9 +26,9 @@ import {
     spacingProperty,
     Transformer
 } from './pager.common';
-import { Color } from 'tns-core-modules/color';
-import * as tracing from 'tns-core-modules/trace';
-import { profile } from 'tns-core-modules/profiling';
+import { Color } from '@nativescript/core/color';
+import * as tracing from '@nativescript/core/trace';
+import { profile } from '@nativescript/core/profiling';
 
 export * from './pager.common';
 export { EventData, ItemsSource, Transformer } from './pager.common';
@@ -121,7 +121,8 @@ export class Pager extends PagerBase {
         this._pager = new androidx.viewpager2.widget.ViewPager2(
             this._context
         );
-        if (typeof this._pager.setNestedScrollingEnabled === 'function') {
+        const sdkVersion = parseInt(device.sdkVersion, 10);
+        if (sdkVersion => 21) {
             this._pager.setNestedScrollingEnabled(true);
         }
         if (this.orientation === 'vertical') {

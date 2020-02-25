@@ -66,7 +66,7 @@ export const $PagerItem: React.ComponentType<OwnPropsWithoutForwardedRef & React
         const {children, ...rest} = props;
 
         return React.createElement(
-            _PagerItem,
+            _PagerItem as any,
             {
                 ...rest,
                 forwardedRef: ref,

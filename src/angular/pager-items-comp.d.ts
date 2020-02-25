@@ -1,7 +1,7 @@
 import { AfterContentInit, DoCheck, ElementRef, EmbeddedViewRef, EventEmitter, InjectionToken, IterableDiffer, IterableDiffers, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-import { ItemEventData, ItemsSource } from 'tns-core-modules/ui/list-view';
-import { KeyedTemplate, View } from 'tns-core-modules/ui/core/view';
-import { EventData, Template } from 'tns-core-modules/ui/layouts/layout-base';
+import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
+import { KeyedTemplate, View } from '@nativescript/core/ui/core/view';
+import { EventData, Template } from '@nativescript/core/ui/layouts/layout-base';
 import { Pager } from '../pager';
 export interface PagerTemplatedItemsView {
     items: any[] | ItemsSource;
