@@ -122,7 +122,7 @@ export class Pager extends PagerBase {
             this._context
         );
         const sdkVersion = parseInt(device.sdkVersion, 10);
-        if (sdkVersion => 21) {
+        if (sdkVersion >= 21) {
             this._pager.setNestedScrollingEnabled(true);
         }
         if (this.orientation === 'vertical') {
