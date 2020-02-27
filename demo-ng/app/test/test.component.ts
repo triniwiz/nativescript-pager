@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
 
 @Component({
     moduleId: module.id,
