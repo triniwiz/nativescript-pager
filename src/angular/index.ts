@@ -1,7 +1,6 @@
 import {
     ChangeDetectionStrategy,
     Component,
-    Directive,
     ElementRef,
     forwardRef,
     IterableDiffers,
@@ -16,7 +15,7 @@ import {
     TemplatedItemsComponent,
     TemplateKeyDirective
 } from './pager-items-comp';
-import { NativeScriptModule } from '@nativescript/angular';
+
 @Component({
     selector: 'Pager',
     template: `
@@ -47,9 +46,6 @@ export class PagerComponent extends TemplatedItemsComponent {
 @NgModule({
     declarations: [PagerComponent, TemplateKeyDirective, PagerItemDirective],
     exports: [PagerComponent, TemplateKeyDirective, PagerItemDirective],
-    imports: [
-        NativeScriptModule
-    ],
     schemas: [NO_ERRORS_SCHEMA]
 })
 export class PagerModule {
