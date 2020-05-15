@@ -140,7 +140,7 @@ export class Pager extends PagerBase {
         this.compositeTransformer = new androidx.viewpager2.widget.CompositePageTransformer();
         this.pager.setUserInputEnabled(!this.disableSwipe);
         this.on(View.layoutChangedEvent, this.onLayoutChange, this);
-        nativeView.addView(this.pager);
+        nativeView.addView(this.pager, new android.widget.RelativeLayout.LayoutParams(android.widget.RelativeLayout.LayoutParams.MATCH_PARENT, android.widget.RelativeLayout.LayoutParams.MATCH_PARENT));
         this._indicatorView = new (com as any).rd.PageIndicatorView2(this._context);
         const params = new android.widget.RelativeLayout.LayoutParams(
             android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT,
