@@ -361,49 +361,55 @@ export class Pager extends PagerBase {
         }
 
         const collectionView = this.pager as UICollectionView;
-        let offset = 0;
-        collectionView.performBatchUpdatesCompletion(() => {
-            this._isRefreshing = true;
-            const array = [];
-            switch (args.action) {
-                case ChangeType.Add:
-                    for (let i = 0; i < args.addedCount; i++) {
-                        array.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
-                    }
-                    offset = collectionView.contentSize.width - collectionView.contentOffset.x;
-                    collectionView.insertItemsAtIndexPaths(array);
-                    break;
-                case ChangeType.Delete:
-                    for (let i = 0; i < args.removed.length; i++) {
-                        array.push(NSIndexPath.indexPathForItemInSection(args.index + i, 0));
-                    }
-                    collectionView.deleteItemsAtIndexPaths(array);
-                    break;
-                case  ChangeType.Splice:
-                    if (args.removed && args.removed.length > 0) {
-                        for (let i = 0; i < args.removed.length; i++) {
+        if (collectionView) {
+          try {
+            let offset = 0;
+            collectionView.performBatchUpdatesCompletion(() => {
+                this._isRefreshing = true;
+                const array = [];
+                switch (args.action) {
+                    case ChangeType.Add:
+                        for (let i = 0; i < args.addedCount; i++) {
                             array.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
                         }
-                        collectionView.deleteItemsAtIndexPaths(array);
-                    } else {
-                        const addedArray = [];
-                        for (let i = 0; i < args.addedCount; i++) {
-                            addedArray.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
+                        offset = collectionView.contentSize.width - collectionView.contentOffset.x;
+                        collectionView.insertItemsAtIndexPaths(array);
+                        break;
+                    case ChangeType.Delete:
+                        for (let i = 0; i < args.removed.length; i++) {
+                            array.push(NSIndexPath.indexPathForItemInSection(args.index + i, 0));
                         }
-                        collectionView.insertItemsAtIndexPaths(addedArray);
-                    }
-                    break;
-                case ChangeType.Update:
-                    collectionView.reloadItemsAtIndexPaths([NSIndexPath.indexPathForRowInSection(args.index, 0)]);
-                    break;
-                default:
-                    break;
-            }
-            this._initAutoPlay(this.autoPlay);
-            if (this.itemCount === 0) {
-                this._isInit = false;
-            }
-        }, null);
+                        collectionView.deleteItemsAtIndexPaths(array);
+                        break;
+                    case  ChangeType.Splice:
+                        if (args.removed && args.removed.length > 0) {
+                            for (let i = 0; i < args.removed.length; i++) {
+                                array.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
+                            }
+                            collectionView.deleteItemsAtIndexPaths(array);
+                        } else {
+                            const addedArray = [];
+                            for (let i = 0; i < args.addedCount; i++) {
+                                addedArray.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
+                            }
+                            collectionView.insertItemsAtIndexPaths(addedArray);
+                        }
+                        break;
+                    case ChangeType.Update:
+                        collectionView.reloadItemsAtIndexPaths([NSIndexPath.indexPathForRowInSection(args.index, 0)]);
+                        break;
+                    default:
+                        break;
+                }
+                this._initAutoPlay(this.autoPlay);
+                if (this.itemCount === 0) {
+                    this._isInit = false;
+                }
+            }, null);
+          } catch (err) {
+
+          }
+        }
     };
 
     _onItemsChanged(oldValue: any, newValue: any): void {
