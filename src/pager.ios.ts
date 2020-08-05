@@ -407,7 +407,7 @@ export class Pager extends PagerBase {
 
           }
         }
-    };
+    }
 
     _onItemsChanged(oldValue: any, newValue: any): void {
     }
@@ -1002,8 +1002,8 @@ class UICollectionDelegateImpl extends NSObject
              } */
 
 
-            //scrollView.setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
-            //(owner.nativeView as UICollectionView).setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
+            // scrollView.setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
+            // (owner.nativeView as UICollectionView).setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
         }
     }
 

@@ -344,7 +344,7 @@ export class Pager extends PagerBase {
             }
             this._initAutoPlay(this.autoPlay);
         }
-    };
+    }
 
     public disposeNativeView() {
         this.off(View.layoutChangedEvent, this.onLayoutChange, this);
@@ -973,21 +973,19 @@ function initPagerFragment() {
                         this.index = this.index - 1;
                     }
                 }
-            const bindingContext = this.owner._getDataItem(this.index);
-            let args = <ItemEventData>{
+                const bindingContext = this.owner._getDataItem(this.index);
+                let args = <ItemEventData>{
                     eventName: ITEMLOADING,
                     object: this.owner,
-                    android: this.type === 'static'? this.holder : this,
+                    android: this.type === 'static' ? this.holder : this,
                     ios: undefined,
                     index: this.index,
                     view: this.holder[PLACEHOLDER] ? null : this.holder,
                     bindingContext
-                    
                 };
 
                 this.owner.notify(args);
                 if (this.type === 'static') {
-    
                     if (this.holder[PLACEHOLDER]) {
                         if (args.view) {
                             this.holder.addChild(args.view);

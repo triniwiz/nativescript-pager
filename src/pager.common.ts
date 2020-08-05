@@ -130,7 +130,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
 
     private _itemIdGenerator: (item: any, index: number, items: any) => number = (_item: any,
-                                                                                  index: number) => index;
+                                                                                  index: number) => index
 
     get itemIdGenerator(): (item: any, index: number, items: any) => number {
         return this._itemIdGenerator;
@@ -215,10 +215,9 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
     _getDataItem(index: number): any {
         let thisItems = this.items;
-        const result = thisItems && (<ItemsSource>thisItems).getItem
+        return thisItems && (<ItemsSource>thisItems).getItem
         ? (<ItemsSource>thisItems).getItem(index)
         : thisItems[index];
-        return result
     }
 
     public _getDefaultItemContent(index: number): View {
