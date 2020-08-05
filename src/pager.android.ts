@@ -1,4 +1,5 @@
-import { ChangeType, Color, Device, KeyedTemplate, ObservableArray, profile, Property, Screen, StackLayout, View, Trace } from "@nativescript/core";
+import { ChangeType, Color, Device, KeyedTemplate, ObservableArray, profile, Property, Screen, StackLayout, View } from "@nativescript/core";
+import { android as androidApp } from "@nativescript/core/application";
 import * as types from "@nativescript/core/utils/types";
 import { layout } from "@nativescript/core/utils/utils";
 import {
@@ -233,13 +234,10 @@ export class Pager extends PagerBase {
         const size = this.convertToSize(value);
         const newPeaking = size !== this._lastPeaking;
         if (newPeaking) {
-            // @ts-ignore
             this.pager.setClipToPadding(false);
             const left = this.orientation === "horizontal" ? size : 0;
             const top = this.orientation === "horizontal" ? 0 : size;
-            // @ts-ignore
             this.pager.setPadding(left, top, left, top);
-            // @ts-ignore
             this.pager.setClipChildren(false);
             this._lastPeaking = size;
         }
@@ -507,7 +505,6 @@ export class Pager extends PagerBase {
     refresh() {
         if (this.pager && this._pagerAdapter) {
             this.pager.requestLayout();
-            // @ts-ignore
             this.pager.getAdapter().notifyDataSetChanged();
         }
     }
@@ -893,6 +890,7 @@ function initPagerFragment() {
         return;
     }
 
+    @NativeClass
     class PagerFragmentImpl extends androidx.fragment.app.Fragment {
         private owner: Pager;
         private index: number;
@@ -928,6 +926,9 @@ function initPagerFragment() {
             } else {
                 const template = this.owner._getItemTemplate(this.index);
                 view = template.createView();
+                if (!view && this.owner._itemViewLoader !== undefined) {
+                    view = this.owner._itemViewLoader(this.owner._getItemTemplateKey(this.index));
+                }
             }
 
             let sp = new StackLayout();
@@ -972,27 +973,21 @@ function initPagerFragment() {
                         this.index = this.index - 1;
                     }
                 }
-                let args = <ItemEventData>{
+            const bindingContext = this.owner._getDataItem(this.index);
+            let args = <ItemEventData>{
                     eventName: ITEMLOADING,
                     object: this.owner,
-                    android: this,
+                    android: this.type === 'static'? this.holder : this,
                     ios: undefined,
                     index: this.index,
-                    view: this.holder[PLACEHOLDER] ? null : this.holder
+                    view: this.holder[PLACEHOLDER] ? null : this.holder,
+                    bindingContext
+                    
                 };
 
                 this.owner.notify(args);
                 if (this.type === 'static') {
-                    let args = <ItemEventData>{
-                        eventName: ITEMLOADING,
-                        object: this.owner,
-                        android: this.holder,
-                        ios: undefined,
-                        index: this.index,
-                        view: this.holder[PLACEHOLDER] ? null : this.holder
-                    };
-
-                    this.owner.notify(args);
+    
                     if (this.holder[PLACEHOLDER]) {
                         if (args.view) {
                             this.holder.addChild(args.view);
@@ -1008,7 +1003,9 @@ function initPagerFragment() {
                         }
                         this.holder[PLACEHOLDER] = false;
                     }
-                    this.owner._prepareItem(this.holder, this.index);
+                    if (this.holder) {
+                        this.holder.bindingContext = bindingContext;
+                    }
                 }
             }
         }
@@ -1022,10 +1019,10 @@ function initPagerRecyclerAdapter() {
         return;
     }
 
+    @NativeClass
     class PagerRecyclerAdapterImpl extends androidx.viewpager2.adapter.FragmentStateAdapter {
         constructor(public owner: Pager, public type: 'dynamic' | 'static' = 'dynamic') {
-            // @ts-ignore
-            super(owner._getFragmentManager(), (application.android.foregroundActivity || application.android.startActivity).getLifecycle());
+            super(owner._getFragmentManager(), (androidApp.foregroundActivity || androidApp.startActivity).getLifecycle());
             return global.__native(this);
         }
 

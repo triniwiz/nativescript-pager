@@ -31,7 +31,6 @@ export class _PagerItem<P extends PagerItemComponentProps<E>,
             parent._removeView(view);
             // add to item;
             this.item.addChild(view);
-            // @ts-ignore
             parent._addChildFromBuilder('PagerItem', this.item);
         }
     }

@@ -1,7 +1,6 @@
-import { EventData, KeyedTemplate, View } from '@nativescript/core';
+import { ChangeType, Color, EventData, KeyedTemplate, ObservableArray, profile, ProxyViewContainer, StackLayout, View } from '@nativescript/core';
+import * as types from "@nativescript/core/utils/types";
 import { layout } from "@nativescript/core/utils/utils";
-import { StackLayout } from '@nativescript/core';
-import { ProxyViewContainer } from '@nativescript/core';
 import * as common from './pager.common';
 import {
     autoplayDelayProperty,
@@ -19,13 +18,11 @@ import {
     orientationProperty,
     PagerBase,
     selectedIndexProperty,
-    showIndicatorProperty,
-    Transformer
+    showIndicatorProperty
 } from './pager.common';
-import { profile } from '@nativescript/core/profiling';
-import { ChangeType, ObservableArray } from '@nativescript/core';
 
-export { Transformer, ItemsSource } from './pager.common';
+export * from './pager.common';
+export { ItemsSource, Transformer } from './pager.common';
 
 function notifyForItemAtIndex(
     owner,
@@ -49,7 +46,6 @@ function notifyForItemAtIndex(
 declare var CHIPageControlAji, CHIPageControlAleppo, CHIPageControlChimayo, CHIPageControlFresno,
     CHIPageControlJalapeno, CHIPageControlJaloro, CHIPageControlPuya, FancyPager, FancyPagerDelegate;
 
-export * from './pager.common';
 const main_queue = dispatch_get_current_queue();
 
 export class Pager extends PagerBase {
@@ -634,15 +630,19 @@ export class Pager extends PagerBase {
 
             if (!view) {
                 view = template.createView();
+                if (!view && this._itemViewLoader !== undefined) {
+                    view = this._itemViewLoader(this._getItemTemplateKey(indexPath.row));
+                }
             }
-
+            const bindingContext = this._getDataItem(indexPath.row);
             let args = <ItemEventData>{
                 eventName: ITEMLOADING,
                 object: this,
                 index: indexPath.row,
                 android: undefined,
                 ios: cell,
-                view: view
+                view: view,
+                bindingContext
             };
 
             this.notify(args);
@@ -666,8 +666,9 @@ export class Pager extends PagerBase {
                 (cell.view.ios as UIView).removeFromSuperview();
                 cell.owner = new WeakRef(view);
             }
-
-            this._prepareItem(view, indexPath.row);
+            if (view) {
+                view.bindingContext = bindingContext;
+            }
             this._map.set(cell, view);
 
             if (view && !view.parent) {

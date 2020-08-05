@@ -1,7 +1,7 @@
-import { View } from '@nativescript/core/ui/core/view';
-import { EventData, ItemsSource, PagerBase, PagerItem } from './pager.common';
+import { View } from '@nativescript/core';
+import { ItemsSource, PagerBase, PagerItem } from './pager.common';
 
-export { EventData, ItemsSource, PagerItem };
+export {  ItemsSource, PagerItem };
 export type Orientation = 'horizontal' | 'vertical';
 
 export declare class Pager extends PagerBase {

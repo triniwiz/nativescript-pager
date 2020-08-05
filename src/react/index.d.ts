@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ItemsSource, Pager as NativeScriptPager } from '../pager';
-import { ContentView } from '@nativescript/core/ui/page/page';
+import { ContentView } from '@nativescript/core';
 import { PropsWithoutForwardedRef, ViewProps } from 'react-nativescript/dist/shared/NativeScriptComponentTypings';
 import { ViewComponentProps, ViewComponentState } from 'react-nativescript/dist/components/View';
 import { RCTContainerView } from 'react-nativescript/dist/components/ContainerView';

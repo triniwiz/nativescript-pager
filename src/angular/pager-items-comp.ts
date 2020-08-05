@@ -21,13 +21,13 @@ import {
     ɵisListLikeIterable as isListLikeIterable
 } from '@angular/core';
 import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
-import { isIOS, KeyedTemplate, View } from '@nativescript/core/ui/core/view';
-import { EventData, LayoutBase, Template } from '@nativescript/core/ui/layouts/layout-base';
+import { isIOS, KeyedTemplate, View } from '@nativescript/core';
+import { EventData, LayoutBase, Template } from '@nativescript/core';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { profile } from '@nativescript/core/profiling';
 
 import { getSingleViewRecursive, InvisibleNode, registerElement } from '@nativescript/angular/element-registry';
-import { isEnabled as isLogEnabled } from '@nativescript/core/trace';
+import { Trace } from '@nativescript/core';
 import { PagerError, PagerItem, PagerLog } from '../pager.common';
 import { Pager } from '../pager';
 import { isBlank } from '@nativescript/angular/lang-facade';
@@ -139,7 +139,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
     }
 
     ngAfterContentInit() {
-        if (isLogEnabled()) {
+        if (Trace.isEnabled()) {
             PagerLog('TemplatedItemsView.ngAfterContentInit()');
         }
         this.setItemTemplates();
@@ -157,7 +157,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
         this.itemTemplate = this.itemTemplateQuery;
 
         if (this._templateMap) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog('Setting templates');
             }
 
@@ -170,7 +170,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
     }
 
     public registerTemplate(key: string, template: TemplateRef<ItemContext>) {
-        if (isLogEnabled()) {
+        if (Trace.isEnabled()) {
             PagerLog(`registerTemplate for key: ${key}`);
         }
 
@@ -200,7 +200,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
         let viewRef: EmbeddedViewRef<ItemContext>;
 
         if (args.view) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog(`onItemLoading: ${index} - Reusing existing view`);
             }
 
@@ -211,13 +211,13 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
                 viewRef = args.view.getChildAt(0)[NG_VIEW];
             }
 
-            if (!viewRef && isLogEnabled()) {
+            if (!viewRef && Trace.isEnabled()) {
                 PagerError(`ViewReference not found for item ${index}. View recycling is not working`);
             }
         }
 
         if (!viewRef) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog(`onItemLoading: ${index} - Creating view from template`);
             }
 
@@ -239,7 +239,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
         let viewRef: EmbeddedViewRef<ItemContext>;
 
         if (args.view) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog(`onItemDisposing: ${index} - Removing angular view`);
             }
 
@@ -250,13 +250,13 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
                 viewRef = args.view.getChildAt(0)[NG_VIEW];
             }
 
-            if (!viewRef && isLogEnabled()) {
+            if (!viewRef && Trace.isEnabled()) {
                 PagerError(`ViewReference not found for item ${index}. View disposing is not working`);
             }
         }
 
         if (viewRef) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog(`onItemDisposing: ${index} - Disposing view reference`);
             }
 
@@ -292,7 +292,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
 
     @profile
     private detectChangesOnChild(viewRef: EmbeddedViewRef<ItemContext>, index: number) {
-        if (isLogEnabled()) {
+        if (Trace.isEnabled()) {
             PagerLog(`Manually detect changes in child: ${index}`);
         }
 
@@ -302,13 +302,13 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
 
     ngDoCheck() {
         if (this._differ) {
-            if (isLogEnabled()) {
+            if (Trace.isEnabled()) {
                 PagerLog('ngDoCheck() - execute differ');
             }
 
             const changes = this._differ.diff(this._items);
             if (changes) {
-                if (isLogEnabled()) {
+                if (Trace.isEnabled()) {
                     PagerLog('ngDoCheck() - refresh');
                 }
 
