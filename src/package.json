@@ -81,7 +81,9 @@
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
     "@nativescript/angular": "^8.21.0",
-    "@nativescript/core": "^6.2.3",
+    "@nativescript/core": "rc",
+    "@nativescript/types": "rc",
+    "@nativescript/webpack": "rc",
     "@types/react": "^16.8.24",
     "@types/react-reconciler": "^0.18.0",
     "nativescript-vue": "~2.3.0",
@@ -90,12 +92,14 @@
     "react-nativescript": "^0.18.0",
     "rimraf": "^2.6.3",
     "rxjs": "^6.4.0",
-    "tns-platform-declarations": "^6.0.1",
+    "ts-patch": "^1.3.0",
     "tslint": "^5.18.0",
-    "typescript": "~3.5.3",
+    "typescript": "~3.9.7",
     "vue": "^2.6.10",
     "zone.js": "^0.9.1"
   },
   "bootstrapper": "nativescript-plugin-seed",
-  "dependencies": {}
+  "dependencies": {
+    "ts-node": "^8.10.2"
+  }
 }

@@ -1,6 +1,7 @@
-import { EventData, KeyedTemplate, layout, View } from '@nativescript/core/ui/core/view';
-import { StackLayout } from '@nativescript/core/ui/layouts/stack-layout';
-import { ProxyViewContainer } from '@nativescript/core/ui/proxy-view-container';
+import { EventData, KeyedTemplate, View } from '@nativescript/core';
+import { layout } from "@nativescript/core/utils/utils";
+import { StackLayout } from '@nativescript/core';
+import { ProxyViewContainer } from '@nativescript/core';
 import * as common from './pager.common';
 import {
     autoplayDelayProperty,
@@ -22,9 +23,9 @@ import {
     Transformer
 } from './pager.common';
 import { profile } from '@nativescript/core/profiling';
-import { ChangeType, ObservableArray } from '@nativescript/core/data/observable-array/observable-array';
+import { ChangeType, ObservableArray } from '@nativescript/core';
 
-export { Transformer, EventData, ItemsSource } from './pager.common';
+export { Transformer, ItemsSource } from './pager.common';
 
 function notifyForItemAtIndex(
     owner,
@@ -243,7 +244,7 @@ export class Pager extends PagerBase {
     public itemTemplateUpdated(oldData: any, newData: any): void {
     }
 
-    private _setNativeClipToBounds(): void {
+    public _setNativeClipToBounds(): void {
         this.pager.clipsToBounds = true;
     }
 
@@ -742,7 +743,8 @@ export class Pager extends PagerBase {
     }
 }
 
-export class PagerCell extends UICollectionViewCell {
+@NativeClass
+class PagerCell extends UICollectionViewCell {
     public owner: WeakRef<View>;
     public index: NSIndexPath;
 
@@ -768,6 +770,7 @@ export class PagerCell extends UICollectionViewCell {
     }
 }
 
+@NativeClass
 @ObjCClass(UICollectionViewDelegate, UICollectionViewDelegateFlowLayout)
 class UICollectionDelegateImpl extends NSObject
     implements UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -1109,6 +1112,7 @@ class UICollectionDelegateImpl extends NSObject
     }
 }
 
+@NativeClass
 @ObjCClass(UICollectionViewDataSource)
 class UICollectionViewDataSourceImpl extends NSObject
     implements UICollectionViewDataSource {
@@ -1224,6 +1228,7 @@ class UICollectionViewDataSourceImpl extends NSObject
     }
 }
 
+@NativeClass
 class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
     _owner: WeakRef<Pager>;
     _curl: CATransition;

@@ -11,14 +11,14 @@ import {
     Property,
     Template,
     View
-} from '@nativescript/core/ui/core/view';
+} from '@nativescript/core/ui';
 import { isIOS } from '@nativescript/core/platform';
 import { Builder } from '@nativescript/core/ui/builder';
 import { Label } from '@nativescript/core/ui/label';
-import { messageType, write } from '@nativescript/core/trace';
+import { Trace } from '@nativescript/core';
 import { Observable } from '@nativescript/core/data/observable';
 import { addWeakEventListener, removeWeakEventListener } from '@nativescript/core/ui/core/weak-event-listener';
-import { ItemsSource } from '@nativescript/core/ui/list-view/list-view';
+import { ItemsSource } from '@nativescript/core/ui/list-view';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { GridLayout } from '@nativescript/core/ui/layouts/grid-layout';
 import { layout } from '@nativescript/core/utils/utils';
@@ -44,15 +44,14 @@ export namespace knownCollections {
 export const pagerTraceCategory = 'ns-pager';
 
 export function PagerLog(message: string): void {
-    write(message, pagerTraceCategory);
+    Trace.write(message, pagerTraceCategory);
 }
 
 export function PagerError(message: string): void {
-    write(message, pagerTraceCategory, messageType.error);
+    Trace.write(message, pagerTraceCategory, Trace.messageType.error);
 }
 
-export * from '@nativescript/core/ui/core/view';
-
+export { ItemsSource }
 export interface ItemEventData {
     eventName: string;
     object: any;
@@ -60,12 +59,6 @@ export interface ItemEventData {
     view: View;
     android: any;
     ios: any;
-}
-
-export interface ItemsSource {
-    length: number;
-
-    getItem(index: number): any;
 }
 
 const autoEffectiveItemHeight = 100;
