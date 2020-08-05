@@ -216,9 +216,11 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
     _getDataItem(index: number): any {
         let thisItems = this.items;
-        return thisItems && (<ItemsSource>thisItems).getItem
-        ? (<ItemsSource>thisItems).getItem(index)
-        : thisItems[index];
+        if (thisItems) {
+            return thisItems && (<ItemsSource>thisItems).getItem
+            ? (<ItemsSource>thisItems).getItem(index)
+            : thisItems[index];
+        }
     }
 
     public _getDefaultItemContent(index: number): View {
