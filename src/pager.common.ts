@@ -1,28 +1,12 @@
 import {
-    AddChildFromBuilder,
-    CoercibleProperty,
-    ContainerView,
-    CSSType,
-    KeyedTemplate,
-    Length,
+    AddChildFromBuilder, addWeakEventListener, Builder, CoercibleProperty, Color, ContainerView,
+    CSSType, GridLayout, KeyedTemplate, Label, Length,
     makeParser,
-    makeValidator,
-    PercentLength,
-    Property,
-    Template,
-    View
-} from '@nativescript/core/ui';
-import {isIOS} from '@nativescript/core/platform';
-import {Builder} from '@nativescript/core/ui/builder';
-import {Label} from '@nativescript/core/ui/label';
-import { Trace } from '@nativescript/core';
-import {Observable} from '@nativescript/core/data/observable';
-import {addWeakEventListener, removeWeakEventListener} from '@nativescript/core/ui/core/weak-event-listener';
+    makeValidator, Observable, ObservableArray, PercentLength,
+    Property, removeWeakEventListener, Template, Trace, View
+} from '@nativescript/core';
 import { ItemsSource } from '@nativescript/core/ui/list-view';
-import {ObservableArray} from '@nativescript/core/data/observable-array';
-import {GridLayout} from '@nativescript/core/ui/layouts/grid-layout';
-import {layout} from '@nativescript/core/utils/utils';
-import {Color} from '@nativescript/core/color';
+import { layout } from '@nativescript/core/utils/utils';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -51,7 +35,7 @@ export function PagerError(message: string): void {
     Trace.write(message, pagerTraceCategory, Trace.messageType.error);
 }
 
-export { ItemsSource }
+export { ItemsSource };
 export interface ItemEventData {
     eventName: string;
     object: any;
@@ -184,12 +168,29 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
         }
     }
 
-    public _getItemTemplate(index: number): KeyedTemplate {
+    onItemViewLoaderChanged() {}
+    _itemViewLoader: Function;
+
+    get itemViewLoader() {
+        return this._itemViewLoader;
+    }
+    set itemViewLoader(value) {
+        if (this._itemViewLoader !== value) {
+            this._itemViewLoader = value;
+            this.onItemViewLoaderChanged();
+        }
+    }
+
+    public _getItemTemplateKey(index: number): string {
         let templateKey = 'default';
         if (this.itemTemplateSelector) {
             let dataItem = this._getDataItem(index);
             templateKey = this._itemTemplateSelector(dataItem, index, this.items);
         }
+        return templateKey;
+    }
+    public _getItemTemplate(index: number): KeyedTemplate {
+        let templateKey = this._getItemTemplateKey(index);
 
         const length = this._itemTemplatesInternal.length;
         for (
@@ -214,9 +215,10 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
     _getDataItem(index: number): any {
         let thisItems = this.items;
-        return thisItems && (<ItemsSource>thisItems).getItem
-            ? (<ItemsSource>thisItems).getItem(index)
-            : thisItems[index];
+        const result = thisItems && (<ItemsSource>thisItems).getItem
+        ? (<ItemsSource>thisItems).getItem(index)
+        : thisItems[index];
+        return result
     }
 
     public _getDefaultItemContent(index: number): View {
@@ -240,20 +242,16 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
         this._innerHeight =
             bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
-        // @ts-ignore
-        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
-        // @ts-ignore
-        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
+        this._effectiveItemWidth = global.isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
+        this._effectiveItemHeight = global.isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
     }
 
     public convertToSize(length): number {
         let size = 0;
         if (this.orientation === 'horizontal') {
-            // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
+            size = global.isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
         } else {
-            // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
+            size = global.isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
         }
 
         let converted = 0;
@@ -359,7 +357,7 @@ indicatorProperty.register(PagerBase);
 export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
     name: 'selectedIndex',
     defaultValue: -1,
-    affectsLayout: isIOS,
+    affectsLayout: global.isIOS,
     coerceValue: (target, value) => {
         let items = target._childrenCount;
         if (items) {
