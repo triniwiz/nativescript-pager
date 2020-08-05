@@ -29,7 +29,7 @@
     "karma-webpack": "3.0.5",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.1",
-    "@nativescript/webpack": "^1.0.1",
+    "@nativescript/webpack": "rc",
     "@nativescript/types": "file:../src/node_modules/@nativescript/types",
     "tslint": "~5.18.0",
     "typescript": "~3.9.7"
