@@ -1,9 +1,20 @@
-import { ItemEventData, LayoutBase, StackLayout, View } from '@nativescript/core';
-import { NativeViewElementNode, TemplateElement, ViewNode, createElement, registerElement } from 'svelte-native/dom';
-import { flush } from 'svelte/internal';
-import { Pager } from '../pager';
+import {
+    ItemEventData,
+    LayoutBase,
+    StackLayout,
+    View,
+} from "@nativescript/core";
+import {
+    NativeViewElementNode,
+    TemplateElement,
+    ViewNode,
+    createElement,
+    registerElement,
+} from "svelte-native/dom";
+import { flush } from "svelte/internal";
+import { Pager } from "../pager";
 
-declare module '@nativescript/core/ui/core/view-base' {
+declare module "@nativescript/core/ui/core/view-base" {
     interface ViewBase {
         __SvelteComponent__?: any;
         __SvelteComponentBuilder__?: any;
@@ -24,7 +35,9 @@ class SvelteKeyedTemplate {
     createView() {
         // create a proxy element to eventually contain our item (once we have one to render)
         // TODO is StackLayout the best choice here?
-        const wrapper = createElement('StackLayout') as NativeViewElementNode<View>;
+        const wrapper = createElement("StackLayout") as NativeViewElementNode<
+            View
+        >;
 
         const nativeEl = wrapper.nativeView;
 
@@ -43,15 +56,18 @@ class SvelteKeyedTemplate {
 
 export default class PagerViewElement extends NativeViewElementNode<Pager> {
     constructor() {
-        super('pager', Pager);
+        super("pager", Pager);
         const nativeView = this.nativeView;
-        nativeView.itemViewLoader = (viewType: any): View => this.loadView(viewType);
+        nativeView.itemViewLoader = (viewType: any): View =>
+            this.loadView(viewType);
         this.nativeView.on(Pager.itemLoadingEvent, this.updateListItem, this);
     }
 
     private loadView(viewType: string): View {
         if (Array.isArray(this.nativeElement._itemTemplatesInternal)) {
-            const keyedTemplate = this.nativeElement._itemTemplatesInternal.find((t) => t.key === 'default');
+            const keyedTemplate = this.nativeElement._itemTemplatesInternal.find(
+                (t) => t.key === "default"
+            );
             if (keyedTemplate) {
                 return keyedTemplate.createView();
             }
@@ -60,7 +76,9 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
         const componentClass = this.getComponentForView(viewType);
         if (!componentClass) return null;
 
-        const wrapper = createElement('StackLayout') as NativeViewElementNode<View>;
+        const wrapper = createElement("StackLayout") as NativeViewElementNode<
+            View
+        >;
         const nativeEl = wrapper.nativeView;
 
         const builder = (parentView, props: any) => {
@@ -77,15 +95,20 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
     // For some reason itemTemplateSelector isn't defined as a "property" on radListView, so when we set the property, it is lowercase (due to svelte's forced downcasing)
     // we intercept and fix the case here.
     setAttribute(fullkey: string, value: any): void {
-        if (fullkey.toLowerCase() === 'itemtemplateselector') {
-            fullkey = 'itemTemplateSelector';
+        if (fullkey.toLowerCase() === "itemtemplateselector") {
+            fullkey = "itemTemplateSelector";
         }
         super.setAttribute(fullkey, value);
     }
 
     private getComponentForView(viewType: string) {
         const normalizedViewType = viewType.toLowerCase();
-        const templateEl = this.childNodes.find((n) => n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType) as any;
+        const templateEl = this.childNodes.find(
+            (n) =>
+                n.tagName === "template" &&
+                String(n.getAttribute("type")).toLowerCase() ===
+                    normalizedViewType
+        ) as any;
         if (!templateEl) return null;
         return templateEl.component;
     }
@@ -93,13 +116,20 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
     onInsertedChild(childNode: ViewNode, index: number) {
         super.onInsertedChild(childNode, index);
         if (childNode instanceof TemplateElement) {
-            const key = childNode.getAttribute('key') || 'default';
-            const templateIndex = this.nativeView._itemTemplatesInternal.findIndex((t) => t.key === key);
+            const key = childNode.getAttribute("key") || "default";
+            const templateIndex = this.nativeView._itemTemplatesInternal.findIndex(
+                (t) => t.key === key
+            );
             if (templateIndex >= 0) {
-                this.nativeView._itemTemplatesInternal.splice(templateIndex,1,new SvelteKeyedTemplate(key, childNode) as any);
+                this.nativeView._itemTemplatesInternal.splice(
+                    templateIndex,
+                    1,
+                    new SvelteKeyedTemplate(key, childNode) as any
+                );
             } else {
-                this.nativeView._itemTemplatesInternal = this.nativeView._itemTemplatesInternal.concat(new SvelteKeyedTemplate(key, childNode) as any);
-
+                this.nativeView._itemTemplatesInternal = this.nativeView._itemTemplatesInternal.concat(
+                    new SvelteKeyedTemplate(key, childNode) as any
+                );
             }
         }
     }
@@ -107,9 +137,14 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
     onRemovedChild(childNode: ViewNode) {
         super.onRemovedChild(childNode);
         if (childNode instanceof TemplateElement) {
-            const key = childNode.getAttribute('key') || 'default';
-            if (this.nativeView._itemTemplatesInternal && typeof this.nativeView._itemTemplatesInternal !== 'string') {
-                this.nativeView._itemTemplatesInternal = this.nativeView._itemTemplatesInternal.filter((t) => t.key !== key);
+            const key = childNode.getAttribute("key") || "default";
+            if (
+                this.nativeView._itemTemplatesInternal &&
+                typeof this.nativeView._itemTemplatesInternal !== "string"
+            ) {
+                this.nativeView._itemTemplatesInternal = this.nativeView._itemTemplatesInternal.filter(
+                    (t) => t.key !== key
+                );
             }
         }
     }
@@ -119,24 +154,24 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
         const componentInstance = _view.__SvelteComponent__;
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
-                const dummy = createElement('fragment');
+                const dummy = createElement("fragment");
                 _view.__SvelteComponentBuilder__(dummy, props);
                 _view.__SvelteComponentBuilder__ = null;
                 _view.__CollectionViewCurrentIndex__ = args.index;
-                const nativeEl = (dummy.firstElement() as NativeViewElementNode<View>).nativeView;
+                const nativeEl = (dummy.firstElement() as NativeViewElementNode<
+                    View
+                >).nativeView;
                 (_view as LayoutBase).addChild(nativeEl);
             }
         } else {
             // ensure we dont do unnecessary tasks if index did not change
             _view.__CollectionViewCurrentIndex__ = args.index;
-            _view._recursiveBatchUpdates(() => {
-                componentInstance.$set(props);
-                flush(); // we need to flush to make sure update is applied right away
-            });
+            componentInstance.$set(props);
+            flush(); // we need to flush to make sure update is applied right away
         }
     }
 
     static register() {
-        registerElement('pager', () => new PagerViewElement());
+        registerElement("pager", () => new PagerViewElement());
     }
 }
