@@ -93,6 +93,8 @@
     "react-nativescript": "^0.18.0",
     "rimraf": "^2.6.3",
     "rxjs": "^6.4.0",
+    "svelte":"3.24.0",
+    "svelte-native":"0.8.4",
     "ts-patch": "^1.3.0",
     "tslint": "^5.18.0",
     "typescript": "~3.9.7",
