@@ -1,6 +1,6 @@
 import { Page } from '@nativescript/core/ui/page';
 import { RegularPageViewModel } from './regular-page-view-model';
-import { Pager } from 'nativescript-pager';
+import { Pager } from '@nativescript-community/ui-pager';
 import { Image } from '@nativescript/core/ui/image';
 import { Frame } from '@nativescript/core/ui/frame';
 

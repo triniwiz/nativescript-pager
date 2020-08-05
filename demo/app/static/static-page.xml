@@ -1,6 +1,6 @@
 <Page
         xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-        xmlns:c="nativescript-pager">
+        xmlns:c="@nativescript-community/ui-pager">
     <GridLayout rows="auto,*,auto" columns="*" id="sl">
         <Label text="Pager With List"/>
         <c:Pager

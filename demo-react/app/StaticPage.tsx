@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { $Pager, $PagerItem } from 'nativescript-pager/react';
+import { $Pager, $PagerItem } from '@nativescript-community/ui-pager/react';
 import { $Button, $GridLayout, $Label } from 'react-nativescript';
 import { ItemSpec } from '@nativescript/core/ui/layouts/grid-layout/grid-layout';
 import { Color } from '@nativescript/core/color';

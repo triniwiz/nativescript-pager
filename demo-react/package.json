@@ -15,7 +15,7 @@
   "dependencies": {
     "@nativescript/core": "rc",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
-    "nativescript-pager": "file:../src",
+    "@nativescript-community/ui-pager": "file:../src",
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",
     "react-nativescript": "^1.0.6"

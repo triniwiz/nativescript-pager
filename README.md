@@ -6,6 +6,10 @@
 
 ## Install
 
+#### NativeScript 7x
+
+- `tns plugin add @nativescript-community/ui-pager`
+
 #### NativeScript 6x
 
 - `tns plugin add nativescript-pager`

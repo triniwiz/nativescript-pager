@@ -1,4 +1,4 @@
-var Pager = require("nativescript-pager").Pager;
+var Pager = require("@nativescript-community/ui-pager").Pager;
 var pager = new Pager();
 
 describe("greet function", function() {

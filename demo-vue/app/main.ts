@@ -1,6 +1,6 @@
 import Vue from "nativescript-vue";
 import App from "./components/App.vue";
-import Pager from "nativescript-pager/vue";
+import Pager from "@nativescript-community/ui-pager/vue";
 
 Vue.use(Pager);
 

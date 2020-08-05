@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@nativescript/core": "rc",
-    "nativescript-pager": "file:../src",
+    "@nativescript-community/ui-pager": "file:../src",
     "nativescript-theme-core": "^2.0.2",
     "nativescript-vue": "2.7.1"
   },

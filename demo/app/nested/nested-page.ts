@@ -1,6 +1,6 @@
 import { Page } from '@nativescript/core/ui/page';
 import { NestedPageViewModel } from './nested-page-view-model';
-import { Pager } from 'nativescript-pager';
+import { Pager } from '@nativescript-community/ui-pager';
 import { Frame } from '@nativescript/core/ui/frame';
 
 let page: Page;

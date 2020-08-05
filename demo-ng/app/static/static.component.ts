@@ -1,5 +1,5 @@
 import { Component, ViewChildren, QueryList } from '@angular/core';
-import { PagerItemDirective } from 'nativescript-pager/angular/pager-items-comp';
+import { PagerItemDirective } from '@nativescript-community/ui-pager/angular/pager-items-comp';
 
 @Component({
     moduleId: module.id,

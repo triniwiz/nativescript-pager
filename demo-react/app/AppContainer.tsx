@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { $Pager } from 'nativescript-pager/react';
+import { $Pager } from '@nativescript-community/ui-pager/react';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { $Image, $Label, $StackLayout, $GridLayout, $Button, $ScrollView, render, $Frame } from 'react-nativescript';
 import { $ImageCacheIt } from './nativescript-image-cache-it';
