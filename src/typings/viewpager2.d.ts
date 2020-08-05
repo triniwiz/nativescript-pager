@@ -212,6 +212,8 @@ declare namespace androidx {
 
                 public setUserInputEnabled(param0: boolean): void;
 
+                public canScrollHorizontally(param0: number): boolean;
+
                 public fakeDragBy(param0: number): boolean;
 
                 public isFakeDragging(): boolean;
@@ -247,6 +249,8 @@ declare namespace androidx {
                 public performAccessibilityAction(param0: number, param1: globalAndroid.os.Bundle): boolean;
 
                 public getScrollState(): number;
+
+                public canScrollVertically(param0: number): boolean;
 
                 public constructor(param0: globalAndroid.content.Context, param1: globalAndroid.util.AttributeSet);
 
@@ -331,6 +335,8 @@ declare namespace androidx {
                     public static class: java.lang.Class<androidx.viewpager2.widget.ViewPager2.LinearLayoutManagerImpl>;
 
                     public calculateExtraLayoutSpace(param0: androidx.recyclerview.widget.RecyclerView.State, param1: native.Array<number>): void;
+
+                    public requestChildRectangleOnScreen(param0: androidx.recyclerview.widget.RecyclerView, param1: globalAndroid.view.View, param2: globalAndroid.graphics.Rect, param3: boolean, param4: boolean): boolean;
 
                     public onInitializeAccessibilityNodeInfo(param0: androidx.recyclerview.widget.RecyclerView.Recycler, param1: androidx.recyclerview.widget.RecyclerView.State, param2: androidx.core.view.accessibility.AccessibilityNodeInfoCompat): void;
 
@@ -460,4 +466,5 @@ declare namespace androidx {
     }
 }
 
+// Generics information:
 

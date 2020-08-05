@@ -6,8 +6,8 @@ import {
     autoplayDelayProperty,
     autoPlayProperty,
     disableSwipeProperty,
-    Indicator,
-    indicatorProperty,
+    Indicator, indicatorColorProperty,
+    indicatorProperty, indicatorSelectedColorProperty,
     ITEMDISPOSING,
     ItemEventData,
     ITEMLOADING,
@@ -23,6 +23,8 @@ import {
 } from './pager.common';
 import { profile } from '@nativescript/core/profiling';
 import { ChangeType, ObservableArray } from '@nativescript/core/data/observable-array/observable-array';
+import {Color} from "@nativescript/core/color";
+import * as types from "@nativescript/core/utils/types";
 
 export { Transformer, EventData, ItemsSource } from './pager.common';
 
@@ -516,6 +518,26 @@ export class Pager extends PagerBase {
 
     [indicatorProperty.setNative](value: Indicator) {
         this._setIndicator(value);
+    }
+
+    [indicatorColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.tintColor = value.ios;
+            } else if (types.isString(value)) {
+                this.indicatorView.tintColor = new Color(value).ios;
+            }
+        }
+    }
+
+    [indicatorSelectedColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.currentPageTintColor = value.ios;
+            } else if (types.isString(value)) {
+                this.indicatorView.currentPageTintColor = new Color(value).ios;
+            }
+        }
     }
 
     [disableSwipeProperty.setNative](value: boolean) {
