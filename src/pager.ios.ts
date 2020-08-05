@@ -7,8 +7,8 @@ import {
     autoplayDelayProperty,
     autoPlayProperty,
     disableSwipeProperty,
-    Indicator,
-    indicatorProperty,
+    Indicator, indicatorColorProperty,
+    indicatorProperty, indicatorSelectedColorProperty,
     ITEMDISPOSING,
     ItemEventData,
     ITEMLOADING,
@@ -517,6 +517,26 @@ export class Pager extends PagerBase {
 
     [indicatorProperty.setNative](value: Indicator) {
         this._setIndicator(value);
+    }
+
+    [indicatorColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.tintColor = value.ios;
+            } else if (types.isString(value)) {
+                this.indicatorView.tintColor = new Color(value).ios;
+            }
+        }
+    }
+
+    [indicatorSelectedColorProperty.setNative](value: Color | string) {
+        if (this.indicatorView) {
+            if (value instanceof Color) {
+                this.indicatorView.currentPageTintColor = value.ios;
+            } else if (types.isString(value)) {
+                this.indicatorView.currentPageTintColor = new Color(value).ios;
+            }
+        }
     }
 
     [disableSwipeProperty.setNative](value: boolean) {
