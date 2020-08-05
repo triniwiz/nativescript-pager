@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { $Pager } from 'nativescript-pager/react';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { $Image, $Label, $StackLayout, $GridLayout, $Button, $ScrollView, render, $Frame } from 'react-nativescript';
 import { $ImageCacheIt } from './nativescript-image-cache-it';
-import { ItemSpec } from 'tns-core-modules/ui/layouts/grid-layout/grid-layout';
+import { ItemSpec } from '@nativescript/core/ui/layouts/grid-layout/grid-layout';
 import { Page } from 'react-nativescript/dist/client/ElementRegistry';
 
 const apiPageRef = React.createRef<Page>();

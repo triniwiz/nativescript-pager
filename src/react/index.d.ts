@@ -52,9 +52,9 @@ export declare class _Pager<P extends PagerComponentProps<E>, S extends PagerCom
         className: string;
     } & Pick<Readonly<P> & Readonly<{
         children?: React.ReactNode;
-    }>, Exclude<keyof P, "items" | "onLoaded" | "forwardedRef" | "onPropertyChange" | "children" | "onUnloaded" | "onAndroidBackPressed" | "onShowingModally" | "onShownModally" | "onTap" | "onDoubleTap" | "onPinch" | "onPan" | "onSwipe" | "onRotation" | "onLongPress" | "onTouch" | "_debug">> & {
+    }>, Exclude<keyof P, "items" | "onLoaded" | "onUnloaded" | "onAndroidBackPressed" | "onShowingModally" | "onShownModally" | "onTap" | "onDoubleTap" | "onPinch" | "onPan" | "onSwipe" | "onRotation" | "onLongPress" | "onTouch" | "forwardedRef" | "onPropertyChange" | "children" | "_debug">> & {
         items: P["items"];
-        ref: P["forwardedRef"];
+        ref: React.RefObject<E>;
     }, string | ((props: any) => React.ReactElement<any, string | any | (new (props: any) => React.Component<any, any, any>)>) | (new (props: any) => React.Component<any, any, any>)>;
 }
 declare type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PagerComponentProps<NativeScriptPager>>;

@@ -20,7 +20,7 @@
 <script>
 	import Detail from './Detail'
 	import Static from './Static';
-	import { ObservableArray } from 'tns-core-modules/data/observable-array';
+	import { ObservableArray } from '@nativescript/core/data/observable-array';
 	export default {
 		data() {
 			return {

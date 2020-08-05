@@ -13,12 +13,12 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "repository": "<fill-your-repository-here>",
   "dependencies": {
-    "@nativescript/core": "^6.4.1",
+    "@nativescript/core": "rc",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
     "nativescript-pager": "file:../src",
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",
-    "react-nativescript": "^0.10.0"
+    "react-nativescript": "^1.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -28,8 +28,8 @@
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.6",
     "fork-ts-checker-webpack-plugin": "^1.4.3",
-    "nativescript-dev-webpack": "~1.5.0",
-    "typescript": "~3.4.0"
+    "@nativescript/webpack": "rc",
+    "typescript": "~3.9.7"
   },
   "gitHead": "f28dbc60d74dd2cef4b645afd8fdd63bbb12c73e",
   "readme": "NativeScript Application"

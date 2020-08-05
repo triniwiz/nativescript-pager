@@ -1,10 +1,11 @@
 import {
     AddChildFromBuilder, addWeakEventListener, Builder, CoercibleProperty, Color, ContainerView,
-    CSSType, GridLayout, KeyedTemplate, Label, Length,
+    CSSType, GridLayout, Label, Length,
     makeParser,
     makeValidator, Observable, ObservableArray, PercentLength,
     Property, removeWeakEventListener, Template, Trace, View
 } from '@nativescript/core';
+import {  KeyedTemplate } from "@nativescript/core/ui/core/view";
 import { ItemsSource } from '@nativescript/core/ui/list-view';
 import { layout } from '@nativescript/core/utils/utils';
 

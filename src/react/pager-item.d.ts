@@ -12,7 +12,7 @@ export declare class _PagerItem<P extends PagerItemComponentProps<E>, S extends 
     render(): React.ReactElement<Pick<Readonly<P> & Readonly<{
         children?: React.ReactNode;
     }>, Exclude<keyof P, "forwardedRef" | "onPropertyChange" | "children">> & {
-        ref: P["forwardedRef"];
+        ref: React.RefObject<E>;
     }, string | ((props: any) => React.ReactElement<any, string | any | (new (props: any) => React.Component<any, any, any>)>) | (new (props: any) => React.Component<any, any, any>)>;
 }
 declare type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PagerItemComponentProps<NativeScriptPagerItem>>;

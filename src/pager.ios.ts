@@ -1,4 +1,5 @@
-import { ChangeType, Color, EventData, KeyedTemplate, ObservableArray, profile, ProxyViewContainer, StackLayout, View } from '@nativescript/core';
+import { ChangeType, Color, EventData, ObservableArray, profile, ProxyViewContainer, StackLayout, View } from '@nativescript/core';
+import {  KeyedTemplate } from "@nativescript/core/ui/core/view";
 import * as types from "@nativescript/core/utils/types";
 import { layout } from "@nativescript/core/utils/utils";
 import * as common from './pager.common';

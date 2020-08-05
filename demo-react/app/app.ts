@@ -1,5 +1,5 @@
 /* Controls react-nativescript log verbosity. true: all logs; false: only error logs. */
-import { run } from 'tns-core-modules/application';
+import { run } from '@nativescript/core/application';
 import * as React from 'react';
 import * as ReactNativeScript from 'react-nativescript/dist/index';
 import { AppContainer } from './AppContainer';

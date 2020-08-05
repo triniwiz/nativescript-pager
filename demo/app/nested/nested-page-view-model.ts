@@ -1,5 +1,5 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { Observable } from '@nativescript/core/data/observable';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
 
 export class NestedPageViewModel extends Observable {
     items: ObservableArray<any>;

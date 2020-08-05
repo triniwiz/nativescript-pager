@@ -1,4 +1,5 @@
-import { ChangeType, Color, Device, KeyedTemplate, ObservableArray, profile, Property, Screen, StackLayout, View } from "@nativescript/core";
+import { ChangeType, Color, Device, ObservableArray, profile, Property, Screen, StackLayout, View } from "@nativescript/core";
+import {  KeyedTemplate } from "@nativescript/core/ui/core/view";
 import { android as androidApp } from "@nativescript/core/application";
 import * as types from "@nativescript/core/utils/types";
 import { layout } from "@nativescript/core/utils/utils";
@@ -50,8 +51,6 @@ function notifyForItemAtIndex(
 
 declare const com, java;
 const PLACEHOLDER = "PLACEHOLDER";
-
-// Trace.enable();
 
 export class Pager extends PagerBase {
     nativeViewProtected: any; /* androidx.viewpager2.widget.ViewPager2 */

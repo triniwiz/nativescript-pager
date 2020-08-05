@@ -1,4 +1,4 @@
-﻿import * as application from 'tns-core-modules/application';
+﻿import * as application from '@nativescript/core/application';
 
 require('nativescript-pager');
 require('./bundle-config');
