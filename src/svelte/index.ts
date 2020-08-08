@@ -150,7 +150,7 @@ export default class PagerViewElement extends NativeViewElementNode<Pager> {
     }
     private updateListItem(args: ItemEventData & { bindingContext }) {
         const _view = (args.view as StackLayout).getChildAt(0);
-        const props = { item: args.bindingContext };
+        const props = { item: args.bindingContext, index: args.index };
         const componentInstance = _view.__SvelteComponent__;
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
