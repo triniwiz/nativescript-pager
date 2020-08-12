@@ -860,6 +860,7 @@ function initPagerRecyclerAdapter() {
         return;
     }
 
+    @NativeClass
     class PagerRecyclerAdapterImpl extends androidx.recyclerview.widget.RecyclerView.Adapter<any> {
         owner: WeakRef<Pager>;
 
@@ -878,6 +879,10 @@ function initPagerRecyclerAdapter() {
 
             let view: View =
                 template.createView();
+            
+            if (!view && owner._itemViewLoader !== undefined) {
+                view = owner._itemViewLoader(template.key);
+            }
             let sp = new StackLayout();
             if (view) {
                 sp.addChild(view);
@@ -929,12 +934,14 @@ function initPagerRecyclerAdapter() {
                         index = index - 1;
                     }
                 }
+                const bindingContext = owner._getDataItem(index);
                 let args = <ItemEventData>{
                     eventName: ITEMLOADING,
                     object: owner,
                     android: holder,
                     ios: undefined,
                     index,
+                    bindingContext,
                     view: holder.view[PLACEHOLDER] ? null : holder.view
                 };
 
@@ -1018,6 +1025,7 @@ function initStaticPagerStateAdapter() {
         return;
     }
 
+    @NativeClass
     class StaticPagerStateAdapterImpl extends androidx.recyclerview.widget.RecyclerView.Adapter<any> {
         owner: WeakRef<Pager>;
 
@@ -1131,6 +1139,7 @@ function initPagerViewHolder() {
         return;
     }
 
+    @NativeClass
     class PagerViewHolderImpl
         extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
         constructor(
