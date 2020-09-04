@@ -14,7 +14,7 @@
     "setup": "ts-patch install",
     "tsc": "tsc -skipLibCheck",
     "build": "npm i && npm run tsc && npm run build.angular",
-    "build.angular": "cd angular && ng-packagr -p ./angular/package.json -c ./angular/tsconfig.json",
+    "build.angular": "cd angular && ng-packagr -p ./angular/ng-package.json -c ./angular/tsconfig.json",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
     "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
     "test.ng.android": "npm i && npm run tsc && npm run tslint && cd ../demo-ng && tns build android && tns test android --justlaunch",
