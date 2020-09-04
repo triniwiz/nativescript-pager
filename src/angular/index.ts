@@ -8,13 +8,15 @@ import {
     NO_ERRORS_SCHEMA
 } from '@angular/core';
 
-import { Pager } from '../pager';
+import { Pager } from '@nativescript-community/ui-pager';
 import {
     PagerItemDirective,
     TEMPLATED_ITEMS_COMPONENT,
     TemplatedItemsComponent,
     TemplateKeyDirective
 } from './pager-items-comp';
+
+export {PagerItemDirective, TemplatedItemsComponent, TemplateKeyDirective} from './pager-items-comp';
 
 @Component({
     selector: 'Pager',

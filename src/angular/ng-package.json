@@ -1,0 +1,15 @@
+{
+  "dest": "./",
+  "deleteDestPath": false,
+  "lib": {
+    "entryFile": "index.ts",
+    "umdModuleIds": {
+      "@nativescript/core": "ns-core",
+      "@nativescript/angular": "ns-angular",
+      "@nativescript-community/ui-pager": "ns-pager"
+    }
+  },
+  "whitelistedNonPeerDependencies": [
+    "."
+  ]
+}

@@ -1,5 +1,6 @@
 import {
     AfterContentInit,
+    Component,
     ContentChild,
     Directive,
     DoCheck,
@@ -28,8 +29,7 @@ import { profile } from '@nativescript/core/profiling';
 
 import { getSingleViewRecursive, InvisibleNode, registerElement } from '@nativescript/angular/element-registry';
 import { Trace } from '@nativescript/core';
-import { PagerError, PagerItem, PagerLog } from '../pager.common';
-import { Pager } from '../pager';
+import { Pager, PagerError, PagerItem, PagerLog } from '@nativescript-community/ui-pager';
 import { isBlank } from '@nativescript/angular/lang-facade';
 
 registerElement('Pager', () => Pager);
@@ -70,7 +70,9 @@ export interface SetupItemViewArgs {
     index: number;
     context: ItemContext;
 }
-
+@Component({
+    template: ''
+  })
 export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, AfterContentInit {
     public abstract get nativeElement(): Pager
 
@@ -240,7 +242,7 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
 
         if (args.view) {
             if (Trace.isEnabled()) {
-                PagerLog(`onItemDisposing: ${index} - Removing angular view`);
+                PagerLog(`onItemDisposing: ${args.index} - Removing angular view`);
             }
 
             viewRef = args.view[NG_VIEW];
@@ -251,13 +253,13 @@ export abstract class TemplatedItemsComponent implements DoCheck, OnDestroy, Aft
             }
 
             if (!viewRef && Trace.isEnabled()) {
-                PagerError(`ViewReference not found for item ${index}. View disposing is not working`);
+                PagerError(`ViewReference not found for item ${args.index}. View disposing is not working`);
             }
         }
 
         if (viewRef) {
             if (Trace.isEnabled()) {
-                PagerLog(`onItemDisposing: ${index} - Disposing view reference`);
+                PagerLog(`onItemDisposing: ${args.index} - Disposing view reference`);
             }
 
             viewRef.destroy();

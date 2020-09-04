@@ -1,3 +1,17 @@
 {
-    "main": "index"
+  "name": "@nativescript-community/ui-pager-angular",
+  "main": "bundles/nativescript-community-ui-pager-angular.umd.js",
+  "dependencies": {
+    "@nativescript-community/ui-pager": "file:../",
+    "tslib": "^2.0.0"
+  },
+  "module": "fesm2015/nativescript-community-ui-pager-angular.js",
+  "es2015": "fesm2015/nativescript-community-ui-pager-angular.js",
+  "esm2015": "esm2015/nativescript-community-ui-pager-angular.js",
+  "fesm2015": "fesm2015/nativescript-community-ui-pager-angular.js",
+  "typings": "nativescript-community-ui-pager-angular.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "node --eval \"console.error('ERROR: Trying to publish a package that has been compiled by Ivy. This is not allowed.\\nPlease delete and rebuild the package, without compiling with Ivy, before attempting to publish.\\n')\" && exit 1"
+  }
 }
