@@ -15,21 +15,29 @@
   "dependencies": {
     "@nativescript/core": "^6.4.1",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
-    "nativescript-pager": "file:../src",
+    "nativescript-pager": "file:../publish/package/nativescript-pager-12.0.0-alpha.9.tgz",
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",
-    "react-nativescript": "^0.10.0"
+    "react-nativescript": "~1.0.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.10.5",
+    "@babel/preset-env": "^7.9.5",
     "@babel/preset-react": "^7.0.0",
-    "@types/react": "^16.8.24",
-    "awesome-typescript-loader": "^5.2.1",
-    "babel-loader": "^8.0.6",
-    "fork-ts-checker-webpack-plugin": "^1.4.3",
+    "@babel/preset-typescript": "^7.9.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.0-beta.5",
+    "@types/react": "16.9.34",
+    "babel-loader": "8.0.6",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "fork-ts-checker-webpack-plugin": "1.3.7",
     "nativescript-dev-webpack": "~1.5.0",
-    "typescript": "~3.4.0"
+    "patch-package": "^6.2.2",
+    "react-refresh": "^0.8.3",
+    "tns-platform-declarations": "6.0.1",
+    "typescript": "^3.9.5"
   },
   "gitHead": "f28dbc60d74dd2cef4b645afd8fdd63bbb12c73e",
   "readme": "NativeScript Application"

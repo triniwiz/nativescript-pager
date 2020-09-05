@@ -1,23 +1,21 @@
+import * as React from "react";
+
 /* Controls react-nativescript log verbosity. true: all logs; false: only error logs. */
-import { run } from 'tns-core-modules/application';
-import * as React from 'react';
-import * as ReactNativeScript from 'react-nativescript/dist/index';
+Object.defineProperty(global, '__DEV__', { value: true });
+
+/*
+In NativeScript, the app.ts file is the entry point to your application.
+You can use this file to perform app-level initialization, but the primary
+purpose of the file is to pass control to the app’s first module.
+*/
+
+import * as ReactNativeScript from "react-nativescript/dist/index";
 import { AppContainer } from './AppContainer';
+import './nativescript-image-cache-it/index';
 
-(global as any).__DEV__ = false;
+ReactNativeScript.start(React.createElement(AppContainer, {}, null));
 
-const rootRef: React.RefObject<any> = React.createRef<any>();
-
-run({
-    create: () => {
-        ReactNativeScript.render(
-            React.createElement(AppContainer, {forwardedRef: rootRef}, null),
-            null,
-            () => {
-                console.log(`AppContainer top-level render complete! run.create with rootRef.current: ${rootRef.current}`);
-            },
-            '__APP_ROOT__',
-        );
-        return rootRef.current;
-    }
-});
+/*
+Do not place any code after the application has been started as it will not
+be executed on iOS.
+*/

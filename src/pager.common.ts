@@ -18,7 +18,6 @@ import { Label } from '@nativescript/core/ui/label';
 import { messageType, write } from '@nativescript/core/trace';
 import { Observable } from '@nativescript/core/data/observable';
 import { addWeakEventListener, removeWeakEventListener } from '@nativescript/core/ui/core/weak-event-listener';
-import { ItemsSource } from '@nativescript/core/ui/list-view/list-view';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { GridLayout } from '@nativescript/core/ui/layouts/grid-layout';
 import { layout } from '@nativescript/core/utils/utils';
