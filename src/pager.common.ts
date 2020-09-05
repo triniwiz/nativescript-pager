@@ -2,11 +2,20 @@ import {
     AddChildFromBuilder, addWeakEventListener, Builder, CoercibleProperty, Color, ContainerView,
     CSSType, GridLayout, Label, Length,
     makeParser,
-    makeValidator, Observable, ObservableArray, PercentLength,
-    Property, removeWeakEventListener, Template, Trace, View
-} from '@nativescript/core';
-import {  KeyedTemplate } from "@nativescript/core/ui/core/view";
-import { ItemsSource } from '@nativescript/core/ui/list-view';
+    makeValidator,
+    PercentLength,
+    Property,
+    Template,
+    View
+} from '@nativescript/core/ui/core/view';
+import { isIOS } from '@nativescript/core/platform';
+import { Builder } from '@nativescript/core/ui/builder';
+import { Label } from '@nativescript/core/ui/label';
+import { messageType, write } from '@nativescript/core/trace';
+import { Observable } from '@nativescript/core/data/observable';
+import { addWeakEventListener, removeWeakEventListener } from '@nativescript/core/ui/core/weak-event-listener';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
+import { GridLayout } from '@nativescript/core/ui/layouts/grid-layout';
 import { layout } from '@nativescript/core/utils/utils';
 
 export type Orientation = 'horizontal' | 'vertical';
@@ -217,10 +226,10 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     _getDataItem(index: number): any {
         let thisItems = this.items;
         if (thisItems) {
-            return thisItems && (<ItemsSource>thisItems).getItem
+        return thisItems && (<ItemsSource>thisItems).getItem
             ? (<ItemsSource>thisItems).getItem(index)
             : thisItems[index];
-        }
+    }
     }
 
     public _getDefaultItemContent(index: number): View {
