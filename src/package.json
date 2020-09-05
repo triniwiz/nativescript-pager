@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pager",
-  "version": "12.0.0-alpha.8",
+  "version": "12.0.0-alpha.9",
   "description": "A Carousel/Pager plugin for NativeScript",
   "main": "pager",
   "typings": "pager.d.ts",
@@ -12,7 +12,10 @@
   },
   "scripts": {
     "tsc": "tsc -skipLibCheck",
-    "build": "npm i && ngc",
+    "build": "npm i && npm run tsc",
+    "build.react": "tsc react/index.tsx --noEmitHelpers true --module commonjs --lib es2015,dom --target es5 --jsx \"react\" --skipLibCheck true --experimentalDecorators true --declaration true",
+    "build.angular": "npm run ngc",
+    "build.full": "npm run build && npm run build.react && npm run build.angular",
     "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
     "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
     "test.ng.android": "npm i && npm run tsc && npm run tslint && cd ../demo-ng && tns build android && tns test android --justlaunch",
@@ -87,7 +90,7 @@
     "nativescript-vue": "~2.3.0",
     "prompt": "^1.0.0",
     "react": "^16.8.6",
-    "react-nativescript": "^0.18.0",
+    "react-nativescript": "~1.0.6",
     "rimraf": "^2.6.3",
     "rxjs": "^6.4.0",
     "tns-platform-declarations": "^6.0.1",
