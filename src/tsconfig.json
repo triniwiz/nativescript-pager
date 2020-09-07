@@ -20,7 +20,7 @@
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
         "jsx": "react",
-        "plugins": [{ "transform": "./node_modules/@nativescript/webpack/transformers/ns-transform-native-classes.js", "type": "raw" }]
+        "plugins": [{ "transform": "@nativescript/webpack/transformers/ns-transform-native-classes.js", "type": "raw" }]
   },
     "include":[
         "**/*.ts",
