@@ -27,10 +27,9 @@ import { EventData, LayoutBase, Template } from '@nativescript/core';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { profile } from '@nativescript/core/profiling';
 
-import { getSingleViewRecursive, InvisibleNode, registerElement } from '@nativescript/angular/element-registry';
+import { getSingleViewRecursive, InvisibleNode, registerElement, isBlank } from '@nativescript/angular';
 import { Trace } from '@nativescript/core';
 import { Pager, PagerError, PagerItem, PagerLog } from '@nativescript-community/ui-pager';
-import { isBlank } from '@nativescript/angular/lang-facade';
 
 registerElement('Pager', () => Pager);
 registerElement('PagerItem', () => PagerItem);
