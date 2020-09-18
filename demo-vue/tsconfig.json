@@ -14,24 +14,38 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "noImplicitUseStrict": true,
-        "lib": ["es6", "dom", "es2015.iterable"],
-        "types": ["vue"],
+        "lib": [
+            "es6",
+            "dom",
+            "es2015.iterable",
+            "es2017"
+        ],
+        "types": [
+            "vue"
+        ],
         "baseUrl": ".",
         "paths": {
-            "~/*": ["app/*"],
-            "@nativescript/core": ["./node_modules/@nativescript/core"],
-            "@nativescript/core/*": ["./node_modules/@nativescript/core/*"],
-            "*": ["./node_modules/*"]
+            "~/*": [
+                "app/*"
+            ],
+            "@nativescript/core": [
+                "./node_modules/@nativescript/core"
+            ],
+            "@nativescript/core/*": [
+                "./node_modules/@nativescript/core/*"
+            ],
+            "*": [
+                "./node_modules/*"
+            ]
         }
     },
     "include": [
-        "../src",
-        "**/*"
-      ],
+        "app/**/*",
+        "references.d.ts"
+    ],
     "exclude": [
         "node_modules",
         "platforms",
-        "../src/node_modules",
         "**/*.spec.ts"
     ]
 }
