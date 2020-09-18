@@ -1,14 +1,25 @@
-import { ChangeType, Color, EventData, ObservableArray, profile, ProxyViewContainer, StackLayout, View } from '@nativescript/core';
-import {  KeyedTemplate } from "@nativescript/core/ui/core/view";
+import {
+    ChangeType,
+    Color,
+    EventData,
+    ObservableArray,
+    profile,
+    ProxyViewContainer,
+    StackLayout,
+    View,
+} from "@nativescript/core";
+import { KeyedTemplate } from "@nativescript/core/ui/core/view";
 import * as types from "@nativescript/core/utils/types";
 import { layout } from "@nativescript/core/utils/utils";
-import * as common from './pager.common';
+import * as common from "./pager.common";
 import {
     autoplayDelayProperty,
     autoPlayProperty,
     disableSwipeProperty,
-    Indicator, indicatorColorProperty,
-    indicatorProperty, indicatorSelectedColorProperty,
+    Indicator,
+    indicatorColorProperty,
+    indicatorProperty,
+    indicatorSelectedColorProperty,
     ITEMDISPOSING,
     ItemEventData,
     ITEMLOADING,
@@ -19,11 +30,11 @@ import {
     orientationProperty,
     PagerBase,
     selectedIndexProperty,
-    showIndicatorProperty
-} from './pager.common';
+    showIndicatorProperty,
+} from "./pager.common";
 
-export * from './pager.common';
-export { ItemsSource, Transformer } from './pager.common';
+export * from "./pager.common";
+export { ItemsSource, Transformer } from "./pager.common";
 
 function notifyForItemAtIndex(
     owner,
@@ -38,14 +49,21 @@ function notifyForItemAtIndex(
         index: index,
         view: view,
         ios: nativeView,
-        android: undefined
+        android: undefined,
     };
     owner.notify(args);
     return args;
 }
 
-declare var CHIPageControlAji, CHIPageControlAleppo, CHIPageControlChimayo, CHIPageControlFresno,
-    CHIPageControlJalapeno, CHIPageControlJaloro, CHIPageControlPuya, FancyPager, FancyPagerDelegate;
+declare var CHIPageControlAji,
+    CHIPageControlAleppo,
+    CHIPageControlChimayo,
+    CHIPageControlFresno,
+    CHIPageControlJalapeno,
+    CHIPageControlJaloro,
+    CHIPageControlPuya,
+    FancyPager,
+    FancyPagerDelegate;
 
 const main_queue = dispatch_get_current_queue();
 
@@ -53,7 +71,7 @@ export class Pager extends PagerBase {
     lastEvent: number = 0;
     private _disableSwipe: boolean = false;
     private _disableAnimation: boolean = false;
-    _layout: any;  /*UICollectionViewFlowLinearLayoutImpl*/
+    _layout: any; /*UICollectionViewFlowLinearLayoutImpl*/
     _preparingCell: boolean = false;
     _delegate: any; /*UICollectionDelegateImpl*/
     private _dataSource;
@@ -88,10 +106,13 @@ export class Pager extends PagerBase {
         this._layout = UICollectionViewFlowLinearLayoutImpl.initWithOwner(
             new WeakRef(this)
         );
-        this._layout.scrollDirection = UICollectionViewScrollDirection.Horizontal;
+        this._layout.scrollDirection =
+            UICollectionViewScrollDirection.Horizontal;
         this._layout.minimumInteritemSpacing = 0;
-        this._pager = UICollectionView.alloc().initWithFrameCollectionViewLayout(CGRectZero,
-            this._layout);
+        this._pager = UICollectionView.alloc().initWithFrameCollectionViewLayout(
+            CGRectZero,
+            this._layout
+        );
         this.pager.showsHorizontalScrollIndicator = false;
         this.pager.showsVerticalScrollIndicator = false;
         this.pager.decelerationRate = UIScrollViewDecelerationRateFast;
@@ -112,22 +133,41 @@ export class Pager extends PagerBase {
         nativeView.dataSource = this._dataSource = UICollectionViewDataSourceImpl.initWithOwner(
             new WeakRef(this)
         );
-        nativeView.scrollEnabled = !(String(this.disableSwipe) === 'true');
-        if (this.orientation === 'vertical') {
-            this._layout.scrollDirection = UICollectionViewScrollDirection.Vertical;
+        nativeView.scrollEnabled = !(String(this.disableSwipe) === "true");
+        if (this.orientation === "vertical") {
+            this._layout.scrollDirection =
+                UICollectionViewScrollDirection.Vertical;
             nativeView.alwaysBounceVertical = true;
             nativeView.alwaysBounceHorizontal = false;
         } else {
-            this._layout.scrollDirection = UICollectionViewScrollDirection.Horizontal;
+            this._layout.scrollDirection =
+                UICollectionViewScrollDirection.Horizontal;
             nativeView.alwaysBounceHorizontal = true;
             nativeView.alwaysBounceVertical = false;
         }
         this._setIndicator(this.indicator);
-        this._delegate = UICollectionDelegateImpl.initWithOwner(new WeakRef(this));
+        this._delegate = UICollectionDelegateImpl.initWithOwner(
+            new WeakRef(this)
+        );
         this._setNativeClipToBounds();
         this._initAutoPlay(this.autoPlay);
     }
 
+    _getRealWidthHeight(): { width: number; height: number } {
+        let height = 0;
+        let width = 0;
+        width =
+            (layout.toDeviceIndependentPixels(this._effectiveItemWidth) -
+                (this.perPage * 2 * this._getSpacing() +
+                    this._getPeaking() * 2)) /
+            this.perPage;
+        height =
+            (layout.toDeviceIndependentPixels(this._effectiveItemHeight) -
+                (this.perPage * 2 * this._getSpacing() +
+                    this._getPeaking() * 2)) /
+            this.perPage;
+        return { height, width };
+    }
 
     _nextIndex(): number {
         if (this.circularMode) {
@@ -227,7 +267,6 @@ export class Pager extends PagerBase {
                 this._indicatorView = CHIPageControlJaloro.new();
                 break;
             default:
-
                 break;
         }
         this._indicatorView.tintColor = UIColor.whiteColor;
@@ -235,21 +274,26 @@ export class Pager extends PagerBase {
     }
 
     public get _childrenCount() {
-        return this.items ? this.items.length : this._childrenViews ? this._childrenViews.size : 0;
+        return this.items
+            ? this.items.length
+            : this._childrenViews
+            ? this._childrenViews.size
+            : 0;
     }
 
-    public itemTemplateUpdated(oldData: any, newData: any): void {
-    }
+    public itemTemplateUpdated(oldData: any, newData: any): void {}
 
     public _setNativeClipToBounds(): void {
         this.pager.clipsToBounds = true;
     }
 
     public [orientationProperty.setNative](value: Orientation) {
-        if (value === 'horizontal') {
-            this._layout.scrollDirection = UICollectionViewScrollDirection.Horizontal;
+        if (value === "horizontal") {
+            this._layout.scrollDirection =
+                UICollectionViewScrollDirection.Horizontal;
         } else {
-            this._layout.scrollDirection = UICollectionViewScrollDirection.Vertical;
+            this._layout.scrollDirection =
+                UICollectionViewScrollDirection.Vertical;
         }
     }
 
@@ -260,8 +304,11 @@ export class Pager extends PagerBase {
     }
 
     _updateScrollPosition() {
-        const view = (this.pager as UICollectionView);
-        const size = this.orientation === 'vertical' ? view.contentSize.height : view.contentSize.width;
+        const view = this.pager as UICollectionView;
+        const size =
+            this.orientation === "vertical"
+                ? view.contentSize.height
+                : view.contentSize.width;
         if (!view || size === 0) {
             return;
         }
@@ -269,6 +316,7 @@ export class Pager extends PagerBase {
     }
 
     [selectedIndexProperty.setNative](value: number) {
+        console.log("selectedIndexProperty", value);
         if (this.isLoaded) {
             this.scrollToIndexAnimated(value, true);
         }
@@ -289,9 +337,10 @@ export class Pager extends PagerBase {
                     value[i].key
                 );
             }
-            this._itemTemplatesInternal = this._itemTemplatesInternal.concat(value);
+            this._itemTemplatesInternal = this._itemTemplatesInternal.concat(
+                value
+            );
         }
-
     }
 
     [itemsProperty.setNative](value: any) {
@@ -300,12 +349,18 @@ export class Pager extends PagerBase {
         }
         // remove old instance
         if (this._observableArrayInstance) {
-            this._observableArrayInstance.off(ObservableArray.changeEvent, this._observableArrayHandler);
+            this._observableArrayInstance.off(
+                ObservableArray.changeEvent,
+                this._observableArrayHandler
+            );
             this._observableArrayInstance = null;
         }
         if (value instanceof ObservableArray) {
             this._observableArrayInstance = value as any;
-            this._observableArrayInstance.on(ObservableArray.changeEvent, this._observableArrayHandler);
+            this._observableArrayInstance.on(
+                ObservableArray.changeEvent,
+                this._observableArrayHandler
+            );
         } else {
             this.refresh();
         }
@@ -337,7 +392,11 @@ export class Pager extends PagerBase {
         if (!this.nativeView) {
             return;
         }
-        this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
+        this.indicatorView.center = CGPointMake(
+            this.nativeView.center.x,
+            this.nativeView.bounds.size.height -
+                this.indicatorView.intrinsicContentSize.height
+        );
         const hasParent = this.indicatorView.superview;
         if (value) {
             if (!hasParent) {
@@ -354,69 +413,102 @@ export class Pager extends PagerBase {
         if (!this.pager) {
             return;
         }
-        if (this.indicatorView && this._observableArrayInstance && this._observableArrayInstance.length) {
+        if (
+            this.indicatorView &&
+            this._observableArrayInstance &&
+            this._observableArrayInstance.length
+        ) {
             this.indicatorView.numberOfPages = this._observableArrayInstance.length;
         }
 
         const collectionView = this.pager as UICollectionView;
         if (collectionView) {
-          try {
-            let offset = 0;
-            collectionView.performBatchUpdatesCompletion(() => {
-                this._isRefreshing = true;
-                const array = [];
-                switch (args.action) {
-                    case ChangeType.Add:
-                        for (let i = 0; i < args.addedCount; i++) {
-                            array.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
-                        }
-                        offset = collectionView.contentSize.width - collectionView.contentOffset.x;
-                        collectionView.insertItemsAtIndexPaths(array);
-                        break;
-                    case ChangeType.Delete:
-                        for (let i = 0; i < args.removed.length; i++) {
-                            array.push(NSIndexPath.indexPathForItemInSection(args.index + i, 0));
-                        }
-                        collectionView.deleteItemsAtIndexPaths(array);
-                        break;
-                    case  ChangeType.Splice:
-                        if (args.removed && args.removed.length > 0) {
+            try {
+                let offset = 0;
+                collectionView.performBatchUpdatesCompletion(() => {
+                    this._isRefreshing = true;
+                    const array = [];
+                    switch (args.action) {
+                        case ChangeType.Add:
+                            for (let i = 0; i < args.addedCount; i++) {
+                                array.push(
+                                    NSIndexPath.indexPathForRowInSection(
+                                        args.index + i,
+                                        0
+                                    )
+                                );
+                            }
+                            offset =
+                                collectionView.contentSize.width -
+                                collectionView.contentOffset.x;
+                            collectionView.insertItemsAtIndexPaths(array);
+                            break;
+                        case ChangeType.Delete:
                             for (let i = 0; i < args.removed.length; i++) {
-                                array.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
+                                array.push(
+                                    NSIndexPath.indexPathForItemInSection(
+                                        args.index + i,
+                                        0
+                                    )
+                                );
                             }
                             collectionView.deleteItemsAtIndexPaths(array);
-                        } else {
-                            const addedArray = [];
-                            for (let i = 0; i < args.addedCount; i++) {
-                                addedArray.push(NSIndexPath.indexPathForRowInSection(args.index + i, 0));
+                            break;
+                        case ChangeType.Splice:
+                            if (args.removed && args.removed.length > 0) {
+                                for (let i = 0; i < args.removed.length; i++) {
+                                    array.push(
+                                        NSIndexPath.indexPathForRowInSection(
+                                            args.index + i,
+                                            0
+                                        )
+                                    );
+                                }
+                                collectionView.deleteItemsAtIndexPaths(array);
+                            } else {
+                                const addedArray = [];
+                                for (let i = 0; i < args.addedCount; i++) {
+                                    addedArray.push(
+                                        NSIndexPath.indexPathForRowInSection(
+                                            args.index + i,
+                                            0
+                                        )
+                                    );
+                                }
+                                collectionView.insertItemsAtIndexPaths(
+                                    addedArray
+                                );
                             }
-                            collectionView.insertItemsAtIndexPaths(addedArray);
-                        }
-                        break;
-                    case ChangeType.Update:
-                        collectionView.reloadItemsAtIndexPaths([NSIndexPath.indexPathForRowInSection(args.index, 0)]);
-                        break;
-                    default:
-                        break;
-                }
-                this._initAutoPlay(this.autoPlay);
-                if (this.itemCount === 0) {
-                    this._isInit = false;
-                }
-            }, null);
-          } catch (err) {
-
-          }
+                            break;
+                        case ChangeType.Update:
+                            collectionView.reloadItemsAtIndexPaths([
+                                NSIndexPath.indexPathForRowInSection(
+                                    args.index,
+                                    0
+                                ),
+                            ]);
+                            break;
+                        default:
+                            break;
+                    }
+                    this._initAutoPlay(this.autoPlay);
+                    if (this.itemCount === 0) {
+                        this._isInit = false;
+                    }
+                }, null);
+            } catch (err) {}
         }
-    }
+    };
 
-    _onItemsChanged(oldValue: any, newValue: any): void {
-    }
+    _onItemsChanged(oldValue: any, newValue: any): void {}
 
     _scrollToIndexAnimated(index: number, animate: boolean) {
         if (!this.pager) return;
         const contentSize = this.pager.contentSize;
-        const size = this.orientation === 'vertical' ? contentSize.height : contentSize.width;
+        const size =
+            this.orientation === "vertical"
+                ? contentSize.height
+                : contentSize.width;
         if (size === 0) {
             return;
         }
@@ -438,7 +530,13 @@ export class Pager extends PagerBase {
         }
 
         dispatch_async(main_queue, () => {
-            this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(NSIndexPath.indexPathForItemInSection(maxMinIndex, 0), this.orientation === 'vertical' ? UICollectionViewScrollPosition.CenteredVertically : UICollectionViewScrollPosition.CenteredHorizontally, !!animate);
+            this.pager.scrollToItemAtIndexPathAtScrollPositionAnimated(
+                NSIndexPath.indexPathForItemInSection(maxMinIndex, 0),
+                this.orientation === "vertical"
+                    ? UICollectionViewScrollPosition.CenteredVertically
+                    : UICollectionViewScrollPosition.CenteredHorizontally,
+                !!animate
+            );
             selectedIndexProperty.nativeValueChange(this, maxMinIndex);
         });
     }
@@ -506,7 +604,10 @@ export class Pager extends PagerBase {
         this._dataSource = null;
         this._layout = null;
         if (this._observableArrayInstance) {
-            this._observableArrayInstance.off(ObservableArray.changeEvent, this._observableArrayHandler);
+            this._observableArrayInstance.off(
+                ObservableArray.changeEvent,
+                this._observableArrayHandler
+            );
             this._observableArrayInstance = null;
         }
         super.disposeNativeView();
@@ -538,9 +639,9 @@ export class Pager extends PagerBase {
 
     [disableSwipeProperty.setNative](value: boolean) {
         if (this.pager) {
-            this.pager.scrollEnabled = !(String(value) === 'true');
+            this.pager.scrollEnabled = !(String(value) === "true");
         }
-        this._disableSwipe = String(value) === 'true';
+        this._disableSwipe = String(value) === "true";
     }
 
     get disableAnimation(): boolean {
@@ -551,8 +652,7 @@ export class Pager extends PagerBase {
         this._disableAnimation = value;
     }
 
-    public _removeContainer(cell: PagerCell,
-                            indexPath?: NSIndexPath): void {
+    public _removeContainer(cell: PagerCell, indexPath?: NSIndexPath): void {
         let view = cell.view;
 
         let args = <ItemEventData>{
@@ -561,7 +661,7 @@ export class Pager extends PagerBase {
             index: indexPath.row,
             android: undefined,
             ios: cell,
-            view: view
+            view: view,
         };
         this.notify(args);
         view = args.view;
@@ -594,10 +694,18 @@ export class Pager extends PagerBase {
         }
     }
 
-    public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void {
+    public onMeasure(
+        widthMeasureSpec: number,
+        heightMeasureSpec: number
+    ): void {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         this._map.forEach((childView: any, pagerCell) => {
-            View.measureChild(this, childView, childView._currentWidthMeasureSpec, childView._currentHeightMeasureSpec);
+            View.measureChild(
+                this,
+                childView,
+                childView._currentWidthMeasureSpec,
+                childView._currentHeightMeasureSpec
+            );
         });
     }
 
@@ -605,7 +713,11 @@ export class Pager extends PagerBase {
         super.onLayout(left, top, right, bottom);
         this.pager.frame = this.nativeView.bounds;
         if (this.indicatorView && this.indicatorView.intrinsicContentSize) {
-            this.indicatorView.center = CGPointMake(this.nativeView.center.x, this.nativeView.bounds.size.height - this.indicatorView.intrinsicContentSize.height);
+            this.indicatorView.center = CGPointMake(
+                this.nativeView.center.x,
+                this.nativeView.bounds.size.height -
+                    this.indicatorView.intrinsicContentSize.height
+            );
         }
         const size = this._getSize();
         this._map.forEach((childView, pagerCell) => {
@@ -632,7 +744,9 @@ export class Pager extends PagerBase {
             if (!view) {
                 view = template.createView();
                 if (!view && this._itemViewLoader !== undefined) {
-                    view = this._itemViewLoader(this._getItemTemplateKey(indexPath.row));
+                    view = this._itemViewLoader(
+                        this._getItemTemplateKey(indexPath.row)
+                    );
                 }
             }
             const bindingContext = this._getDataItem(indexPath.row);
@@ -643,7 +757,7 @@ export class Pager extends PagerBase {
                 android: undefined,
                 ios: cell,
                 view: view,
-                bindingContext
+                bindingContext,
             };
 
             this.notify(args);
@@ -688,9 +802,15 @@ export class Pager extends PagerBase {
             const size = this._getSize();
             let width = layout.toDevicePixels(size.width);
             let height = layout.toDevicePixels(size.height);
-            const widthMeasureSpec = layout.makeMeasureSpec(width, layout.EXACTLY);
+            const widthMeasureSpec = layout.makeMeasureSpec(
+                width,
+                layout.EXACTLY
+            );
 
-            const heightMeasureSpec = layout.makeMeasureSpec(height, layout.EXACTLY);
+            const heightMeasureSpec = layout.makeMeasureSpec(
+                height,
+                layout.EXACTLY
+            );
 
             const measured = View.measureChild(
                 this,
@@ -720,7 +840,6 @@ export class Pager extends PagerBase {
                     }
                 }
             }
-
         }
     }
 
@@ -733,26 +852,36 @@ export class Pager extends PagerBase {
     }
 
     _getSpacing(): number {
-        return layout.toDeviceIndependentPixels(this.convertToSize(this.spacing));
+        return layout.toDeviceIndependentPixels(
+            this.convertToSize(this.spacing)
+        );
     }
 
     _getPeaking(): number {
-        return layout.toDeviceIndependentPixels(this.convertToSize(this.peaking));
+        return layout.toDeviceIndependentPixels(
+            this.convertToSize(this.peaking)
+        );
     }
 
-    _getSize(w: number = 0, h: number = 0): { width: number, height: number } {
+    _getSize(w: number = 0, h: number = 0): { width: number; height: number } {
         let width = 0;
         let height = 0;
         if (width === 0) {
             width = layout.toDeviceIndependentPixels(this._effectiveItemWidth);
         }
         if (height === 0) {
-            height = layout.toDeviceIndependentPixels(this._effectiveItemHeight);
+            height = layout.toDeviceIndependentPixels(
+                this._effectiveItemHeight
+            );
         }
-        if (this.orientation === 'vertical') {
-            height = (height - ((this._getSpacing() * 2) + (this._getPeaking() * 2))) / this.perPage;
+        if (this.orientation === "vertical") {
+            height =
+                (height - (this._getSpacing() * 2 + this._getPeaking() * 2)) /
+                this.perPage;
         } else {
-            width = (width - ((this._getSpacing() * 2) + (this._getPeaking() * 2))) / this.perPage;
+            width =
+                (width - (this._getSpacing() * 2 + this._getPeaking() * 2)) /
+                this.perPage;
         }
         if (Number.isNaN(width)) {
             width = 0;
@@ -761,7 +890,7 @@ export class Pager extends PagerBase {
         if (Number.isNaN(height)) {
             height = 0;
         }
-        return {width, height};
+        return { width, height };
     }
 }
 
@@ -794,55 +923,78 @@ class PagerCell extends UICollectionViewCell {
 
 @NativeClass
 @ObjCClass(UICollectionViewDelegate, UICollectionViewDelegateFlowLayout)
-class UICollectionDelegateImpl extends NSObject
+class UICollectionDelegateImpl
+    extends NSObject
     implements UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     private _owner: WeakRef<Pager>;
     private _startingScrollingOffset;
     private _indexOfCellBeforeDragging = 0;
 
-    public static initWithOwner(owner: WeakRef<Pager>): UICollectionDelegateImpl {
+    public static initWithOwner(
+        owner: WeakRef<Pager>
+    ): UICollectionDelegateImpl {
         const delegate = UICollectionDelegateImpl.alloc().init() as UICollectionDelegateImpl;
         delegate._owner = owner;
         delegate._startingScrollingOffset = CGPointMake(0, 0);
         return delegate;
     }
 
-
-    public collectionViewLayoutInsetForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): UIEdgeInsets {
+    public collectionViewLayoutInsetForSectionAtIndex(
+        collectionView: UICollectionView,
+        collectionViewLayout: UICollectionViewLayout,
+        section: number
+    ): UIEdgeInsets {
         let owner = this._owner ? this._owner.get() : null;
         if (owner) {
             const inset = owner._getSpacing() + owner._getPeaking();
-            if (owner.orientation === 'vertical') {
-                return new UIEdgeInsets({bottom: inset, left: 0, right: 0, top: inset});
+            if (owner.orientation === "vertical") {
+                return new UIEdgeInsets({
+                    bottom: inset,
+                    left: 0,
+                    right: 0,
+                    top: inset,
+                });
             }
 
-            return new UIEdgeInsets({bottom: 0, left: inset, right: inset, top: 0});
+            return new UIEdgeInsets({
+                bottom: 0,
+                left: inset,
+                right: inset,
+                top: 0,
+            });
         }
-        return new UIEdgeInsets({bottom: 0, left: 0, right: 0, top: 0});
+        return new UIEdgeInsets({ bottom: 0, left: 0, right: 0, top: 0 });
     }
 
-    public collectionViewLayoutSizeForItemAtIndexPath(collectionView: UICollectionView,
-                                                      collectionViewLayout: UICollectionViewLayout,
-                                                      indexPath: NSIndexPath): CGSize {
+    public collectionViewLayoutSizeForItemAtIndexPath(
+        collectionView: UICollectionView,
+        collectionViewLayout: UICollectionViewLayout,
+        indexPath: NSIndexPath
+    ): CGSize {
         let owner = this._owner && this._owner.get();
         if (!owner) return CGSizeZero;
         const size = owner._getSize();
         return CGSizeMake(size.width, size.height);
     }
 
-    public collectionViewWillDisplayCellForItemAtIndexPath(collectionView: UICollectionView,
-                                                           cell: UICollectionViewCell,
-                                                           indexPath: NSIndexPath) {
+    public collectionViewWillDisplayCellForItemAtIndexPath(
+        collectionView: UICollectionView,
+        cell: UICollectionViewCell,
+        indexPath: NSIndexPath
+    ) {
         const owner = this._owner && this._owner.get();
         if (owner) {
             if (!owner._isInit) {
                 owner._updateScrollPosition();
                 owner._isInit = true;
             }
-            if (owner.items && indexPath.row === owner.lastIndex - owner.loadMoreCount) {
+            if (
+                owner.items &&
+                indexPath.row === owner.lastIndex - owner.loadMoreCount
+            ) {
                 owner.notify<EventData>({
                     eventName: LOADMOREITEMS,
-                    object: owner
+                    object: owner,
                 });
             }
         }
@@ -856,7 +1008,11 @@ class UICollectionDelegateImpl extends NSObject
         }
     }
 
-    public collectionViewLayoutMinimumLineSpacingForSectionAtIndex(collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, section: number): number {
+    public collectionViewLayoutMinimumLineSpacingForSectionAtIndex(
+        collectionView: UICollectionView,
+        collectionViewLayout: UICollectionViewLayout,
+        section: number
+    ): number {
         let owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
         return owner._getSpacing();
@@ -869,7 +1025,7 @@ class UICollectionDelegateImpl extends NSObject
             if (owner.lastEvent === 0) {
                 owner.notify({
                     eventName: Pager.swipeStartEvent,
-                    object: owner
+                    object: owner,
                 });
                 owner.lastEvent = 1;
             }
@@ -881,7 +1037,7 @@ class UICollectionDelegateImpl extends NSObject
         if (owner) {
             owner.notify({
                 eventName: Pager.swipeEvent,
-                object: owner
+                object: owner,
             });
         }
     }
@@ -891,21 +1047,28 @@ class UICollectionDelegateImpl extends NSObject
         if (owner) {
             let width: number;
             let offset: number;
-            let size = this._getRealWidthHeight();
+            let size = owner._getRealWidthHeight();
             let total: number;
             let percent: number;
-            if (owner.orientation === 'vertical') {
+            if (owner.orientation === "vertical") {
                 width = size.height;
                 offset = scrollView.contentOffset.y;
-                total = scrollView.contentSize.height - scrollView.bounds.size.height;
+                total =
+                    scrollView.contentSize.height -
+                    scrollView.bounds.size.height;
             } else {
                 width = size.width;
                 offset = scrollView.contentOffset.x;
-                total = scrollView.contentSize.width - scrollView.bounds.size.width;
+                total =
+                    scrollView.contentSize.width - scrollView.bounds.size.width;
             }
-            percent = (offset / total);
+            percent = offset / total;
             let progress = percent * (owner.itemCount - 1);
-            if (owner.indicatorView && owner.indicatorView.setWithProgressAnimated && !Number.isNaN(progress)) {
+            if (
+                owner.indicatorView &&
+                owner.indicatorView.setWithProgressAnimated &&
+                !Number.isNaN(progress)
+            ) {
                 owner.indicatorView.progress = progress;
             }
             const index = parseInt(progress.toFixed(0), 10);
@@ -916,17 +1079,16 @@ class UICollectionDelegateImpl extends NSObject
                 object: owner,
                 eventName: Pager.scrollEvent,
                 scrollX: owner.horizontalOffset,
-                scrollY: owner.verticalOffset
+                scrollY: owner.verticalOffset,
             });
 
             if (owner.lastEvent === 1) {
                 owner.notify({
                     eventName: Pager.swipeOverEvent,
-                    object: owner
+                    object: owner,
                 });
                 owner.lastEvent = 1;
             }
-
 
             // (scrollView as any).scrollToItemAtIndexPathAtScrollPositionAnimated(
             //     NSIndexPath.indexPathForRowInSection(Math.round(width),0), UICollectionViewScrollPosition.CenteredHorizontally, true
@@ -1002,7 +1164,6 @@ class UICollectionDelegateImpl extends NSObject
                  }
              } */
 
-
             // scrollView.setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
             // (owner.nativeView as UICollectionView).setContentOffsetAnimated(CGPointMake((w * width) + 1, 0),false);
         }
@@ -1010,7 +1171,10 @@ class UICollectionDelegateImpl extends NSObject
 
     private _nextIndex: number;
 
-    scrollViewDidEndDraggingWillDecelerate(scrollView: UIScrollView, decelerate: boolean): void {
+    scrollViewDidEndDraggingWillDecelerate(
+        scrollView: UIScrollView,
+        decelerate: boolean
+    ): void {
         if (!decelerate) {
             // (scrollView as any).scrollToItemAtIndexPathAtScrollPositionAnimated(
             //     NSIndexPath.indexPathForRowInSection(this._getIndex(scrollView), 0), UICollectionViewScrollPosition.CenteredHorizontally, true
@@ -1018,25 +1182,14 @@ class UICollectionDelegateImpl extends NSObject
         }
     }
 
-    private _getRealWidthHeight(): { width: number, height: number } {
-        const owner = this._owner && this._owner.get();
-        let height = 0;
-        let width = 0;
-        if (owner) {
-            width = (layout.toDeviceIndependentPixels(owner._effectiveItemWidth) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
-            height = (layout.toDeviceIndependentPixels(owner._effectiveItemHeight) - (((owner.perPage * 2) * owner._getSpacing()) + (owner._getPeaking() * 2))) / owner.perPage;
-        }
-        return {height, width};
-    }
-
     private _getIndex(scrollView: UIScrollView) {
         let index = 0;
         const owner = this._owner && this._owner.get();
         if (owner) {
             let offset: number;
-            let itemSize = this._getRealWidthHeight();
+            let itemSize = owner._getRealWidthHeight();
             let size: number;
-            if (owner.orientation === 'vertical') {
+            if (owner.orientation === "vertical") {
                 offset = scrollView.contentOffset.y;
                 size = itemSize.height;
             } else {
@@ -1048,7 +1201,11 @@ class UICollectionDelegateImpl extends NSObject
         return index;
     }
 
-    public scrollViewWillEndDraggingWithVelocityTargetContentOffset(scrollView: UIScrollView, velocity: CGPoint, targetContentOffset: interop.Pointer | interop.Reference<CGPoint>) {
+    public scrollViewWillEndDraggingWithVelocityTargetContentOffset(
+        scrollView: UIScrollView,
+        velocity: CGPoint,
+        targetContentOffset: interop.Pointer | interop.Reference<CGPoint>
+    ) {
         let owner = this._owner ? this._owner.get() : null;
 
         if (!owner) return;
@@ -1056,78 +1213,116 @@ class UICollectionDelegateImpl extends NSObject
         if (owner.lastEvent === 1) {
             owner.notify({
                 eventName: Pager.swipeEndEvent,
-                object: owner
+                object: owner,
             });
             owner.lastEvent = 0;
         }
-        const collection = owner.pager as UICollectionView;
-        const contentSize = owner.orientation === 'vertical' ? collection.contentSize.height : collection.contentSize.width;
-        if (contentSize === 0) {
-            return;
-        }
+        // const collection = owner.pager as UICollectionView;
+        // const contentSize =
+        //     owner.orientation === "vertical"
+        //         ? collection.contentSize.height
+        //         : collection.contentSize.width;
+        // if (contentSize === 0) {
+        //     return;
+        // }
 
-        const target = (targetContentOffset as any).value;
+        // const target = (targetContentOffset as any).value;
 
-        const size = this._getRealWidthHeight();
-        let width = 0;
-        let currentVelocity = 0;
-        let offset = 0;
-        if (owner.orientation === 'vertical') {
-            currentVelocity = velocity.y;
-            offset = this._startingScrollingOffset.y;
-            width = size.height;
-        } else {
-            currentVelocity = velocity.x;
-            offset = this._startingScrollingOffset.x;
-            width = size.width;
-        }
+        // const size = this._getRealWidthHeight();
+        // let width = 0;
+        // let currentVelocity = 0;
+        // let offset = 0;
+        // if (owner.orientation === "vertical") {
+        //     currentVelocity = velocity.y;
+        //     offset = this._startingScrollingOffset.y;
+        //     width = size.height;
+        // } else {
+        //     currentVelocity = velocity.x;
+        //     offset = this._startingScrollingOffset.x;
+        //     width = size.width;
+        // }
 
-        let next = 0;
-        if (currentVelocity >= 0.5) {
-            next = 1;
-            this._indexOfCellBeforeDragging = Math.floor(offset / width);
-            this._indexOfCellBeforeDragging = Math.min(this._indexOfCellBeforeDragging, owner.selectedIndex);
-        } else if (currentVelocity <= -0.5) {
-            next = -1;
-            this._indexOfCellBeforeDragging = Math.round(offset / width);
-            this._indexOfCellBeforeDragging = Math.min(this._indexOfCellBeforeDragging, owner.selectedIndex);
-        } else {
-            this._indexOfCellBeforeDragging = Math.floor(offset / width);
-            scrollView.setContentOffsetAnimated(CGPointMake(target.x, target.y), false);
-            // set offset as current offset then animate scroll to stop jank
-            (scrollView as any).scrollToItemAtIndexPathAtScrollPositionAnimated(
-                NSIndexPath.indexPathForRowInSection(owner.selectedIndex, 0), UICollectionViewScrollPosition.CenteredHorizontally, true
-            );
-            return;
-        }
-        let nextIndex = this._indexOfCellBeforeDragging + next;
-        if (owner.circularMode) {
-            if (nextIndex === 0) {
-                nextIndex = owner.itemCount - 2;
-            } else if (nextIndex === owner.itemCount - 1) {
-                nextIndex = 1;
-            } else if (nextIndex > (owner.itemCount - 1)) {
-                nextIndex = (owner.itemCount - 1);
-            }
-        } else {
-            if (nextIndex <= -1) {
-                nextIndex = 0;
-            } else if (nextIndex >= owner.lastIndex) {
-                nextIndex = owner.lastIndex;
-            }
-        }
-        this._nextIndex = nextIndex;
-        (targetContentOffset as any).value = this._getPointFromAttrOffset(collection.collectionViewLayout.layoutAttributesForItemAtIndexPath(NSIndexPath.indexPathForRowInSection(nextIndex, 0)), target);
-        setTimeout(() => {
-            selectedIndexProperty.nativeValueChange(owner, nextIndex);
-        });
+        // let next = 0;
+        // console.log(
+        //     "scrollViewWillEndDraggingWithVelocityTargetContentOffset",
+        //     currentVelocity
+        // );
+        // if (currentVelocity >= 0.5) {
+        //     next = 1;
+        //     this._indexOfCellBeforeDragging = Math.floor(offset / width);
+        //     this._indexOfCellBeforeDragging = Math.min(
+        //         this._indexOfCellBeforeDragging,
+        //         owner.selectedIndex
+        //     );
+        // } else if (currentVelocity <= -0.5) {
+        //     next = -1;
+        //     this._indexOfCellBeforeDragging = Math.round(offset / width);
+        //     this._indexOfCellBeforeDragging = Math.min(
+        //         this._indexOfCellBeforeDragging,
+        //         owner.selectedIndex
+        //     );
+        // } else {
+        //     this._indexOfCellBeforeDragging = Math.floor(offset / width);
+        //     scrollView.setContentOffsetAnimated(
+        //         CGPointMake(target.x, target.y),
+        //         false
+        //     );
+        //     console.log(
+        //         "scrollToItemAtIndexPathAtScrollPositionAnimated",
+        //         owner.selectedIndex,
+        //         NSIndexPath.indexPathForRowInSection(owner.selectedIndex, 0)
+        //     );
+        //     // set offset as current offset then animate scroll to stop jank
+        //     (scrollView as any).scrollToItemAtIndexPathAtScrollPositionAnimated(
+        //         NSIndexPath.indexPathForRowInSection(owner.selectedIndex, 0),
+        //         UICollectionViewScrollPosition.CenteredHorizontally,
+        //         true
+        //     );
+        //     return;
+        // }
+        // let nextIndex = this._indexOfCellBeforeDragging + next;
+        // if (owner.circularMode) {
+        //     if (nextIndex === 0) {
+        //         nextIndex = owner.itemCount - 2;
+        //     } else if (nextIndex === owner.itemCount - 1) {
+        //         nextIndex = 1;
+        //     } else if (nextIndex > owner.itemCount - 1) {
+        //         nextIndex = owner.itemCount - 1;
+        //     }
+        // } else {
+        //     if (nextIndex <= -1) {
+        //         nextIndex = 0;
+        //     } else if (nextIndex >= owner.lastIndex) {
+        //         nextIndex = owner.lastIndex;
+        //     }
+        // }
+        // this._nextIndex = nextIndex;
+        // (targetContentOffset as any).value = this._getPointFromAttrOffset(
+        //     collection.collectionViewLayout.layoutAttributesForItemAtIndexPath(
+        //         NSIndexPath.indexPathForRowInSection(nextIndex, 0)
+        //     ),
+        //     target
+        // );
+        // console.log("nextIndex", nextIndex);
+        // setTimeout(() => {
+        //     owner.selectedIndex = nextIndex;
+        //     // selectedIndexProperty.nativeValueChange(owner, nextIndex);
+        // });
     }
 
     private _getPointFromAttrOffset(attribute, target) {
         const owner = this._owner && this._owner.get();
         if (owner) {
-            const x = owner.orientation === 'vertical' ? target.x : attribute.frame.origin.x - (owner._getSpacing() + owner._getPeaking());
-            const y = owner.orientation === 'vertical' ? attribute.frame.origin.y - (owner._getSpacing() + owner._getPeaking()) : target.y;
+            const x =
+                owner.orientation === "vertical"
+                    ? target.x
+                    : attribute.frame.origin.x -
+                      (owner._getSpacing() + owner._getPeaking());
+            const y =
+                owner.orientation === "vertical"
+                    ? attribute.frame.origin.y -
+                      (owner._getSpacing() + owner._getPeaking())
+                    : target.y;
             return CGPointMake(x, y);
         }
         return CGPointZero;
@@ -1136,19 +1331,23 @@ class UICollectionDelegateImpl extends NSObject
 
 @NativeClass
 @ObjCClass(UICollectionViewDataSource)
-class UICollectionViewDataSourceImpl extends NSObject
+class UICollectionViewDataSourceImpl
+    extends NSObject
     implements UICollectionViewDataSource {
     _owner: WeakRef<Pager>;
 
-    public static initWithOwner(owner: WeakRef<Pager>): UICollectionViewDataSourceImpl {
+    public static initWithOwner(
+        owner: WeakRef<Pager>
+    ): UICollectionViewDataSourceImpl {
         const delegate = UICollectionViewDataSourceImpl.alloc().init() as UICollectionViewDataSourceImpl;
         delegate._owner = owner;
         return delegate;
     }
 
-
-    public collectionViewCellForItemAtIndexPath(collectionView: UICollectionView,
-                                                indexPath: NSIndexPath): UICollectionViewCell {
+    public collectionViewCellForItemAtIndexPath(
+        collectionView: UICollectionView,
+        indexPath: NSIndexPath
+    ): UICollectionViewCell {
         const owner = this._owner ? this._owner.get() : null;
         let cell;
         let count = 0;
@@ -1158,13 +1357,19 @@ class UICollectionViewDataSourceImpl extends NSObject
                 count = owner.itemCount;
                 switch (indexPath.row) {
                     case 0:
-                        indexPath = NSIndexPath.indexPathForRowInSection(owner.lastDummy, 0);
+                        indexPath = NSIndexPath.indexPathForRowInSection(
+                            owner.lastDummy,
+                            0
+                        );
                         break;
                     case owner.firstDummy:
                         indexPath = NSIndexPath.indexPathForRowInSection(0, 0);
                         break;
                     default:
-                        indexPath = NSIndexPath.indexPathForRowInSection(indexPath.row - 1, 0);
+                        indexPath = NSIndexPath.indexPathForRowInSection(
+                            indexPath.row - 1,
+                            0
+                        );
                         break;
                 }
             }
@@ -1172,7 +1377,10 @@ class UICollectionViewDataSourceImpl extends NSObject
         if (owner && !owner.items && count > 0) {
             owner._preparingCell = true;
             const size = owner._getSize();
-            collectionView.registerClassForCellWithReuseIdentifier(PagerCell.class(), `static-${indexPath.row}`);
+            collectionView.registerClassForCellWithReuseIdentifier(
+                PagerCell.class(),
+                `static-${indexPath.row}`
+            );
             cell =
                 collectionView.dequeueReusableCellWithReuseIdentifierForIndexPath(
                     `static-${indexPath.row}`,
@@ -1230,22 +1438,32 @@ class UICollectionViewDataSourceImpl extends NSObject
             owner._prepareCell(<PagerCell>cell, indexPath);
             const cellView: any = (cell as PagerCell).view;
             if (cellView && cellView.isLayoutRequired) {
-                View.layoutChild(owner, cellView, 0, 0, layout.toDevicePixels(size.width), layout.toDevicePixels(size.height));
+                View.layoutChild(
+                    owner,
+                    cellView,
+                    0,
+                    0,
+                    layout.toDevicePixels(size.width),
+                    layout.toDevicePixels(size.height)
+                );
             }
         }
 
         return cell;
     }
 
-
-    public collectionViewNumberOfItemsInSection(collectionView: UICollectionView,
-                                                section: number): number {
+    public collectionViewNumberOfItemsInSection(
+        collectionView: UICollectionView,
+        section: number
+    ): number {
         const owner = this._owner ? this._owner.get() : null;
         if (!owner) return 0;
         return owner.circularMode ? owner.itemCount : owner._childrenCount;
     }
 
-    public numberOfSectionsInCollectionView(collectionView: UICollectionView): number {
+    public numberOfSectionsInCollectionView(
+        collectionView: UICollectionView
+    ): number {
         return 1;
     }
 }
@@ -1255,7 +1473,9 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
     _owner: WeakRef<Pager>;
     _curl: CATransition;
 
-    public static initWithOwner(owner: WeakRef<Pager>): UICollectionViewFlowLinearLayoutImpl {
+    public static initWithOwner(
+        owner: WeakRef<Pager>
+    ): UICollectionViewFlowLinearLayoutImpl {
         const layout = UICollectionViewFlowLinearLayoutImpl.new() as UICollectionViewFlowLinearLayoutImpl;
         layout._owner = owner;
         layout._curl = CATransition.animation();
@@ -1264,23 +1484,45 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
 
     public layoutAttributesForElementsInRect(rect: CGRect) {
         let owner = this._owner ? this._owner.get() : null;
-        const originalLayoutAttribute = super.layoutAttributesForElementsInRect(rect);
+        const originalLayoutAttribute = super.layoutAttributesForElementsInRect(
+            rect
+        );
         let visibleLayoutAttributes = [];
         if (owner) {
-            if (owner.transformers && owner.transformers.indexOf('scale') > -1) {
+            if (
+                owner.transformers &&
+                owner.transformers.indexOf("scale") > -1
+            ) {
                 const count = originalLayoutAttribute.count;
                 for (let i = 0; i < count; i++) {
                     let attributes = originalLayoutAttribute.objectAtIndex(i);
                     visibleLayoutAttributes[i] = attributes;
                     const frame = attributes.frame;
-                    const width = attributes.frame.size.width * .75;
-                    const height = attributes.frame.size.height * .75;
+                    const width = attributes.frame.size.width * 0.75;
+                    const height = attributes.frame.size.height * 0.75;
                     attributes.frame.size.width = width;
                     attributes.frame.size.height = height;
                     const spacing = owner.convertToSize(owner.spacing);
-                    const distance = Math.abs(this.collectionView.contentOffset.x + this.collectionView.contentInset.left + spacing - frame.origin.x);
-                    const scale = Math.min(Math.max(1 - distance / (this.collectionView.bounds.size.width), .75), 1);
-                    attributes.transform = CGAffineTransformScale(attributes.transform, 1, scale);
+                    const distance = Math.abs(
+                        this.collectionView.contentOffset.x +
+                            this.collectionView.contentInset.left +
+                            spacing -
+                            frame.origin.x
+                    );
+                    const scale = Math.min(
+                        Math.max(
+                            1 -
+                                distance /
+                                    this.collectionView.bounds.size.width,
+                            0.75
+                        ),
+                        1
+                    );
+                    attributes.transform = CGAffineTransformScale(
+                        attributes.transform,
+                        1,
+                        scale
+                    );
                 }
             } else {
                 return originalLayoutAttribute;
@@ -1293,16 +1535,104 @@ class UICollectionViewFlowLinearLayoutImpl extends UICollectionViewFlowLayout {
         return true;
     }
 
-    public initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath): UICollectionViewLayoutAttributes {
-        const attrs = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath);
+    public initialLayoutAttributesForAppearingItemAtIndexPath(
+        itemIndexPath: NSIndexPath
+    ): UICollectionViewLayoutAttributes {
+        const attrs = super.initialLayoutAttributesForAppearingItemAtIndexPath(
+            itemIndexPath
+        );
         attrs.alpha = 1;
         return attrs;
     }
 
-    public finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath): UICollectionViewLayoutAttributes {
-        const attrs = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath);
+    public finalLayoutAttributesForDisappearingItemAtIndexPath(
+        itemIndexPath: NSIndexPath
+    ): UICollectionViewLayoutAttributes {
+        const attrs = super.finalLayoutAttributesForDisappearingItemAtIndexPath(
+            itemIndexPath
+        );
         attrs.alpha = 1;
         return attrs;
     }
 
+    targetContentOffsetForProposedContentOffsetWithScrollingVelocity(
+        proposedContentOffset: CGPoint,
+        velocity: CGPoint
+    ) {
+        let owner = this._owner ? this._owner.get() : null;
+        if (!this.collectionView || !owner) {
+            return super.targetContentOffsetForProposedContentOffsetWithScrollingVelocity(
+                proposedContentOffset,
+                velocity
+            );
+        }
+        const size = owner._getRealWidthHeight();
+        if (
+            this.scrollDirection === UICollectionViewScrollDirection.Horizontal
+        ) {
+            // Page width used for estimating and calculating paging.
+            let pageWidth = size.width + this.minimumInteritemSpacing;
+
+            // Make an estimation of the current page position.
+            let approximatePage =
+                this.collectionView.contentOffset.x / pageWidth;
+            // Determine the current page based on velocity.
+            let currentPage =
+                velocity.x == 0
+                    ? Math.round(approximatePage)
+                    : velocity.x < 0.0
+                    ? Math.floor(approximatePage)
+                    : Math.ceil(approximatePage);
+
+            // Create custom flickVelocity.
+            let flickVelocity = velocity.x * 0.3;
+
+            // Check how many pages the user flicked, if <= 1 then flickedPages should return 0.
+            let flickedPages =
+                Math.abs(Math.round(flickVelocity)) <= 1
+                    ? 0
+                    : Math.round(flickVelocity);
+
+            const newPageIndex = currentPage + flickedPages;
+            selectedIndexProperty.nativeValueChange(owner, Math.max(newPageIndex, 0));
+            // Calculate newHorizontalOffset.
+            let newHorizontalOffset =
+                newPageIndex * pageWidth -
+                this.collectionView.contentInset.left;
+
+            return CGPointMake(newHorizontalOffset, proposedContentOffset.y);
+        } else {
+            // Page height used for estimating and calculating paging.
+            let pageHeight = size.height + this.minimumLineSpacing;
+
+            // Make an estimation of the current page position.
+            let approximatePage =
+                this.collectionView.contentOffset.y / pageHeight;
+
+            // Determine the current page based on velocity.
+            let currentPage =
+                velocity.y == 0
+                    ? Math.round(approximatePage)
+                    : velocity.y < 0.0
+                    ? Math.floor(approximatePage)
+                    : Math.ceil(approximatePage);
+
+            // Create custom flickVelocity.
+            let flickVelocity = velocity.y * 0.3;
+
+            // Check how many pages the user flicked, if <= 1 then flickedPages should return 0.
+            let flickedPages =
+                Math.abs(Math.round(flickVelocity)) <= 1
+                    ? 0
+                    : Math.round(flickVelocity);
+
+            const newPageIndex = currentPage + flickedPages;
+            selectedIndexProperty.nativeValueChange(owner, Math.max(newPageIndex, 0));
+            let newVerticalOffset =
+                newPageIndex * pageHeight -
+                this.collectionView.contentInset.top;
+
+            return CGPointMake(proposedContentOffset.x, newVerticalOffset);
+        }
+    }
 }
