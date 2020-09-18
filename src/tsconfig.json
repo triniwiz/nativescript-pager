@@ -28,7 +28,8 @@
     ],
     "exclude": [
         "node_modules",
-        "angular"
+        "angular",
+        "react"
     ],
     "compileOnSave": false,
     "angularCompilerOptions": {
