@@ -14,15 +14,15 @@
     }
   },
   "dependencies": {
-    "@nativescript/core": "rc",
+    "@nativescript/core": "7.0.3",
     "@nativescript-community/ui-pager": "file:../src",
-    "nativescript-theme-core": "^2.0.2",
-    "nativescript-vue": "2.7.1"
+    "nativescript-theme-core": "^2.0.24",
+    "nativescript-vue": "2.8.1"
   },
   "devDependencies": {
-    "@nativescript/webpack": "rc",
+    "@nativescript/webpack": "3.0.4",
     "babel-loader": "8.1.0",
-    "nativescript-vue-template-compiler": "^2.7.1",
+    "nativescript-vue-template-compiler": "^2.8.1",
     "sass-loader": "9.0.3",
     "typescript": "3.9.7",
     "vue-loader": "^15.9.3",
