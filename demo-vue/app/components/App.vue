@@ -5,7 +5,8 @@
 		<StackLayout>
 			<Button text="To Details directly" @tap="$navigateTo(detailPage)"/>
 			<Button text="To Static" @tap="$navigateTo(staticPage)"/>
-			<Pager height="100%" for="item in items">
+			<Button text="To 7" @tap="selectedIndex = 6"/>
+			<Pager height="100%" for="item in items" :selectedIndex="selectedIndex" @selectedIndexChange="onIndexChanged">
 				<v-template>
 					<GridLayout class="pager-item" rows="auto, *" columns="*">
 						<Label :text="item.title"></Label>
@@ -24,6 +25,7 @@
 	export default {
 		data() {
 			return {
+				selectedIndex: 0,
 				detailPage: Detail,
 				staticPage: Static,
 				items: new ObservableArray([
@@ -76,6 +78,12 @@
 					}
 				])
 			};
+		},
+		methods:{
+			onIndexChanged(event){
+				this.selectedIndex = event;
+				console.log('onIndexChanged', event);
+			}
 		}
 	};
 </script>
