@@ -33,7 +33,6 @@ export declare type CellViewContainer = View;
 declare type CellFactory = (item: any) => React.ReactElement;
 declare type OwnProps = {
     items: ItemsSource | any[];
-    /** User may specify cellFactory for single-template or cellFactories for multi-template. */
     cellFactory?: CellFactory;
     cellFactories?: Map<string, {
         placeholderItem: any;
@@ -93,7 +92,6 @@ export declare class _PagerItem extends React.Component<PagerItemAttributes, {}>
 }
 export declare const Pager: React.ForwardRefExoticComponent<{
     items: ItemsSource | any[];
-    /** User may specify cellFactory for single-template or cellFactories for multi-template. */
     cellFactory?: CellFactory;
     cellFactories?: Map<string, {
         placeholderItem: any;
