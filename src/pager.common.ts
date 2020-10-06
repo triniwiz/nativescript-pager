@@ -127,6 +127,10 @@ export abstract class PagerBase
 
     abstract refresh(): void;
 
+    getChildView(index:number) {
+        return this._childrenViews && this._childrenViews.get(index)
+    } 
+
     private _itemTemplateSelector: (
         item: any,
         index: number,

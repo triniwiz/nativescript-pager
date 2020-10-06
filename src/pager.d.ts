@@ -1,7 +1,7 @@
 import { View } from '@nativescript/core';
-import {  PagerBase } from './pager.common';
+import {  PagerBase, PagerItem } from './pager.common';
 
-export { ItemsSource, PagerItem, PagerError, PagerLog } from './pager.common';
+export { ItemsSource, PagerError, PagerLog, PagerItem } from './pager.common';
 export type Orientation = 'horizontal' | 'vertical';
 
 export declare class Pager extends PagerBase {
@@ -30,4 +30,6 @@ export declare class Pager extends PagerBase {
     _addChildFromBuilder(name: string, value: any): void;
 
     _onItemsChanged(oldValue: any, newValue: any);
+
+    getChildView(index:number): PagerItem;
 }

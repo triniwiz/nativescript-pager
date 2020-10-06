@@ -28,7 +28,6 @@ module.exports = function pager(Vue) {
       ref="pagerView"
       :items="items"
       v-bind="$attrs"
-      v-on="listeners"
       :selectedIndex="selectedIndex"
 	  @itemLoading="onItemLoading"
 	  @itemDisposing="onItemDisposing">
@@ -42,13 +41,6 @@ module.exports = function pager(Vue) {
 					this.$refs.pagerView.nativeView.refresh();
 				},
 				deep: true
-			}
-		},
-		computed: {
-			listeners() {
-				return Object.assign({}, this.$listeners, {
-					selectedIndexChange: this.onSelectedIndexChange
-				})
 			}
 		},
 		mounted() {
@@ -88,9 +80,6 @@ module.exports = function pager(Vue) {
 				// if (oldVnode) {
 				// 	Vue.prototype.__patch__(oldVnode, null);
 				// }
-			},
-			onSelectedIndexChange({ value }) {
-				this.$emit('selectedIndexChange', value)
 			}
 		}
 	};
