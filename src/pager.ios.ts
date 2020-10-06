@@ -320,7 +320,7 @@ export class Pager extends PagerBase {
     [selectedIndexProperty.setNative](value: number) {
         console.log("selectedIndexProperty", value);
         if (this.isLoaded) {
-            this.scrollToIndexAnimated(value, true);
+            this.scrollToIndexAnimated(value, !this.disableAnimation);
         }
     }
 
