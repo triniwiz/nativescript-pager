@@ -67,6 +67,8 @@ declare var CHIPageControlAji,
 
 const main_queue = dispatch_get_current_queue();
 
+
+const PFLAG_FORCE_LAYOUT = 1;
 export class Pager extends PagerBase {
     lastEvent: number = 0;
     private _disableSwipe: boolean = false;
@@ -82,7 +84,7 @@ export class Pager extends PagerBase {
     backgroundColor: any;
     _isDirty: boolean = false;
     _isRefreshing: boolean = false;
-    private _pager: any; /*UICollectionView*/
+    private _pager: UICollectionView;
     private _indicatorView: any;
     private _observableArrayInstance: ObservableArray<any>;
     _isInit: boolean = false;
@@ -682,13 +684,16 @@ export class Pager extends PagerBase {
             heightMeasureSpec
         );
         super.measure(widthMeasureSpec, heightMeasureSpec);
-        if (changed) {
+		let forceLayout = (this._privateFlags & PFLAG_FORCE_LAYOUT) === PFLAG_FORCE_LAYOUT;
+        if (changed || forceLayout) {
             dispatch_async(main_queue, () => {
                 if (!this.pager) {
                     return;
                 }
                 this.pager.reloadData();
-                this._updateScrollPosition();
+                if (changed) {
+                    this._updateScrollPosition();
+                }
                 this._initAutoPlay(this.autoPlay);
             });
         }
