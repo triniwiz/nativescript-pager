@@ -1,8 +1,8 @@
-import { Page } from 'tns-core-modules/ui/page';
-import { HelloWorldModel } from './main-view-model';
-import { Pager } from 'nativescript-pager';
-import { Image } from 'tns-core-modules/ui/image';
-import { Frame } from 'tns-core-modules/ui/frame';
+import {Page} from '@nativescript/core/ui/page';
+import {HelloWorldModel} from './main-view-model';
+import {Pager} from '@nativescript-community/ui-pager';
+import {Image} from '@nativescript/core/ui/image';
+import {Frame} from '@nativescript/core/ui/frame';
 
 let page: Page;
 let vm = new HelloWorldModel();
@@ -168,13 +168,13 @@ export function navigate() {
     Frame.topmost().navigate('dummy-page');
 }
 
-export function toggleIndicator(event){
+export function toggleIndicator(event) {
     const state = vm.get('showIndicator');
     vm.set('showIndicator', !state);
     console.log('toggleIndicator', state, vm.get('showIndicator'));
 }
 
-export function toggleCircularMode(event){
+export function toggleCircularMode(event) {
     const state = vm.get('circularMode');
     console.log('circularMode', state);
     vm.set('circularMode', !state);

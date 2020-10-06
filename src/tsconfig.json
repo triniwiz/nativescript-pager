@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
+        "target": "es2017",
+        "module": "esnext",
+        "moduleResolution": "node",
         "declaration": true,
         "removeComments": true,
         "noLib": false,
@@ -19,13 +20,16 @@
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
         "jsx": "react",
-    },
+        "plugins": [{ "transform": "@nativescript/webpack/transformers/ns-transform-native-classes.js", "type": "raw" }]
+  },
     "include":[
         "**/*.ts",
         "!*.d.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "angular",
+        "react"
     ],
     "compileOnSave": false,
     "angularCompilerOptions": {

@@ -1,5 +1,5 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-      xmlns:c="nativescript-pager"
+      xmlns:c="@nativescript-community/ui-pager"
       xmlns:i="nativescript-image-cache-it"
       title="Pager Demo"
 >

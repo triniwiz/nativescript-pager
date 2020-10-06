@@ -2,7 +2,7 @@
 	<Page>
 		<ActionBar title="Static"/>
 		<StackLayout iosOverflowSafeArea="false">
-			<Pager height="100%" :selectedIndex="1">
+			<Pager height="100%" :selectedIndex="1" orientation="vertical">
 				<PagerItem backgroundColor="red">
 					<Label text="First"></Label>
 				</PagerItem>

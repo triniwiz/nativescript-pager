@@ -13,9 +13,9 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "repository": "<fill-your-repository-here>",
   "dependencies": {
-    "@nativescript/core": "^6.4.1",
+    "@nativescript/core": "rc",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
-    "nativescript-pager": "file:../publish/package/nativescript-pager-12.0.0-alpha.9.tgz",
+    "@nativescript-community/ui-pager": "file:../publish/package/@nativescript-community/ui-pager-12.0.0-alpha.9.tgz",
     "nativescript-theme-core": "~1.0.6",
     "react": "^16.8.6",
     "react-nativescript": "~1.0.6"

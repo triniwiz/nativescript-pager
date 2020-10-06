@@ -1,57 +1,58 @@
 import {
     AddChildFromBuilder,
+    addWeakEventListener,
+    Builder,
     CoercibleProperty,
+    Color,
     ContainerView,
     CSSType,
+    GridLayout,
+    ItemsSource,
     KeyedTemplate,
+    Label,
     Length,
     makeParser,
     makeValidator,
     PercentLength,
     Property,
+    removeWeakEventListener,
     Template,
-    View
-} from '@nativescript/core/ui/core/view';
-import { isIOS } from '@nativescript/core/platform';
-import { Builder } from '@nativescript/core/ui/builder';
-import { Label } from '@nativescript/core/ui/label';
-import { messageType, write } from '@nativescript/core/trace';
-import { Observable } from '@nativescript/core/data/observable';
-import { addWeakEventListener, removeWeakEventListener } from '@nativescript/core/ui/core/weak-event-listener';
-import { ObservableArray } from '@nativescript/core/data/observable-array';
-import { GridLayout } from '@nativescript/core/ui/layouts/grid-layout';
-import { layout } from '@nativescript/core/utils/utils';
-import { Color } from '@nativescript/core/color';
+    Trace,
+    View,
+} from "@nativescript/core";
+import { Observable } from "@nativescript/core/data/observable";
+import { ObservableArray } from "@nativescript/core/data/observable-array";
+import {} from "@nativescript/core/ui/core/weak-event-listener";
+import { layout } from "@nativescript/core/utils/utils";
 
-export type Orientation = 'horizontal' | 'vertical';
+export type Orientation = "horizontal" | "vertical";
 
-export const ITEMLOADING = 'itemLoading';
-export const ITEMDISPOSING = 'itemDisposing';
-export const LOADMOREITEMS = 'loadMoreItems';
+export const ITEMLOADING = "itemLoading";
+export const ITEMDISPOSING = "itemDisposing";
+export const LOADMOREITEMS = "loadMoreItems";
 export namespace knownTemplates {
-    export const itemTemplate = 'itemTemplate';
+    export const itemTemplate = "itemTemplate";
 }
 
 export namespace knownMultiTemplates {
-    export const itemTemplates = 'itemTemplates';
+    export const itemTemplates = "itemTemplates";
 }
 
 export namespace knownCollections {
-    export const items = 'items';
+    export const items = "items";
 }
 
-export const pagerTraceCategory = 'ns-pager';
+export const pagerTraceCategory = "ns-pager";
 
 export function PagerLog(message: string): void {
-    write(message, pagerTraceCategory);
+    Trace.write(message, pagerTraceCategory);
 }
 
 export function PagerError(message: string): void {
-    write(message, pagerTraceCategory, messageType.error);
+    Trace.write(message, pagerTraceCategory, Trace.messageType.error);
 }
 
-export * from '@nativescript/core/ui/core/view';
-
+export { ItemsSource };
 export interface ItemEventData {
     eventName: string;
     object: any;
@@ -61,35 +62,31 @@ export interface ItemEventData {
     ios: any;
 }
 
-export interface ItemsSource {
-    length: number;
-
-    getItem(index: number): any;
-}
-
 const autoEffectiveItemHeight = 100;
 const autoEffectiveItemWidth = 100;
 
 export enum Transformer {
-    SCALE = 'scale'
+    SCALE = "scale",
 }
 
 export enum Indicator {
-    Disabled = 'disable',
-    None = 'none',
-    Worm = 'worm',
-    Fill = 'fill',
-    Swap = 'swap',
-    THIN_WORM = 'thin_worm',
-    Flat = 'flat',
+    Disabled = "disable",
+    None = "none",
+    Worm = "worm",
+    Fill = "fill",
+    Swap = "swap",
+    THIN_WORM = "thin_worm",
+    Flat = "flat",
 }
 
 const booleanConverter = (v: any): boolean => {
-    return String(v) === 'true';
+    return String(v) === "true";
 };
 
-@CSSType('Pager')
-export abstract class PagerBase extends ContainerView implements AddChildFromBuilder {
+@CSSType("Pager")
+export abstract class PagerBase
+    extends ContainerView
+    implements AddChildFromBuilder {
     public items: any[] | ItemsSource;
     public selectedIndex: number;
     public itemTemplate: string | Template;
@@ -103,13 +100,13 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public circularMode: boolean;
     public autoPlayDelay: number;
     public autoPlay: boolean;
-    public static selectedIndexChangedEvent = 'selectedIndexChanged';
-    public static selectedIndexChangeEvent = 'selectedIndexChange';
-    public static scrollEvent = 'scroll';
-    public static swipeEvent = 'swipe';
-    public static swipeStartEvent = 'swipeStart';
-    public static swipeOverEvent = 'swipeOver';
-    public static swipeEndEvent = 'swipeEnd';
+    public static selectedIndexChangedEvent = "selectedIndexChanged";
+    public static selectedIndexChangeEvent = "selectedIndexChange";
+    public static scrollEvent = "scroll";
+    public static swipeEvent = "swipe";
+    public static swipeStartEvent = "swipeStart";
+    public static swipeOverEvent = "swipeOver";
+    public static swipeEndEvent = "swipeEnd";
     public static loadMoreItemsEvent = LOADMOREITEMS;
     public static itemLoadingEvent = ITEMLOADING;
     public orientation: Orientation;
@@ -126,7 +123,7 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public indicatorColor: Color | string;
     public indicatorSelectedColor: Color | string;
     // TODO: get rid of such hacks.
-    public static knownFunctions = ['itemTemplateSelector', 'itemIdGenerator']; // See component-builder.ts isKnownFunction
+    public static knownFunctions = ["itemTemplateSelector", "itemIdGenerator"]; // See component-builder.ts isKnownFunction
 
     abstract refresh(): void;
 
@@ -137,28 +134,32 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     ) => string;
     private _itemTemplateSelectorBindable = new Label();
     public _defaultTemplate: KeyedTemplate = {
-        key: 'default',
+        key: "default",
         createView: () => {
             if (this.itemTemplate) {
                 return Builder.parse(this.itemTemplate, this);
             }
             return undefined;
-        }
+        },
     };
 
     public _itemTemplatesInternal = new Array<KeyedTemplate>(
         this._defaultTemplate
     );
 
-
-    private _itemIdGenerator: (item: any, index: number, items: any) => number = (_item: any,
-                                                                                  index: number) => index;
+    private _itemIdGenerator: (
+        item: any,
+        index: number,
+        items: any
+    ) => number = (_item: any, index: number) => index;
 
     get itemIdGenerator(): (item: any, index: number, items: any) => number {
         return this._itemIdGenerator;
     }
 
-    set itemIdGenerator(generatorFn: (item: any, index: number, items: any) => number) {
+    set itemIdGenerator(
+        generatorFn: (item: any, index: number, items: any) => number
+    ) {
         this._itemIdGenerator = generatorFn;
     }
 
@@ -171,38 +172,61 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     set itemTemplateSelector(
         value: string | ((item: any, index: number, items: any) => string)
     ) {
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             this._itemTemplateSelectorBindable.bind({
                 sourceProperty: null,
-                targetProperty: 'templateKey',
-                expression: value
+                targetProperty: "templateKey",
+                expression: value,
             });
-            this._itemTemplateSelector = (item: any, index: number, items: any) => {
-                item['$index'] = index;
-                if (this._itemTemplateSelectorBindable.bindingContext === item) {
+            this._itemTemplateSelector = (
+                item: any,
+                index: number,
+                items: any
+            ) => {
+                item["$index"] = index;
+                if (
+                    this._itemTemplateSelectorBindable.bindingContext === item
+                ) {
                     this._itemTemplateSelectorBindable.bindingContext = null;
                 }
                 this._itemTemplateSelectorBindable.bindingContext = item;
-                return this._itemTemplateSelectorBindable.get('templateKey');
+                return this._itemTemplateSelectorBindable.get("templateKey");
             };
-        } else if (typeof value === 'function') {
+        } else if (typeof value === "function") {
             this._itemTemplateSelector = value;
         }
     }
 
-    public _getItemTemplate(index: number): KeyedTemplate {
-        let templateKey = 'default';
+    onItemViewLoaderChanged() {}
+    _itemViewLoader: Function;
+
+    get itemViewLoader() {
+        return this._itemViewLoader;
+    }
+    set itemViewLoader(value) {
+        if (this._itemViewLoader !== value) {
+            this._itemViewLoader = value;
+            this.onItemViewLoaderChanged();
+        }
+    }
+
+    public _getItemTemplateKey(index: number): string {
+        let templateKey = "default";
         if (this.itemTemplateSelector) {
             let dataItem = this._getDataItem(index);
-            templateKey = this._itemTemplateSelector(dataItem, index, this.items);
+            templateKey = this._itemTemplateSelector(
+                dataItem,
+                index,
+                this.items
+            );
         }
+        return templateKey;
+    }
+    public _getItemTemplate(index: number): KeyedTemplate {
+        let templateKey = this._getItemTemplateKey(index);
 
         const length = this._itemTemplatesInternal.length;
-        for (
-            let i = 0;
-            i < length;
-            i++
-        ) {
+        for (let i = 0; i < length; i++) {
             if (this._itemTemplatesInternal[i].key === templateKey) {
                 return this._itemTemplatesInternal[i];
             }
@@ -220,16 +244,18 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
     _getDataItem(index: number): any {
         let thisItems = this.items;
-        return thisItems && (<ItemsSource>thisItems).getItem
-            ? (<ItemsSource>thisItems).getItem(index)
-            : thisItems[index];
+        if (thisItems) {
+            return thisItems && (<ItemsSource>thisItems).getItem
+                ? (<ItemsSource>thisItems).getItem(index)
+                : thisItems[index];
+        }
     }
 
     public _getDefaultItemContent(index: number): View {
         let lbl = new Label();
         lbl.bind({
-            targetProperty: 'text',
-            sourceProperty: '$value'
+            targetProperty: "text",
+            sourceProperty: "$value",
         });
         return lbl;
     }
@@ -242,44 +268,60 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
     public onLayout(left: number, top: number, right: number, bottom: number) {
         super.onLayout(left, top, right, bottom);
         this._innerWidth =
-            right - left - this.effectivePaddingLeft - this.effectivePaddingRight;
+            right -
+            left -
+            this.effectivePaddingLeft -
+            this.effectivePaddingRight;
 
         this._innerHeight =
-            bottom - top - this.effectivePaddingTop - this.effectivePaddingBottom;
-        // @ts-ignore
-        this._effectiveItemWidth = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
-        // @ts-ignore
-        this._effectiveItemHeight = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
+            bottom -
+            top -
+            this.effectivePaddingTop -
+            this.effectivePaddingBottom;
+        this._effectiveItemWidth = global.isIOS
+            ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec)
+            : this.getMeasuredWidth();
+        this._effectiveItemHeight = global.isIOS
+            ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec)
+            : this.getMeasuredHeight();
     }
 
     public convertToSize(length): number {
         let size = 0;
-        if (this.orientation === 'horizontal') {
-            // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentWidthMeasureSpec) : this.getMeasuredWidth();
+        if (this.orientation === "horizontal") {
+            size = global.isIOS
+                ? layout.getMeasureSpecSize(
+                      (this as any)._currentWidthMeasureSpec
+                  )
+                : this.getMeasuredWidth();
         } else {
-            // @ts-ignore
-            size = isIOS ? layout.getMeasureSpecSize((this as any)._currentHeightMeasureSpec) : this.getMeasuredHeight();
+            size = global.isIOS
+                ? layout.getMeasureSpecSize(
+                      (this as any)._currentHeightMeasureSpec
+                  )
+                : this.getMeasuredHeight();
         }
 
         let converted = 0;
-        if (length && length.unit === 'px') {
+        if (length && length.unit === "px") {
             converted = length.value;
-        } else if (length && length.unit === 'dip') {
+        } else if (length && length.unit === "dip") {
             converted = layout.toDevicePixels(length.value);
-        } else if (length && length.unit === '%') {
+        } else if (length && length.unit === "%") {
             converted = size * length.value;
-        } else if (typeof length === 'string') {
-            if (length.indexOf('px') > -1) {
-                converted = parseInt(length.replace('px', ''));
-            } else if (length.indexOf('dip') > -1) {
-                converted = layout.toDevicePixels(parseInt(length.replace('dip', '')));
-            } else if (length.indexOf('%') > -1) {
-                converted = size * (parseInt(length.replace('%', '')) / 100);
+        } else if (typeof length === "string") {
+            if (length.indexOf("px") > -1) {
+                converted = parseInt(length.replace("px", ""));
+            } else if (length.indexOf("dip") > -1) {
+                converted = layout.toDevicePixels(
+                    parseInt(length.replace("dip", ""))
+                );
+            } else if (length.indexOf("%") > -1) {
+                converted = size * (parseInt(length.replace("%", "")) / 100);
             } else {
                 converted = layout.toDevicePixels(parseInt(length));
             }
-        } else if (typeof length === 'number') {
+        } else if (typeof length === "number") {
             converted = layout.toDevicePixels(length);
         }
 
@@ -293,7 +335,6 @@ export abstract class PagerBase extends ContainerView implements AddChildFromBui
 
     abstract _onItemsChanged(oldValue: any, newValue: any): void;
 }
-
 
 export class PagerItem extends GridLayout {
     constructor() {
@@ -315,7 +356,10 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
         );
     }
 
-    if (newValue instanceof Observable && !(newValue instanceof ObservableArray)) {
+    if (
+        newValue instanceof Observable &&
+        !(newValue instanceof ObservableArray)
+    ) {
         addWeakEventListener(
             newValue,
             ObservableArray.changeEvent,
@@ -324,7 +368,10 @@ function onItemsChanged(pager: PagerBase, oldValue, newValue) {
         );
     }
 
-    if (!(newValue instanceof Observable) || !(newValue instanceof ObservableArray)) {
+    if (
+        !(newValue instanceof Observable) ||
+        !(newValue instanceof ObservableArray)
+    ) {
         pager.refresh();
     }
     pager._onItemsChanged(oldValue, newValue);
@@ -335,37 +382,39 @@ function onItemTemplateChanged(pager: PagerBase, oldValue, newValue) {
 }
 
 export const indicatorColorProperty = new Property<PagerBase, Color | string>({
-    name: 'indicatorColor'
+    name: "indicatorColor",
 });
 
 indicatorColorProperty.register(PagerBase);
 
-
-export const indicatorSelectedColorProperty = new Property<PagerBase, Color | string>({
-    name: 'indicatorSelectedColor'
+export const indicatorSelectedColorProperty = new Property<
+    PagerBase,
+    Color | string
+>({
+    name: "indicatorSelectedColor",
 });
 
 indicatorSelectedColorProperty.register(PagerBase);
 
 export const circularModeProperty = new Property<PagerBase, boolean>({
-    name: 'circularMode',
+    name: "circularMode",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 
 circularModeProperty.register(PagerBase);
 
 export const indicatorProperty = new Property<PagerBase, Indicator>({
-    name: 'indicator',
-    defaultValue: Indicator.None
+    name: "indicator",
+    defaultValue: Indicator.None,
 });
 
 indicatorProperty.register(PagerBase);
 
 export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
-    name: 'selectedIndex',
+    name: "selectedIndex",
     defaultValue: -1,
-    affectsLayout: isIOS,
+    affectsLayout: global.isIOS,
     coerceValue: (target, value) => {
         let items = target._childrenCount;
         if (items) {
@@ -382,77 +431,78 @@ export const selectedIndexProperty = new CoercibleProperty<PagerBase, number>({
 
         return value;
     },
-    valueConverter: v => parseInt(v, 10)
+    valueConverter: (v) => parseInt(v, 10),
 });
 selectedIndexProperty.register(PagerBase);
 
-
 export const spacingProperty = new Property<PagerBase, Length>({
-    name: 'spacing',
-    defaultValue: {value: 0, unit: 'dip'},
-    affectsLayout: true
+    name: "spacing",
+    defaultValue: { value: 0, unit: "dip" },
+    affectsLayout: true,
 });
 
 spacingProperty.register(PagerBase);
 
 export const peakingProperty = new Property<PagerBase, Length>({
-    name: 'peaking',
-    defaultValue: {value: 0, unit: 'dip'},
-    affectsLayout: true
+    name: "peaking",
+    defaultValue: { value: 0, unit: "dip" },
+    affectsLayout: true,
 });
 
 peakingProperty.register(PagerBase);
 
 export const itemsProperty = new Property<PagerBase, any>({
-    name: 'items',
+    name: "items",
     affectsLayout: true,
-    valueChanged: onItemsChanged
+    valueChanged: onItemsChanged,
 });
 itemsProperty.register(PagerBase);
 
 export const itemTemplateProperty = new Property<PagerBase, string | Template>({
-    name: 'itemTemplate',
+    name: "itemTemplate",
     affectsLayout: true,
-    valueChanged: target => {
+    valueChanged: (target) => {
         target.refresh();
-    }
+    },
 });
 itemTemplateProperty.register(PagerBase);
 
-export const itemTemplatesProperty = new Property<PagerBase,
-    string | Array<KeyedTemplate>>({
-    name: 'itemTemplates',
+export const itemTemplatesProperty = new Property<
+    PagerBase,
+    string | Array<KeyedTemplate>
+>({
+    name: "itemTemplates",
     affectsLayout: true,
-    valueConverter: value => {
-        if (typeof value === 'string') {
+    valueConverter: (value) => {
+        if (typeof value === "string") {
             return Builder.parseMultipleTemplates(value);
         }
         return value;
-    }
+    },
 });
 itemTemplatesProperty.register(PagerBase);
 
 export const canGoRightProperty = new Property<PagerBase, boolean>({
-    name: 'canGoRight',
+    name: "canGoRight",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 canGoRightProperty.register(PagerBase);
 
 export const canGoLeftProperty = new Property<PagerBase, boolean>({
-    name: 'canGoLeft',
+    name: "canGoLeft",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 canGoLeftProperty.register(PagerBase);
 
 const converter = makeParser<Orientation>(
-    makeValidator('horizontal', 'vertical')
+    makeValidator("horizontal", "vertical")
 );
 
 export const orientationProperty = new Property<PagerBase, Orientation>({
-    name: 'orientation',
-    defaultValue: 'horizontal',
+    name: "orientation",
+    defaultValue: "horizontal",
     affectsLayout: true,
     valueChanged: (
         target: PagerBase,
@@ -461,50 +511,47 @@ export const orientationProperty = new Property<PagerBase, Orientation>({
     ) => {
         target.refresh();
     },
-    valueConverter: converter
+    valueConverter: converter,
 });
 orientationProperty.register(PagerBase);
 
 export const disableSwipeProperty = new Property<PagerBase, boolean>({
-    name: 'disableSwipe',
+    name: "disableSwipe",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 
 disableSwipeProperty.register(PagerBase);
 
-
 export const perPageProperty = new Property<PagerBase, number>({
-    name: 'perPage',
-    defaultValue: 1
+    name: "perPage",
+    defaultValue: 1,
 });
 
 perPageProperty.register(PagerBase);
 
-
 export const transformersProperty = new Property<PagerBase, string>({
-    name: 'transformers'
+    name: "transformers",
 });
 
 transformersProperty.register(PagerBase);
 
-
 export const showIndicatorProperty = new Property<PagerBase, boolean>({
-    name: 'showIndicator',
+    name: "showIndicator",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 showIndicatorProperty.register(PagerBase);
 
 export const autoPlayProperty = new Property<PagerBase, boolean>({
-    name: 'autoPlay',
+    name: "autoPlay",
     defaultValue: false,
-    valueConverter: booleanConverter
+    valueConverter: booleanConverter,
 });
 autoPlayProperty.register(PagerBase);
 
 export const autoplayDelayProperty = new Property<PagerBase, number>({
-    name: 'autoPlayDelay',
+    name: "autoPlayDelay",
     defaultValue: 3000,
 });
 autoplayDelayProperty.register(PagerBase);

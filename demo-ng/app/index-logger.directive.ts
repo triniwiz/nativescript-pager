@@ -1,5 +1,5 @@
 import { Directive, OnInit, OnDestroy, Input, Host, Optional } from '@angular/core';
-import { PagerComponent } from 'nativescript-pager/angular';
+import { PagerComponent } from '@nativescript-community/ui-pager/angular';
 
 let autoId = 0;
 

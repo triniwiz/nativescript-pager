@@ -1,9 +1,12 @@
 <Page
         xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
-        xmlns:c="nativescript-pager">
+        xmlns:c="@nativescript-community/ui-pager">
     <GridLayout rows="auto,*,auto" columns="*" id="sl">
         <Label text="Pager With List"/>
-        <c:Pager selectedIndex="2" row="1" id="pager" backgroundColor="lightsteelblue">
+        <c:Pager
+                showIndicator="true"
+                indicatorColor="purple"
+                 indicatorSelectedColor="blue" selectedIndex="2" row="1" id="pager" backgroundColor="lightsteelblue" circularMode="false">
             <c:PagerItem backgroundColor="red">
                 <Label text="First"/>
             </c:PagerItem>
@@ -18,6 +21,9 @@
             </c:PagerItem>
             <c:PagerItem backgroundColor="pink">
                 <Label text="Fifth"/>
+            </c:PagerItem>
+            <c:PagerItem backgroundColor="yellow">
+                <Label text="Sixth"/>
             </c:PagerItem>
         </c:Pager>
         <Button text="Nav" row="2" tap="navigate"/>

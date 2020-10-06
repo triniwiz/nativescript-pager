@@ -1,6 +1,6 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import { getJSON, HttpResponse } from 'tns-core-modules/http';
+import { Observable } from '@nativescript/core/data/observable';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
+import { getJSON, HttpResponse } from '@nativescript/core/http';
 
 export class ApiViewModel extends Observable {
     public page = 1;

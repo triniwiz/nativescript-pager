@@ -12,10 +12,10 @@
     "nativescript-carousel": "^6.1.1",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
     "nativescript-nested-scrollview": "^1.1.0",
-    "nativescript-pager": "file:../src",
+    "@nativescript-community/ui-pager": "file:../src",
     "nativescript-theme-core": "^2.0.2",
     "nativescript-unit-test-runner": "0.7.0",
-    "tns-core-modules": "~6.4.0"
+    "@nativescript/core": "rc"
   },
   "devDependencies": {
     "babel-traverse": "6.12.0",
@@ -29,10 +29,10 @@
     "karma-webpack": "3.0.5",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.1",
-    "nativescript-dev-webpack": "^1.0.1",
-    "tns-platform-declarations": "file:../src/node_modules/tns-platform-declarations",
+    "@nativescript/webpack": "rc",
+    "@nativescript/types": "file:../src/node_modules/@nativescript/types",
     "tslint": "~5.18.0",
-    "typescript": "~3.4.5"
+    "typescript": "~3.9.7"
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",

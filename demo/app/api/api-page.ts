@@ -1,6 +1,6 @@
 import { ApiViewModel } from '~/api/api-view-model';
-import { Page } from 'tns-core-modules/ui/page';
-import { Pager } from 'nativescript-pager';
+import { Page } from '@nativescript/core/ui/page';
+import { Pager } from '@nativescript-community/ui-pager';
 
 let vm = new ApiViewModel();
 let page;

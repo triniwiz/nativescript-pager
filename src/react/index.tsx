@@ -6,7 +6,7 @@ registerElement('pager', () => require('../').Pager);
 registerElement('pagerItem', () => require('../').PagerItem);
 
 import { Template, Color } from '@nativescript/core';
-import { PercentLength } from '@nativescript/core/ui/core/view';
+import { PercentLength } from '@nativescript/core';
 import { View, KeyedTemplate } from "@nativescript/core";
 import { render as RNSRender, unmountComponentAtNode, NSVRoot, NSVElement, ViewAttributes, NativeScriptProps, GridLayoutAttributes } from "react-nativescript";
 

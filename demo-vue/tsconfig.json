@@ -1,0 +1,51 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "removeComments": false,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "noEmitOnError": true,
+        "preserveSymlinks": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "noImplicitUseStrict": true,
+        "lib": [
+            "es6",
+            "dom",
+            "es2015.iterable",
+            "es2017"
+        ],
+        "types": [
+            "vue"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "~/*": [
+                "app/*"
+            ],
+            "@nativescript/core": [
+                "./node_modules/@nativescript/core"
+            ],
+            "@nativescript/core/*": [
+                "./node_modules/@nativescript/core/*"
+            ],
+            "*": [
+                "./node_modules/*"
+            ]
+        }
+    },
+    "include": [
+        "app/**/*",
+        "references.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "platforms",
+        "**/*.spec.ts"
+    ]
+}

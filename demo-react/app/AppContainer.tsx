@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pager, PagerItem } from 'nativescript-pager/react';
+import { Pager, PagerItem } from '@nativescript-community/ui-pager/react';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
 import { Page, Frame } from '@nativescript/core';
 

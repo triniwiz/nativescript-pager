@@ -1,5 +1,5 @@
-﻿import * as application from 'tns-core-modules/application';
+﻿import * as application from '@nativescript/core/application';
 
-require('nativescript-pager');
+require('@nativescript-community/ui-pager');
 require('./bundle-config');
 application.run({moduleName: 'app-root'});

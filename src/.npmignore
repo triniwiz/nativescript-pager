@@ -5,3 +5,4 @@
 tsconfig.json
 hooks
 typings
+node_modules

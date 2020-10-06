@@ -22,7 +22,7 @@
     "@nativescript/angular": "^8.21.0",
     "@nativescript/core": "^6.4.1",
     "nativescript-image-cache-it": "^5.0.0-beta.10",
-    "nativescript-pager": "../src",
+    "@nativescript-community/ui-pager": "../src",
     "nativescript-theme-core": "^2.0.2",
     "reflect-metadata": "~0.1.13",
     "rxjs": "^6.4.0",

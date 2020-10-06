@@ -1,5 +1,5 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import { Observable } from '@nativescript/core/data/observable';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
 
 export class NestedPageViewModel extends Observable {
     items: ObservableArray<any>;
@@ -136,13 +136,13 @@ export class NestedPageViewModel extends Observable {
         // this.set('showIndicator', true);
         this.items = new ObservableArray(this._originalItems);
         this.set('itemsCount', this.items.length);
-        this.items.on('change', args =>{
+        this.items.on('change', args => {
             this.set('itemsCount', this.items.length);
-        })
+        });
     }
 
     public resetItems() {
         this.items.splice(0, this.items.length);
-        this.items.push(...this._originalItems)
+        this.items.push(...this._originalItems);
     }
 }
