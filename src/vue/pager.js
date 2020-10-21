@@ -89,11 +89,13 @@ module.exports = function pager(Vue) {
 				// 	Vue.prototype.__patch__(oldVnode, null);
 				// }
 			},
-			onSelectedIndexChange({ value }) {
-				this.$emit('selectedIndexChange', value)
-			}
-		}
-	};
+            onSelectedIndexChange({ value }) {
+                this.$emit('selectedIndexChange', {
+                    object: { selectedIndex: value },
+                });
+            }
+        }
+    };
 
 	function getItemContext(item, index, alias, index_alias) {
 		return {
