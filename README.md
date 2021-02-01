@@ -8,7 +8,7 @@
 
 #### NativeScript 7x
 
-- `tns plugin add @nativescript-community/ui-pager`
+- `tns plugin add @triniwiz/nativescript-pager`
 
 #### NativeScript 6x
 
