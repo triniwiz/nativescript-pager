@@ -6,7 +6,7 @@
 
 ## Install
 
-#### NativeScript 7x
+#### [NativeScript 7+](https://github.com/triniwiz/nativescript-plugins)
 
 - `tns plugin add @triniwiz/nativescript-pager`
 
